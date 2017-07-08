@@ -3,19 +3,107 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_margin="8dp"
+              android:layout_margin="16dp"
               android:orientation="vertical">
 
-    <TextView
-        style="@style/TextAppearance.AppCompat.Body2"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="I am a member item"/>
+        android:orientation="horizontal"
+        android:weightSum="5">
 
-    <TextView
-        style="@style/TextAppearance.AppCompat.Caption"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="SBI Air India"/>
+
+            <TextView
+                android:id="@+id/number"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                tools:text="1234 4556 6778 6778"/>
+
+            <TextView
+                android:id="@+id/payment_date"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                tools:text="10th July"/>
+
+            <TextView
+                android:id="@+id/cardholder"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                tools:text="Zeeshan Khan"/>
+
+            <TextView
+                android:id="@+id/bank"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                tools:text="SBI"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/limit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp"
+                android:max="100"
+                android:progress="50"
+                android:progressTint="@color/colorPrimary"
+                />
+
+            <TextView
+                android:id="@+id/remaining_limit"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                tools:text="3400$"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        tools:text="I am a dummy text for a member item"/>
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/updated_by"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Bushra Rehman"/>
+
+        <TextView
+            android:id="@+id/updated_on"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            tools:text="27, July 12:45 AM"/>
+    </LinearLayout>
 </LinearLayout>

@@ -2,13 +2,37 @@ package io.github.zkhan93.familyfinance.viewholders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.models.Otp;
+import io.github.zkhan93.familyfinance.util.Constants;
 
 /**
  * Created by zeeshan on 7/7/17.
  */
 
 public class OtpVH extends RecyclerView.ViewHolder {
+    @BindView(R.id.name)
+    TextView name;
+    @BindView(R.id.number)
+    TextView number;
+    @BindView(R.id.content)
+    TextView content;
+    @BindView(R.id.timestamp)
+    TextView timestamp;
+
     public OtpVH(View itemView) {
         super(itemView);
+        ButterKnife.bind(this, itemView);
+    }
+
+    public void setOtp(Otp otp) {
+        name.setText(otp.getFrom().getName());
+        number.setText(otp.getNumber());
+        content.setText(otp.getContent());
+        timestamp.setText(Constants.DATE_FORMAT.format(otp.getTimestamp()));
     }
 }

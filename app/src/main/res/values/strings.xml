@@ -17,9 +17,12 @@
     <string name="title_activity_login">Login Activity</string>
 
 
-    <!--Main Activiyt specific-->
+    <!--Main Activity specific-->
     <string name="section_format">%d Section</string>
     <!-- Strings related to Settings -->
+
+    <!--Contants-->
+    <string name="rs">\u20B9</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

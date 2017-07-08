@@ -3,19 +3,44 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_margin="8dp"
+              android:layout_margin="16dp"
               android:orientation="vertical">
 
-    <TextView
-        style="@style/TextAppearance.AppCompat.Body2"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="I am a member item"/>
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/name"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:text="Bushra Rehman"/>
+
+        <TextView
+            android:id="@+id/number"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="+91 8738914923"/>
+    </LinearLayout>
 
     <TextView
+        android:id="@+id/content"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"/>
+
+    <TextView
+        android:id="@+id/timestamp"
         style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        tools:text="I am a dummy text for a member item"/>
+        android:gravity="end"
+        tools:text="23, July 12:54 PM"/>
 </LinearLayout>

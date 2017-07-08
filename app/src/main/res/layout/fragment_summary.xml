@@ -3,11 +3,76 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:orientation="vertical"
     tools:context="io.github.zkhan93.familyfinance.MembersFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list"
+    <TextView
+        style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/listitem_summary"/>
+        android:layout_height="wrap_content"
+        tools:text="Summary"/>
+
+    <TextView
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Total Balance"/>
+
+    <TextView
+        android:id="@+id/grand_total"
+        style="@style/TextAppearance.AppCompat.Display1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_red_light"
+        tools:text=" -300$"/>
+
+    <TextView
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        tools:text="Accounts"/>
+
+    <TextView
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Total balance in 4 accounts"/>
+
+    <TextView
+        android:id="@+id/account_total"
+        style="@style/TextAppearance.AppCompat.Display1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="500$"/>
+
+    <TextView
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        tools:text="Credit Cards"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/consumed_cc_limit"
+            style="@style/TextAppearance.AppCompat.Display1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:text="800$"/>
+
+        <TextView
+            android:id="@+id/remaining_cc_limit"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="400$"/>
+    </LinearLayout>
 </LinearLayout>

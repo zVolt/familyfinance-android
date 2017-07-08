@@ -34,12 +34,12 @@
                 tools:text="000123456789"/>
 
             <TextView
-                android:id="@+id/bank_name"
+                android:id="@+id/bank"
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                tools:text=" ICICI"/>
+                tools:text="ICICI"/>
 
             <TextView
                 android:id="@+id/ifsc"
@@ -58,6 +58,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/balance"
                 style="@style/TextAppearance.AppCompat.Display1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -69,7 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:gravity="right"
+        android:gravity="end"
         android:orientation="horizontal">
 
         <TextView
