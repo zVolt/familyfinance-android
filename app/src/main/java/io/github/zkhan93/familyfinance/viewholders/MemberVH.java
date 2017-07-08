@@ -5,8 +5,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -49,10 +47,10 @@ public class MemberVH extends RecyclerView.ViewHolder {
     public void onClick(ImageButton button) {
         switch (button.getId()) {
             case R.id.remove:
-                memberItemActionClbk.remove(memberId);
+                memberItemActionClbk.removeMember(memberId);
                 break;
             case R.id.sms:
-                memberItemActionClbk.toggleSms(memberId);
+                memberItemActionClbk.toggleMemberSms(memberId);
                 break;
         }
     }

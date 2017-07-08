@@ -12,9 +12,11 @@
     <string name="action_logout">Sign out</string>
 
     <!-- activity titles -->
-    <string name="title_activity_main">Main Activity</string>
-    <string name="title_activity_settings">Settings Activity</string>
-    <string name="title_activity_login">Login Activity</string>
+    <string name="title_summary">Summary</string>
+    <string name="title_accounts">Accounts</string>
+    <string name="title_members">Members</string>
+    <string name="title_otps">OTPs</string>
+    <string name="title_ccards">Credit Cards</string>
 
 
     <!--Main Activity specific-->

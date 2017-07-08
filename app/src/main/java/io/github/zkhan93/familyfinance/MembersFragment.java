@@ -39,14 +39,14 @@ public class MembersFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param number Parameter 1.
+
      * @return A new instance of fragment MembersFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MembersFragment newInstance(int number) {
+    public static MembersFragment newInstance() {
         MembersFragment fragment = new MembersFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, number);
+//        args.putInt(ARG_PARAM1, number);
 
         fragment.setArguments(args);
         return fragment;

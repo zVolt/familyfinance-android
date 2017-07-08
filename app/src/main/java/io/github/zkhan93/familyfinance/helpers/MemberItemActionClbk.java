@@ -5,7 +5,7 @@ package io.github.zkhan93.familyfinance.helpers;
  */
 
 public interface MemberItemActionClbk {
-    void remove(String memberId);
+    void removeMember(String memberId);
 
-    void toggleSms(String memberId);
+    void toggleMemberSms(String memberId);
 }

@@ -23,8 +23,10 @@ import com.google.android.gms.tasks.Task;
 
 import io.github.zkhan93.familyfinance.helpers.OnCCardFragmentInteractionListener;
 import io.github.zkhan93.familyfinance.helpers.OnMemberFragmentInteractionListener;
+import io.github.zkhan93.familyfinance.models.Account;
 
-public class MainActivity extends AppCompatActivity implements OnMemberFragmentInteractionListener, OnCCardFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements
+        OnMemberFragmentInteractionListener, OnCCardFragmentInteractionListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -128,24 +130,40 @@ public class MainActivity extends AppCompatActivity implements OnMemberFragmentI
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return MembersFragment.newInstance(position + 1);
+            switch (position) {
+                default:
+                    return SummaryFragment.newInstance();
+                case 1:
+                    return AccountsFragment.newInstance();
+                case 2:
+                    return CCardsFragment.newInstance();
+                case 3:
+                    return OtpsFragment.newInstance();
+                case 4:
+                    return MembersFragment.newInstance();
+            }
+
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 5;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return getString(R.string.title_summary);
                 case 1:
-                    return "SECTION 2";
+                    return getString(R.string.title_accounts);
                 case 2:
-                    return "SECTION 3";
+                    return getString(R.string.title_ccards);
+                case 3:
+                    return getString(R.string.title_otps);
+                case 4:
+                    return getString(R.string.title_members);
             }
             return null;
         }
