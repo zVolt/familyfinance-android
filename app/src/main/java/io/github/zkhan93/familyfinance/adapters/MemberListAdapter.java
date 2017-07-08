@@ -16,19 +16,20 @@ import io.github.zkhan93.familyfinance.viewholders.MemberVH;
  * Created by zeeshan on 8/7/17.
  */
 
-public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
-        MemberItemActionClbk {
+public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> {
     public static final String TAG = MemberListAdapter.class.getSimpleName();
-    ArrayList<Member> members;
+    private ArrayList<Member> members;
+    private MemberItemActionClbk memberItemActionClbk;
 
-    public MemberListAdapter(ArrayList<Member> members) {
+    public MemberListAdapter(ArrayList<Member> members, MemberItemActionClbk memberItemActionClbk) {
         this.members = members == null ? new ArrayList<Member>() : members;
+        this.memberItemActionClbk = memberItemActionClbk;
     }
 
     @Override
     public MemberVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MemberVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_member, parent, false), this);
+                .listitem_member, parent, false), memberItemActionClbk);
     }
 
     @Override
@@ -39,15 +40,5 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
     @Override
     public int getItemCount() {
         return members.size();
-    }
-
-    @Override
-    public void removeMember(String memberId) {
-        Log.d(TAG, "remove member: " + memberId);
-    }
-
-    @Override
-    public void toggleMemberSms(String memberId) {
-        Log.d(TAG, "toggle sms for member: " + memberId);
     }
 }

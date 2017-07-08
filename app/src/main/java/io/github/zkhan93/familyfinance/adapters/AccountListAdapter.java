@@ -29,7 +29,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountVH> {
     @Override
     public AccountVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new AccountVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_member, parent, false));
+                .listitem_account, parent, false));
     }
 
     @Override

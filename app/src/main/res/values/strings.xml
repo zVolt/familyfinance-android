@@ -17,6 +17,8 @@
     <string name="title_members">Members</string>
     <string name="title_otps">OTPs</string>
     <string name="title_ccards">Credit Cards</string>
+    <string name="title_settings">Settings</string>
+
 
 
     <!--Main Activity specific-->

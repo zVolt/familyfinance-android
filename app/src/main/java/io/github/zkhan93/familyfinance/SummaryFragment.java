@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.ButterKnife;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,7 +64,9 @@ public class SummaryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_summary, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_summary, container, false);
+        ButterKnife.bind(this, rootView);
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

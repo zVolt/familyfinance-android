@@ -4,9 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
+import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
+import io.github.zkhan93.familyfinance.util.Constants;
 
 
 /**
@@ -28,6 +36,10 @@ public class AccountsFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private AccountListAdapter accountListAdapter;
+
+    @BindView(R.id.list)
+    RecyclerView accountsList;
 
     public AccountsFragment() {
         // Required empty public constructor
@@ -62,15 +74,15 @@ public class AccountsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_accounts, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_accounts, container, false);
+        ButterKnife.bind(this, rootView);
+        accountListAdapter = new AccountListAdapter(Constants.getDummyAccounts());
+        accountsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
+                ()));
+        accountsList.setAdapter(accountListAdapter);
+        return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {

@@ -16,6 +16,21 @@ public class CCard implements Parcelable {
     Member updatedBy;
     float maxLimit, consumedLimit, remainingLimit;
 
+    public CCard(String name, String number, String bank, String cardholder, Date updatedOn, int
+            paymentDay, Member updatedBy, float maxLimit, float consumedLimit, float
+            remainingLimit) {
+        this.name = name;
+        this.number = number;
+        this.bank = bank;
+        this.cardholder = cardholder;
+        this.updatedOn = updatedOn;
+        this.paymentDay = paymentDay;
+        this.updatedBy = updatedBy;
+        this.maxLimit = maxLimit;
+        this.consumedLimit = consumedLimit;
+        this.remainingLimit = remainingLimit;
+    }
+
     public String getName() {
         return name;
     }

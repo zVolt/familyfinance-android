@@ -27,7 +27,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> {
     @Override
     public OtpVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new OtpVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_member, parent, false));
+                .listitem_otp, parent, false));
     }
 
     @Override

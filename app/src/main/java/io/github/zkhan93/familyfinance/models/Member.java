@@ -11,6 +11,13 @@ public class Member implements Parcelable {
     String name, email, id;
     boolean canRecieveSms;
 
+    public Member(String name, String email, String id, boolean canRecieveSms) {
+        this.name = name;
+        this.email = email;
+        this.id = id;
+        this.canRecieveSms = canRecieveSms;
+    }
+
     public String getName() {
         return name;
     }

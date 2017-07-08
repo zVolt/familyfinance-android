@@ -15,6 +15,14 @@ public class Otp implements Parcelable {
     Member from;
     Date timestamp;
 
+    public Otp(String id, String number, String content, Member from, Date timestamp) {
+        this.id = id;
+        this.number = number;
+        this.content = content;
+        this.from = from;
+        this.timestamp = timestamp;
+    }
+
     public String getId() {
         return id;
     }

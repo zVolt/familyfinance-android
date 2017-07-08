@@ -4,9 +4,16 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
+import io.github.zkhan93.familyfinance.util.Constants;
 
 
 /**
@@ -28,6 +35,10 @@ public class OtpsFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private OtpListAdapter otpListAdapter;
+
+    @BindView(R.id.list)
+    RecyclerView otpsList;
 
     public OtpsFragment() {
         // Required empty public constructor
@@ -62,7 +73,13 @@ public class OtpsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_otps, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
+        ButterKnife.bind(this, rootView);
+        otpListAdapter = new OtpListAdapter(Constants.getDummyOtps());
+        otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        otpsList.setAdapter(otpListAdapter);
+
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

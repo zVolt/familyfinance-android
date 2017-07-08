@@ -15,6 +15,17 @@ public class Account implements Parcelable{
     Date updatedOn;
     Member updatedBy;
 
+    public Account(String name, String bank, String ifsc, String accountNumber, float balance,
+                   Date updatedOn, Member updatedBy) {
+        this.name = name;
+        this.bank = bank;
+        this.ifsc = ifsc;
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.updatedOn = updatedOn;
+        this.updatedBy = updatedBy;
+    }
+
     public String getName() {
         return name;
     }

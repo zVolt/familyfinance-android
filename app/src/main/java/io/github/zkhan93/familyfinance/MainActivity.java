@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -21,12 +22,11 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import io.github.zkhan93.familyfinance.helpers.OnCCardFragmentInteractionListener;
-import io.github.zkhan93.familyfinance.helpers.OnMemberFragmentInteractionListener;
-import io.github.zkhan93.familyfinance.models.Account;
-
 public class MainActivity extends AppCompatActivity implements
-        OnMemberFragmentInteractionListener, OnCCardFragmentInteractionListener {
+        MembersFragment.OnFragmentInteractionListener, OtpsFragment
+        .OnFragmentInteractionListener, AccountsFragment.OnFragmentInteractionListener,
+        CCardsFragment.OnFragmentInteractionListener, SummaryFragment
+        .OnFragmentInteractionListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -111,9 +111,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void doThis() {
-        //dummy implmentation
-        Log.d(TAG, "this is a dummy message");
+    public void onFragmentInteraction(Uri uri) {
+        Log.d(TAG, "dummy interaction");
     }
 
     /**

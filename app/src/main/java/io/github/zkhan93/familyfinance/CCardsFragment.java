@@ -4,9 +4,16 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
+import io.github.zkhan93.familyfinance.util.Constants;
 
 
 /**
@@ -28,6 +35,10 @@ public class CCardsFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private CCardListAdapter cCardListAdapter;
+
+    @BindView(R.id.list)
+    RecyclerView ccardsList;
 
     public CCardsFragment() {
         // Required empty public constructor
@@ -37,7 +48,6 @@ public class CCardsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-
      * @return A new instance of fragment CCardsFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -63,7 +73,12 @@ public class CCardsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ccards, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_ccards, container, false);
+        ButterKnife.bind(this, rootView);
+        cCardListAdapter = new CCardListAdapter(Constants.getDummyCCards());
+        ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        ccardsList.setAdapter(cCardListAdapter);
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

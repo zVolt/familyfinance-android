@@ -27,7 +27,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> {
     @Override
     public CCardVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CCardVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_member, parent, false));
+                .listitem_ccard, parent, false));
     }
 
     @Override

@@ -45,6 +45,7 @@ public class CCardVH extends RecyclerView.ViewHolder {
         super(itemView);
         resources = itemView.getResources();
         ButterKnife.bind(this, itemView);
+        limit.setIndeterminate(false);
     }
 
     public void setCCard(CCard cCard) {
@@ -68,6 +69,7 @@ public class CCardVH extends RecyclerView.ViewHolder {
         bank.setText(cCard.getBank());
         limit.setMax((int) cCard.getMaxLimit());
         limit.setProgress((int) cCard.getConsumedLimit());
+
         remainingLimit.setText(String.format(Locale.US, "%.2f %s", cCard.getMaxLimit() - cCard
                 .getConsumedLimit(), resources.getString(R.string.rs)));
         updatedBy.setText(cCard.getUpdatedBy().getName());

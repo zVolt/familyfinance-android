@@ -1,5 +1,7 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
@@ -30,9 +32,11 @@ public class MemberVH extends RecyclerView.ViewHolder {
 
     private String memberId;
     private MemberItemActionClbk memberItemActionClbk;
+    private Context context;
 
     public MemberVH(View itemView, MemberItemActionClbk memberItemActionClbk) {
         super(itemView);
+        context = itemView.getContext();
         this.memberItemActionClbk = memberItemActionClbk;
         ButterKnife.bind(this, itemView);
     }
@@ -41,6 +45,9 @@ public class MemberVH extends RecyclerView.ViewHolder {
         memberId = member.getId();
         name.setText(member.getName());
         email.setText(member.getEmail());
+        toggleSms.setImageDrawable(ContextCompat.getDrawable(context, member.isCanRecieveSms() ?
+                R.drawable
+                        .ic_sms_teal_500_24dp : R.drawable.ic_sms_grey_500_24dp));
     }
 
     @OnClick({R.id.remove, R.id.sms})
