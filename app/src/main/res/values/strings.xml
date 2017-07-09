@@ -20,6 +20,13 @@
     <string name="title_settings">Settings</string>
 
 
+    <!--Menu Titles-->
+    <string name="action_copy">Copy to clipboard</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_update">Update</string>
+    <string name="action_share">Share</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_remove">Remove</string>
 
     <!--Main Activity specific-->
     <string name="section_format">%d Section</string>

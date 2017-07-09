@@ -19,12 +19,12 @@ import io.github.zkhan93.familyfinance.util.Constants;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OtpsFragment.OnFragmentInteractionListener} interface
+ * {@link FragmentOtps.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link OtpsFragment#newInstance} factory method to
+ * Use the {@link FragmentOtps#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class OtpsFragment extends Fragment {
+public class FragmentOtps extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -40,7 +40,7 @@ public class OtpsFragment extends Fragment {
     @BindView(R.id.list)
     RecyclerView otpsList;
 
-    public OtpsFragment() {
+    public FragmentOtps() {
         // Required empty public constructor
     }
 
@@ -48,11 +48,11 @@ public class OtpsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment OtpsFragment.
+     * @return A new instance of fragment FragmentOtps.
      */
     // TODO: Rename and change types and number of parameters
-    public static OtpsFragment newInstance() {
-        OtpsFragment fragment = new OtpsFragment();
+    public static FragmentOtps newInstance() {
+        FragmentOtps fragment = new FragmentOtps();
         Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);

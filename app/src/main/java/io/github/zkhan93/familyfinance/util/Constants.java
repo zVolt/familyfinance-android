@@ -52,8 +52,11 @@ public class Constants {
 
     public static ArrayList<Otp> getDummyOtps() {
         ArrayList<Otp> data = new ArrayList<>();
-        for (int i = 0; i < new Random().nextInt(100); i++) {
-//            data.add(new Otp("Member " + i, "member" + i + "@gmail.com", i + "", i % 5 == 0));
+        for (int i = 0; i < new Random().nextInt(50); i++) {
+            data.add(new Otp("otp_ " + i, "8932061116", "Lorem Ipsum is simply dummy text of the " +
+                    "printing and typesetting industry. Lorem Ipsum has been the industry's " +
+                    "standard dummy text ever since the 1500s,", getRandomMember(), Calendar
+                    .getInstance().getTime()));
         }
         return data;
     }

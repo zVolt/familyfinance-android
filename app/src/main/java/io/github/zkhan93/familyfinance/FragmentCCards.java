@@ -6,42 +6,44 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
-import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
+import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
+import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.util.Constants;
+import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link AccountsFragment.OnFragmentInteractionListener} interface
+ * {@link FragmentCCards.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link AccountsFragment#newInstance} factory method to
+ * Use the {@link FragmentCCards#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AccountsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionListener {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    public static final String TAG = FragmentCCards.class.getSimpleName();
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    //private static final String ARG_PARAM1 = "param1";
+    //private static final String ARG_PARAM2 = "param2";
+
+    //private String mParam1;
+    //private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    private AccountListAdapter accountListAdapter;
+    private CCardListAdapter cCardListAdapter;
 
     @BindView(R.id.list)
-    RecyclerView accountsList;
+    RecyclerView ccardsList;
 
-    public AccountsFragment() {
+    public FragmentCCards() {
         // Required empty public constructor
     }
 
@@ -49,14 +51,11 @@ public class AccountsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment AccountsFragment.
+     * @return A new instance of fragment FragmentCCards.
      */
-    // TODO: Rename and change types and number of parameters
-    public static AccountsFragment newInstance() {
-        AccountsFragment fragment = new AccountsFragment();
+    public static FragmentCCards newInstance() {
+        FragmentCCards fragment = new FragmentCCards();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,8 +64,6 @@ public class AccountsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -74,15 +71,19 @@ public class AccountsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_accounts, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_ccards, container, false);
         ButterKnife.bind(this, rootView);
-        accountListAdapter = new AccountListAdapter(Constants.getDummyAccounts());
-        accountsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
-                ()));
-        accountsList.setAdapter(accountListAdapter);
+        cCardListAdapter = new CCardListAdapter(Constants.getDummyCCards(), FragmentCCards.this);
+        ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        ccardsList.setAdapter(cCardListAdapter);
         return rootView;
     }
 
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            //call the function inside the interface
+        }
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -101,18 +102,39 @@ public class AccountsFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void copy(CCard cCard) {
+        //TODO Copy the card data into clibboard
+        Log.d(TAG, "copy: " + cCard.toString());
+    }
+
+    @Override
+    public void delete(CCard cCard) {
+        //TODO: delete the card from local database and sync the action to cloud(firebase realtime database)
+        Log.d(TAG, "delete: " + cCard.toString());
+    }
+
+    @Override
+    public void share(CCard cCard) {
+        //TODO: Fire a Intent with card details as plain text
+        Log.d(TAG, "share: " + cCard.toString());
+    }
+
+    @Override
+    public void edit(CCard cCard) {
+        //TODO: Show edit dialog for updating a Card
+        Log.d(TAG, "edit: " + cCard.toString());
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
     }
+
+
 }

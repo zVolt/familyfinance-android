@@ -23,9 +23,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 public class MainActivity extends AppCompatActivity implements
-        MembersFragment.OnFragmentInteractionListener, OtpsFragment
-        .OnFragmentInteractionListener, AccountsFragment.OnFragmentInteractionListener,
-        CCardsFragment.OnFragmentInteractionListener, SummaryFragment
+        FragmentMembers.OnFragmentInteractionListener, FragmentOtps
+        .OnFragmentInteractionListener, FragmentAccounts.OnFragmentInteractionListener,
+        FragmentCCards.OnFragmentInteractionListener, FragmentSummary
         .OnFragmentInteractionListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -131,15 +131,15 @@ public class MainActivity extends AppCompatActivity implements
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 default:
-                    return SummaryFragment.newInstance();
+                    return FragmentSummary.newInstance();
                 case 1:
-                    return AccountsFragment.newInstance();
+                    return FragmentAccounts.newInstance();
                 case 2:
-                    return CCardsFragment.newInstance();
+                    return FragmentCCards.newInstance();
                 case 3:
-                    return OtpsFragment.newInstance();
+                    return FragmentOtps.newInstance();
                 case 4:
-                    return MembersFragment.newInstance();
+                    return FragmentMembers.newInstance();
             }
 
         }

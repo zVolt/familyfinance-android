@@ -11,7 +11,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.helpers.MemberItemActionClbk;
 import io.github.zkhan93.familyfinance.models.Member;
 
 /**
@@ -30,19 +29,19 @@ public class MemberVH extends RecyclerView.ViewHolder {
     @BindView(R.id.remove)
     ImageButton remove;
 
-    private String memberId;
-    private MemberItemActionClbk memberItemActionClbk;
+    private Member member;
+    private ItemInteractionListener itemInteractionListener;
     private Context context;
 
-    public MemberVH(View itemView, MemberItemActionClbk memberItemActionClbk) {
+    public MemberVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);
         context = itemView.getContext();
-        this.memberItemActionClbk = memberItemActionClbk;
+        this.itemInteractionListener = itemInteractionListener;
         ButterKnife.bind(this, itemView);
     }
 
     public void setMember(Member member) {
-        memberId = member.getId();
+        this.member = member;
         name.setText(member.getName());
         email.setText(member.getEmail());
         toggleSms.setImageDrawable(ContextCompat.getDrawable(context, member.isCanRecieveSms() ?
@@ -51,14 +50,21 @@ public class MemberVH extends RecyclerView.ViewHolder {
     }
 
     @OnClick({R.id.remove, R.id.sms})
-    public void onClick(ImageButton button) {
+    void onClick(ImageButton button) {
         switch (button.getId()) {
             case R.id.remove:
-                memberItemActionClbk.removeMember(memberId);
+                itemInteractionListener.remove(member);
                 break;
             case R.id.sms:
-                memberItemActionClbk.toggleMemberSms(memberId);
+                itemInteractionListener.toggleSms(member);
                 break;
         }
+    }
+
+    public interface ItemInteractionListener {
+        void toggleSms(Member member);
+
+        void remove(Member member);
+
     }
 }

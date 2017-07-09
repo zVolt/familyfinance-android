@@ -1,14 +1,12 @@
 package io.github.zkhan93.familyfinance.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.helpers.MemberItemActionClbk;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 
@@ -19,17 +17,17 @@ import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> {
     public static final String TAG = MemberListAdapter.class.getSimpleName();
     private ArrayList<Member> members;
-    private MemberItemActionClbk memberItemActionClbk;
+    private MemberVH.ItemInteractionListener itemInteractionListener;
 
-    public MemberListAdapter(ArrayList<Member> members, MemberItemActionClbk memberItemActionClbk) {
+    public MemberListAdapter(ArrayList<Member> members, MemberVH.ItemInteractionListener itemInteractionListener) {
         this.members = members == null ? new ArrayList<Member>() : members;
-        this.memberItemActionClbk = memberItemActionClbk;
+        this.itemInteractionListener = itemInteractionListener;
     }
 
     @Override
     public MemberVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MemberVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_member, parent, false), memberItemActionClbk);
+                .listitem_member, parent, false), itemInteractionListener);
     }
 
     @Override

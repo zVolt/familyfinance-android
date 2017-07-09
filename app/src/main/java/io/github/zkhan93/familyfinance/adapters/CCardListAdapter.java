@@ -18,16 +18,19 @@ import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
 public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> {
     public static final String TAG = CCardListAdapter.class.getSimpleName();
-    ArrayList<CCard> ccards;
+    private ArrayList<CCard> ccards;
+    private CCardVH.ItemInteractionListener itemInteractionListener;
 
-    public CCardListAdapter(ArrayList<CCard> ccards) {
+    public CCardListAdapter(ArrayList<CCard> ccards, CCardVH.ItemInteractionListener
+            itemInteractionListener) {
         this.ccards = ccards == null ? new ArrayList<CCard>() : ccards;
+        this.itemInteractionListener = itemInteractionListener;
     }
 
     @Override
     public CCardVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CCardVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_ccard, parent, false));
+                .listitem_ccard, parent, false),itemInteractionListener);
     }
 
     @Override

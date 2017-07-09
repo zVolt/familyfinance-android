@@ -1,18 +1,14 @@
 package io.github.zkhan93.familyfinance.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.helpers.MemberItemActionClbk;
 import io.github.zkhan93.familyfinance.models.Account;
-import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
-import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 
 /**
  * Created by zeeshan on 8/7/17.
@@ -21,15 +17,18 @@ import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 public class AccountListAdapter extends RecyclerView.Adapter<AccountVH> {
     public static final String TAG = AccountListAdapter.class.getSimpleName();
     ArrayList<Account> accounts;
+    AccountVH.ItemInteractionListener itemInteractionListener;
 
-    public AccountListAdapter(ArrayList<Account> accounts) {
+    public AccountListAdapter(ArrayList<Account> accounts, AccountVH.ItemInteractionListener
+            itemInteractionListener) {
         this.accounts = accounts == null ? new ArrayList<Account>() : accounts;
+        this.itemInteractionListener = itemInteractionListener;
     }
 
     @Override
     public AccountVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new AccountVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_account, parent, false));
+                .listitem_account, parent, false), itemInteractionListener);
     }
 
     @Override
