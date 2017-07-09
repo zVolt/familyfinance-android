@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
@@ -78,8 +80,8 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_accounts, container, false);
         ButterKnife.bind(this, rootView);
-        accountListAdapter = new AccountListAdapter(Constants.getDummyAccounts(),
-                FragmentAccounts.this);
+        accountListAdapter = new AccountListAdapter((App) getActivity().getApplication(), new
+                ArrayList<Account>(), FragmentAccounts.this);
         accountsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         accountsList.setAdapter(accountListAdapter);
@@ -106,22 +108,31 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     @Override
     public void copy(Account account) {
+        //TODO Copy the Account data into clipboard
         Log.d(TAG, "copy: " + account.toString());
     }
 
     @Override
     public void delete(Account account) {
+        //TODO: delete the Account from local database and sync the action to cloud(firebase
+        // realtime database)
         Log.d(TAG, "delete: " + account.toString());
     }
 
     @Override
     public void share(Account account) {
+        //TODO: Fire a Intent with Account details as plain text
         Log.d(TAG, "share: " + account.toString());
     }
 
     @Override
     public void edit(Account account) {
+        //TODO: Show edit dialog for updating the Account
         Log.d(TAG, "edit: " + account.toString());
+        account.setBank(account.getBank() + "X");
+        account.update();
+        //TODO: notify adapter about this update
+        accountListAdapter.notifyItemChanged(account);
     }
 
     /**

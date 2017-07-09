@@ -3,6 +3,7 @@ package io.github.zkhan93.familyfinance.viewholders;
 import android.content.res.Resources;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +26,7 @@ import io.github.zkhan93.familyfinance.util.Constants;
 
 public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         .OnMenuItemClickListener {
-
+    public static final String TAG = AccountVH.class.getSimpleName();
     @BindView(R.id.name)
     TextView name;
     @BindView(R.id.account_number)
@@ -61,6 +62,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
     }
 
     public void setAccount(Account account) {
+        Log.d(TAG, "item: " + account.toString());
         this.account = account;
         name.setText(account.getName());
         accountNumber.setText(account.getAccountNumber());

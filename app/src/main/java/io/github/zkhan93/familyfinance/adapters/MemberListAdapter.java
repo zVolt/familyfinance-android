@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
@@ -16,10 +17,10 @@ import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 
 public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> {
     public static final String TAG = MemberListAdapter.class.getSimpleName();
-    private ArrayList<Member> members;
+    private List<Member> members;
     private MemberVH.ItemInteractionListener itemInteractionListener;
 
-    public MemberListAdapter(ArrayList<Member> members, MemberVH.ItemInteractionListener itemInteractionListener) {
+    public MemberListAdapter(List<Member> members, MemberVH.ItemInteractionListener itemInteractionListener) {
         this.members = members == null ? new ArrayList<Member>() : members;
         this.itemInteractionListener = itemInteractionListener;
     }

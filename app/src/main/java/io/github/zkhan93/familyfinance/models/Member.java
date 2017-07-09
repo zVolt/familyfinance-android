@@ -3,14 +3,22 @@ package io.github.zkhan93.familyfinance.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Keep;
+import org.greenrobot.greendao.annotation.Generated;
+
 /**
  * Created by zeeshan on 7/7/17.
  */
-
+@Entity
 public class Member implements Parcelable {
-    String name, email, id;
+    @Id
+    String id;
+    String name, email;
     boolean canRecieveSms;
 
+    @Keep
     public Member(String name, String email, String id, boolean canRecieveSms) {
         this.name = name;
         this.email = email;
@@ -76,6 +84,10 @@ public class Member implements Parcelable {
         dest.writeByte(this.canRecieveSms ? (byte) 1 : (byte) 0);
     }
 
+    public boolean getCanRecieveSms() {
+        return this.canRecieveSms;
+    }
+    @Keep
     protected Member(Parcel in) {
         this.name = in.readString();
         this.email = in.readString();

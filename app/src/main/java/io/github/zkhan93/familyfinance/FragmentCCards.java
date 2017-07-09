@@ -73,7 +73,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_ccards, container, false);
         ButterKnife.bind(this, rootView);
-        cCardListAdapter = new CCardListAdapter(Constants.getDummyCCards(), FragmentCCards.this);
+        cCardListAdapter = new CCardListAdapter(Constants.getDummyCCards(20,null), FragmentCCards.this);
         ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);
         return rootView;
@@ -104,7 +104,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void copy(CCard cCard) {
-        //TODO Copy the card data into clibboard
+        //TODO Copy the card data into clipboard
         Log.d(TAG, "copy: " + cCard.toString());
     }
 
@@ -123,7 +123,9 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     @Override
     public void edit(CCard cCard) {
         //TODO: Show edit dialog for updating a Card
+        //TODO: notify adapter about this update
         Log.d(TAG, "edit: " + cCard.toString());
+
     }
 
     /**

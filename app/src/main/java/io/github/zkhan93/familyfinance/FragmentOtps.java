@@ -75,7 +75,7 @@ public class FragmentOtps extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
         ButterKnife.bind(this, rootView);
-        otpListAdapter = new OtpListAdapter(Constants.getDummyOtps());
+        otpListAdapter = new OtpListAdapter(Constants.getDummyOtps(20, null));
         otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         otpsList.setAdapter(otpListAdapter);
 

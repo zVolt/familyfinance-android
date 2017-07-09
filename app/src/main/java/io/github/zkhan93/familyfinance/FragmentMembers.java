@@ -79,7 +79,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_members, container, false);
         ButterKnife.bind(this, rootView);
-        memberListAdapter = new MemberListAdapter(Constants.getDummyMembers(), this);
+        memberListAdapter = new MemberListAdapter(Constants.getDummyMembers(10), this);
         membersList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         membersList.setAdapter(memberListAdapter);
