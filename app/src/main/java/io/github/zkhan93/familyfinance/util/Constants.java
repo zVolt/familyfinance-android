@@ -29,16 +29,23 @@ public class Constants {
     public static void generateDummyData(App app) {
         Random random = new Random();
         DaoSession daoSession = app.getDaoSession();
-//        daoSession.getMemberDao().deleteAll();
+        boolean deleteAll = true;
+
+        if (deleteAll) daoSession.getMemberDao().deleteAll();
         if (daoSession.getMemberDao().loadAll().size() < 5)
             daoSession.getMemberDao().insertOrReplaceInTx(getDummyMembers(random.nextInt(100)));
-//        daoSession.getAccountDao().deleteAll();
+
+        if (deleteAll) daoSession.getAccountDao().deleteAll();
         if (daoSession.getAccountDao().loadAll().size() < 5)
             daoSession.getAccountDao().insertOrReplaceInTx(getDummyAccounts(random.nextInt(100),
                     daoSession.getMemberDao()));
+
+        if (deleteAll) daoSession.getCCardDao().deleteAll();
         if (daoSession.getCCardDao().loadAll().size() < 5)
             daoSession.getCCardDao().insertOrReplaceInTx(getDummyCCards(random.nextInt(100),
                     daoSession.getMemberDao()));
+
+        if (deleteAll) daoSession.getOtpDao().deleteAll();
         if (daoSession.getOtpDao().loadAll().size() < 5)
             daoSession.getOtpDao().insertOrReplaceInTx(getDummyOtps(random.nextInt(100), daoSession
                     .getMemberDao()));
@@ -80,22 +87,32 @@ public class Constants {
 
     private static ArrayList<CCard> getDummyCCards(int size, MemberDao memberDao) {
         ArrayList<CCard> data = new ArrayList<>();
+        CCard cCard;
+        Member member;
         for (int i = 0; i < size; i++) {
-            data.add(new CCard("Card " + i, "000000" + i + "234234234", "bank" + i, "cardholder"
-                    + i, Calendar.getInstance().getTime(), i + 34, getRandomMember(memberDao), i *
-                    7800.00f, i * 800.00f, i * 500f));
+            member = getRandomMember(memberDao);
+            cCard = new CCard("Card " + i, "000000" + i + "234234234", "bank" + i, "cardholder"
+                    + i, Calendar.getInstance().getTime(), i + 34, member, i *
+                    7800.00f, i * 800.00f, i * 500f);
+            cCard.setUpdatedByMemberId(member.getId());
+            data.add(cCard);
         }
         return data;
     }
 
     private static ArrayList<Otp> getDummyOtps(int size, MemberDao memberDao) {
         ArrayList<Otp> data = new ArrayList<>();
+        Otp otp;
+        Member member;
         for (int i = 0; i < size; i++) {
-            data.add(new Otp("otp_ " + i, "8932061116", "Lorem Ipsum is simply dummy text of the " +
+            member = getRandomMember(memberDao);
+            otp = new Otp("otp_ " + i, "8932061116", "Lorem Ipsum is simply dummy text of the " +
                     "printing and typesetting industry. Lorem Ipsum has been the industry's " +
-                    "standard dummy text ever since the 1500s,", getRandomMember(memberDao),
+                    "standard dummy text ever since the 1500s,", member,
                     Calendar
-                            .getInstance().getTime()));
+                            .getInstance().getTime());
+            otp.setFromMemberId(member.getId());
+            data.add(otp);
         }
         return data;
     }

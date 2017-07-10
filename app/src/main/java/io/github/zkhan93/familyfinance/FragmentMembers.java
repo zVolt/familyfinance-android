@@ -114,6 +114,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         Log.d(TAG, "toggleSms: " + member.toString());
         member.setCanRecieveSms(!member.getCanRecieveSms());
         ((App) getActivity().getApplication()).getDaoSession().getMemberDao().update(member);
+        memberListAdapter.notifyItemChanged(member);
     }
 
     @Override
