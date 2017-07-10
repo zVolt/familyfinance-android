@@ -73,7 +73,8 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_ccards, container, false);
         ButterKnife.bind(this, rootView);
-        cCardListAdapter = new CCardListAdapter(Constants.getDummyCCards(20,null), FragmentCCards.this);
+        cCardListAdapter = new CCardListAdapter((App) getActivity().getApplication(),
+                FragmentCCards.this);
         ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);
         return rootView;
@@ -110,7 +111,8 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void delete(CCard cCard) {
-        //TODO: delete the card from local database and sync the action to cloud(firebase realtime database)
+        //TODO: delete the card from local database and sync the action to cloud(firebase
+        // realtime database)
         Log.d(TAG, "delete: " + cCard.toString());
     }
 
@@ -125,6 +127,9 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         //TODO: Show edit dialog for updating a Card
         //TODO: notify adapter about this update
         Log.d(TAG, "edit: " + cCard.toString());
+        cCard.setBank(cCard.getBank() + "X");
+        cCard.update();
+        cCardListAdapter.notifyItemChanged(cCard);
 
     }
 

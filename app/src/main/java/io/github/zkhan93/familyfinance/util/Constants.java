@@ -29,19 +29,22 @@ public class Constants {
     public static void generateDummyData(App app) {
         Random random = new Random();
         DaoSession daoSession = app.getDaoSession();
-        daoSession.getMemberDao().deleteAll();
+//        daoSession.getMemberDao().deleteAll();
         if (daoSession.getMemberDao().loadAll().size() < 5)
             daoSession.getMemberDao().insertOrReplaceInTx(getDummyMembers(random.nextInt(100)));
-        daoSession.getAccountDao().deleteAll();
+//        daoSession.getAccountDao().deleteAll();
         if (daoSession.getAccountDao().loadAll().size() < 5)
             daoSession.getAccountDao().insertOrReplaceInTx(getDummyAccounts(random.nextInt(100),
                     daoSession.getMemberDao()));
-
-//        daoSession.getMemberDao().insertOrReplaceInTx(getDummyCCards(random.nextInt(100)));
-//        daoSession.getOtpsDao().insertOrReplaceInTx(getDummyOtps(random.nextInt(100)));
+        if (daoSession.getCCardDao().loadAll().size() < 5)
+            daoSession.getCCardDao().insertOrReplaceInTx(getDummyCCards(random.nextInt(100),
+                    daoSession.getMemberDao()));
+        if (daoSession.getOtpDao().loadAll().size() < 5)
+            daoSession.getOtpDao().insertOrReplaceInTx(getDummyOtps(random.nextInt(100), daoSession
+                    .getMemberDao()));
     }
 
-    public static List<Member> getDummyMembers(int size) {
+    private static List<Member> getDummyMembers(int size) {
         List<Member> memberList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             memberList.add(getNewRandomMember());
@@ -61,21 +64,21 @@ public class Constants {
         return new Member("Member " + i, "member" + i + "@gmail.com", i + "", i % 5 == 0);
     }
 
-    public static List<Account> getDummyAccounts(int size, MemberDao memberDao) {
+    private static List<Account> getDummyAccounts(int size, MemberDao memberDao) {
         List<Account> accountList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            Member member=getRandomMember(memberDao);
-            Account account=
+            Member member = getRandomMember(memberDao);
+            Account account =
                     new Account("Account " + i, "bank" + i, "BANK00001234", "0000" + i +
                             "00000000", i * 45340.4f, Calendar.getInstance().getTime(),
                             member);
-                    account.setUpdatedByMemberId(member.getId());
+            account.setUpdatedByMemberId(member.getId());
             accountList.add(account);
         }
         return accountList;
     }
 
-    public static ArrayList<CCard> getDummyCCards(int size, MemberDao memberDao) {
+    private static ArrayList<CCard> getDummyCCards(int size, MemberDao memberDao) {
         ArrayList<CCard> data = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             data.add(new CCard("Card " + i, "000000" + i + "234234234", "bank" + i, "cardholder"
@@ -85,7 +88,7 @@ public class Constants {
         return data;
     }
 
-    public static ArrayList<Otp> getDummyOtps(int size, MemberDao memberDao) {
+    private static ArrayList<Otp> getDummyOtps(int size, MemberDao memberDao) {
         ArrayList<Otp> data = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             data.add(new Otp("otp_ " + i, "8932061116", "Lorem Ipsum is simply dummy text of the " +

@@ -80,8 +80,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_accounts, container, false);
         ButterKnife.bind(this, rootView);
-        accountListAdapter = new AccountListAdapter((App) getActivity().getApplication(), new
-                ArrayList<Account>(), FragmentAccounts.this);
+        accountListAdapter = new AccountListAdapter((App) getActivity().getApplication(), FragmentAccounts.this);
         accountsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         accountsList.setAdapter(accountListAdapter);

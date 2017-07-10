@@ -1,22 +1,16 @@
 package io.github.zkhan93.familyfinance.adapters;
 
-import android.app.Application;
-import android.content.Context;
-import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Account;
-import io.github.zkhan93.familyfinance.models.AccountDao;
-import io.github.zkhan93.familyfinance.models.DaoSession;
-import io.github.zkhan93.familyfinance.tasks.AccountFetchTask;
+import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 
 /**
@@ -24,18 +18,17 @@ import io.github.zkhan93.familyfinance.viewholders.AccountVH;
  */
 
 public class AccountListAdapter extends RecyclerView.Adapter<AccountVH> implements
-        AccountFetchTask.Listener {
+        LoadFromDbTask.Callbacks<Account> {
     public static final String TAG = AccountListAdapter.class.getSimpleName();
-    ArrayList<Account> accounts;
-    AccountVH.ItemInteractionListener itemInteractionListener;
+    private ArrayList<Account> accounts;
+    private AccountVH.ItemInteractionListener itemInteractionListener;
 
-    public AccountListAdapter(App app, ArrayList<Account> accounts, AccountVH
-            .ItemInteractionListener
-            itemInteractionListener) {
-        this.accounts = accounts == null ? new ArrayList<Account>() : accounts;
+    public AccountListAdapter(App app, AccountVH.ItemInteractionListener itemInteractionListener) {
+        this.accounts = new ArrayList<>();
         this.itemInteractionListener = itemInteractionListener;
 
-        new AccountFetchTask(app, this).execute();
+        new LoadFromDbTask<>(app.getDaoSession().getAccountDao(), this).execute();
+
     }
 
     @Override
@@ -55,9 +48,9 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountVH> implemen
     }
 
     @Override
-    public void onAccountFetchComplete(List<Account> _accounts) {
+    public void onTaskComplete(List<Account> data) {
         accounts.clear();
-        accounts.addAll(_accounts);
+        accounts.addAll(data);
         notifyDataSetChanged();
     }
 

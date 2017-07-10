@@ -5,10 +5,13 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.Otp;
+import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
@@ -16,12 +19,14 @@ import io.github.zkhan93.familyfinance.viewholders.OtpVH;
  * Created by zeeshan on 8/7/17.
  */
 
-public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> {
+public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadFromDbTask
+        .Callbacks<Otp> {
     public static final String TAG = OtpListAdapter.class.getSimpleName();
     ArrayList<Otp> otps;
 
-    public OtpListAdapter(ArrayList<Otp> opts) {
-        this.otps = opts == null ? new ArrayList<Otp>() : opts;
+    public OtpListAdapter(App app) {
+        this.otps = new ArrayList<>();
+        new LoadFromDbTask<>(app.getDaoSession().getOtpDao(), this).execute();
     }
 
     @Override
@@ -40,4 +45,10 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> {
         return otps.size();
     }
 
+    @Override
+    public void onTaskComplete(List<Otp> data) {
+        otps.clear();
+        otps.addAll(data);
+        notifyDataSetChanged();
+    }
 }

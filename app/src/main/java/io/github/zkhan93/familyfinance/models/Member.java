@@ -18,11 +18,11 @@ public class Member implements Parcelable {
     String name, email;
     boolean canRecieveSms;
 
-    @Keep
-    public Member(String name, String email, String id, boolean canRecieveSms) {
+    @Generated(hash = 1704121277)
+    public Member(String id, String name, String email, boolean canRecieveSms) {
+        this.id = id;
         this.name = name;
         this.email = email;
-        this.id = id;
         this.canRecieveSms = canRecieveSms;
     }
 
@@ -87,6 +87,7 @@ public class Member implements Parcelable {
     public boolean getCanRecieveSms() {
         return this.canRecieveSms;
     }
+
     @Keep
     protected Member(Parcel in) {
         this.name = in.readString();
