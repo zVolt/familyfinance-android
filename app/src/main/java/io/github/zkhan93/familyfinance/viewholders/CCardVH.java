@@ -3,7 +3,6 @@ package io.github.zkhan93.familyfinance.viewholders;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -14,9 +13,9 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,8 +33,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     TextView name;
     @BindView(R.id.number)
     TextView number;
-    @BindView(R.id.payment_date)
-    TextView paymentDate;
+    @BindView(R.id.date)
+    TextView date;
     @BindView(R.id.cardholder)
     TextView cardholder;
     @BindView(R.id.bank)
@@ -76,20 +75,34 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     public void setCCard(CCard cCard) {
         this.cCard = cCard;
         name.setText(cCard.getName());
-        number.setText(cCard.getNumber());
+        NumberFormat cardNumberFormat = new DecimalFormat("");
+        number.setText(cCard.getFormattedNumber(' '));
 
         /*
         calculate next payment day ie., suppose 15th is the payment day so if current day is less
          than of equal to 15 then next payment date is 15th of current month and if current day
          is greater than 15th then next payment date is 15th of next month.
         **/
-        Calendar nextPaymentDate = Calendar.getInstance();
-        int currentDayOfMonth = nextPaymentDate.get(Calendar.DAY_OF_MONTH);
-        nextPaymentDate.set(Calendar.DAY_OF_MONTH, cCard.getPaymentDay());
-        if (currentDayOfMonth > nextPaymentDate.get(Calendar.DAY_OF_MONTH))
-            nextPaymentDate.add(Calendar.MONTH, 1);
+        Calendar today = Calendar.getInstance();
 
-        paymentDate.setText(Constants.PAYMENT_DATE.format(nextPaymentDate.getTime()));
+        Calendar paymentDate = Calendar.getInstance();
+        paymentDate.set(Calendar.DAY_OF_MONTH, cCard.getPaymentDay());
+
+        Calendar billingDate = Calendar.getInstance();
+        billingDate.set(Calendar.DAY_OF_MONTH, cCard.getBillingDay());
+
+        if (today.get(Calendar.DAY_OF_MONTH) > cCard.getPaymentDay())
+            paymentDate.add(Calendar.MONTH, 1);
+
+        if (cCard.getBillingDay() < paymentDate.get(Calendar.DAY_OF_MONTH))
+            billingDate.set(Calendar.MONTH, paymentDate.get(Calendar.MONTH));
+        else {
+            billingDate.set(Calendar.MONTH, paymentDate.get(Calendar.MONTH));
+            billingDate.add(Calendar.MONTH, -1);
+        }
+
+        date.setText(String.format("%s - %s", Constants.PAYMENT_DATE.format(billingDate
+                .getTime()), Constants.PAYMENT_DATE.format(paymentDate.getTime())));
 
         cardholder.setText(cCard.getCardholder());
         bank.setText(cCard.getBank());
@@ -98,7 +111,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         limit.setProgress((int) cCard.getConsumedLimit());
         //set progress color
         if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.25f)
-            limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.md_red_500)));
+            limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R
+                    .color.md_red_500)));
         else if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.5f)
             limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R
                     .color.md_orange_500)));

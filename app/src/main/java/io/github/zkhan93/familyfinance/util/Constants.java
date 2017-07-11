@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -71,15 +72,16 @@ public class Constants {
         ArrayList<CCard> data = new ArrayList<>();
         CCard cCard;
         Member member;
-
+        Calendar cal = Calendar.getInstance();
+        Random random = new Random();
         for (int i = 0; i < size; i++) {
             member = getRandomMember(memberDao);
             float percentConsumed = new Random().nextFloat();
             float maxLimit = new Random().nextFloat() * 10000;
             cCard = new CCard("Card " + i, "000000" + i + "234234234", "bank" + i, "cardholder"
-                    + i, Calendar.getInstance().getTime(), i + 34, member, maxLimit, maxLimit *
-                    percentConsumed, maxLimit * (1 - percentConsumed));
-            cCard.setUpdatedByMemberId(member.getId());
+                    + i, cal.getTime(), random.nextInt(30), random.nextInt(30), maxLimit,
+                    maxLimit *
+                    percentConsumed, maxLimit * (1 - percentConsumed),member.getId());
             data.add(cCard);
         }
         return data;
@@ -115,7 +117,7 @@ public class Constants {
                 return null;
             Random random = new Random();
             DaoSession daoSession = app.getDaoSession();
-            boolean deleteAll = true;
+            boolean deleteAll = false;
 
             if (deleteAll) daoSession.getMemberDao().deleteAll();
             if (daoSession.getMemberDao().loadAll().size() < 5)

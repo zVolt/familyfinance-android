@@ -9,6 +9,7 @@ import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.util.Date;
+
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
@@ -21,28 +22,14 @@ public class CCard implements Parcelable {
     String number;
     String name, bank, cardholder;
     Date updatedOn;
-    int paymentDay;
+    int paymentDay,billingDay;
     @ToOne(joinProperty = "updatedByMemberId")
     Member updatedBy;
     float maxLimit, consumedLimit, remainingLimit;
 
     private String updatedByMemberId;
 
-    @Keep
-    public CCard(String name, String number, String bank, String cardholder, Date updatedOn, int
-            paymentDay, Member updatedBy, float maxLimit, float consumedLimit, float
-                         remainingLimit) {
-        this.name = name;
-        this.number = number;
-        this.bank = bank;
-        this.cardholder = cardholder;
-        this.updatedOn = updatedOn;
-        this.paymentDay = paymentDay;
-        this.updatedBy = updatedBy;
-        this.maxLimit = maxLimit;
-        this.consumedLimit = consumedLimit;
-        this.remainingLimit = remainingLimit;
-    }
+
 
     public String getName() {
         return name;
@@ -93,8 +80,6 @@ public class CCard implements Parcelable {
     }
 
 
-
-
     public float getMaxLimit() {
         return maxLimit;
     }
@@ -119,6 +104,18 @@ public class CCard implements Parcelable {
         this.remainingLimit = remainingLimit;
     }
 
+    public String getFormattedNumber(char delimiter) {
+        StringBuilder strb = new StringBuilder(19);
+        int i = 1;
+        for (char c : number.toCharArray()) {
+            strb.append(c);
+            if (i % 4 == 0)
+                strb.append(delimiter);
+            i++;
+        }
+        return strb.toString();
+    }
+
     @Override
     public String toString() {
         return "CCard{" +
@@ -135,25 +132,6 @@ public class CCard implements Parcelable {
                 '}';
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.name);
-        dest.writeString(this.number);
-        dest.writeString(this.bank);
-        dest.writeString(this.cardholder);
-        dest.writeInt(this.paymentDay);
-        dest.writeLong(this.updatedOn != null ? this.updatedOn.getTime() : -1);
-        dest.writeParcelable(this.updatedBy, flags);
-        dest.writeFloat(this.maxLimit);
-        dest.writeFloat(this.consumedLimit);
-        dest.writeFloat(this.remainingLimit);
-    }
-
     public String getUpdatedByMemberId() {
         return this.updatedByMemberId;
     }
@@ -162,7 +140,9 @@ public class CCard implements Parcelable {
         this.updatedByMemberId = updatedByMemberId;
     }
 
-    /** To-one relationship, resolved on first access. */
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Generated(hash = 142537439)
     public Member getUpdatedBy() {
         String __key = this.updatedByMemberId;
@@ -181,7 +161,9 @@ public class CCard implements Parcelable {
         return updatedBy;
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 2009088111)
     public void setUpdatedBy(Member updatedBy) {
         synchronized (this) {
@@ -227,6 +209,68 @@ public class CCard implements Parcelable {
         myDao.update(this);
     }
 
+    public CCard() {
+    }
+
+    @Keep
+    public CCard(String name, String number, String bank, String cardholder, Date updatedOn,
+            int paymentDay, int billingDay, float maxLimit, float consumedLimit,
+            float remainingLimit, String updatedByMemberId) {
+        this.number = number;
+        this.name = name;
+        this.bank = bank;
+        this.cardholder = cardholder;
+        this.updatedOn = updatedOn;
+        this.paymentDay = paymentDay;
+        this.billingDay = billingDay;
+        this.maxLimit = maxLimit;
+        this.consumedLimit = consumedLimit;
+        this.remainingLimit = remainingLimit;
+        this.updatedByMemberId = updatedByMemberId;
+    }
+
+    /**
+     * Used to resolve relations
+     */
+    @Generated(hash = 2040040024)
+    private transient DaoSession daoSession;
+    /**
+     * Used for active entity operations.
+     */
+    @Generated(hash = 1513197518)
+    private transient CCardDao myDao;
+    @Generated(hash = 1066823846)
+    private transient String updatedBy__resolvedKey;
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.number);
+        dest.writeString(this.name);
+        dest.writeString(this.bank);
+        dest.writeString(this.cardholder);
+        dest.writeLong(this.updatedOn != null ? this.updatedOn.getTime() : -1);
+        dest.writeInt(this.paymentDay);
+        dest.writeInt(this.billingDay);
+        dest.writeParcelable(this.updatedBy, flags);
+        dest.writeFloat(this.maxLimit);
+        dest.writeFloat(this.consumedLimit);
+        dest.writeFloat(this.remainingLimit);
+        dest.writeString(this.updatedByMemberId);
+    }
+
+    public int getBillingDay() {
+        return this.billingDay;
+    }
+
+    public void setBillingDay(int billingDay) {
+        this.billingDay = billingDay;
+    }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1480820516)
     public void __setDaoSession(DaoSession daoSession) {
@@ -234,40 +278,23 @@ public class CCard implements Parcelable {
         myDao = daoSession != null ? daoSession.getCCardDao() : null;
     }
 
-    public CCard() {
-    }
-
     protected CCard(Parcel in) {
-        this.name = in.readString();
         this.number = in.readString();
+        this.name = in.readString();
         this.bank = in.readString();
         this.cardholder = in.readString();
-        this.paymentDay = in.readInt();
         long tmpUpdatedOn = in.readLong();
         this.updatedOn = tmpUpdatedOn == -1 ? null : new Date(tmpUpdatedOn);
+        this.paymentDay = in.readInt();
+        this.billingDay = in.readInt();
         this.updatedBy = in.readParcelable(Member.class.getClassLoader());
         this.maxLimit = in.readFloat();
         this.consumedLimit = in.readFloat();
         this.remainingLimit = in.readFloat();
+        this.updatedByMemberId = in.readString();
     }
 
-    @Generated(hash = 487725028)
-    public CCard(String number, String name, String bank, String cardholder, Date updatedOn,
-            int paymentDay, float maxLimit, float consumedLimit, float remainingLimit,
-            String updatedByMemberId) {
-        this.number = number;
-        this.name = name;
-        this.bank = bank;
-        this.cardholder = cardholder;
-        this.updatedOn = updatedOn;
-        this.paymentDay = paymentDay;
-        this.maxLimit = maxLimit;
-        this.consumedLimit = consumedLimit;
-        this.remainingLimit = remainingLimit;
-        this.updatedByMemberId = updatedByMemberId;
-    }
-
-    public static final Parcelable.Creator<CCard> CREATOR = new Parcelable.Creator<CCard>() {
+    public static final Creator<CCard> CREATOR = new Creator<CCard>() {
         @Override
         public CCard createFromParcel(Parcel source) {
             return new CCard(source);
@@ -278,12 +305,4 @@ public class CCard implements Parcelable {
             return new CCard[size];
         }
     };
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-    /** Used for active entity operations. */
-    @Generated(hash = 1513197518)
-    private transient CCardDao myDao;
-    @Generated(hash = 1066823846)
-    private transient String updatedBy__resolvedKey;
 }

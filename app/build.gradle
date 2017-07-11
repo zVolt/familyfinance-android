@@ -53,6 +53,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 greendao {
-    schemaVersion 2
+    schemaVersion 3
 }
 apply plugin: 'com.google.gms.google-services'
