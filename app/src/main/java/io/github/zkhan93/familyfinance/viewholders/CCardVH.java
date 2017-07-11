@@ -1,6 +1,10 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuInflater;
@@ -10,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -45,8 +50,11 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     TextView updatedOn;
     @BindView(R.id.menu)
     ImageButton menu;
+    @BindView(R.id.max_limit)
+    TextView maxLimit;
 
     private Resources resources;
+    private Context context;
     private PopupMenu popup;
     private ItemInteractionListener itemInteractionListener;
     private CCard cCard;
@@ -55,6 +63,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         super(itemView);
         this.itemInteractionListener = itemInteractionListener;
         resources = itemView.getResources();
+        context = itemView.getContext();
         ButterKnife.bind(this, itemView);
         limit.setIndeterminate(false);
 
@@ -84,11 +93,23 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
 
         cardholder.setText(cCard.getCardholder());
         bank.setText(cCard.getBank());
+
         limit.setMax((int) cCard.getMaxLimit());
         limit.setProgress((int) cCard.getConsumedLimit());
+        //set progress color
+        if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.25f)
+            limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.md_red_500)));
+        else if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.5f)
+            limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R
+                    .color.md_orange_500)));
+        else
+            limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R
+                    .color.md_green_500)));
 
-        remainingLimit.setText(String.format(Locale.US, "%.2f %s", cCard.getMaxLimit() - cCard
-                .getConsumedLimit(), resources.getString(R.string.rs)));
+        maxLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit()));
+        remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit() - cCard
+                .getConsumedLimit()));
+
         updatedBy.setText(cCard.getUpdatedBy().getName());
         updatedOn.setText(Constants.DATE_FORMAT.format(cCard.getUpdatedOn()));
     }

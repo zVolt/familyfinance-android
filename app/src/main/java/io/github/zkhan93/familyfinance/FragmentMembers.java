@@ -109,6 +109,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         mListener = null;
     }
 
+
     @Override
     public void toggleSms(Member member) {
         Log.d(TAG, "toggleSms: " + member.toString());
@@ -130,5 +131,6 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
      * activity.
      */
     public interface OnFragmentInteractionListener {
+
     }
 }

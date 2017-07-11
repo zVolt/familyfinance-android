@@ -1,5 +1,8 @@
 package io.github.zkhan93.familyfinance.util;
 
+import android.os.AsyncTask;
+
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,28 +30,7 @@ public class Constants {
 
     //TODO: delete the following methods, they are just to provide dummy data
     public static void generateDummyData(App app) {
-        Random random = new Random();
-        DaoSession daoSession = app.getDaoSession();
-        boolean deleteAll = true;
-
-        if (deleteAll) daoSession.getMemberDao().deleteAll();
-        if (daoSession.getMemberDao().loadAll().size() < 5)
-            daoSession.getMemberDao().insertOrReplaceInTx(getDummyMembers(random.nextInt(100)));
-
-        if (deleteAll) daoSession.getAccountDao().deleteAll();
-        if (daoSession.getAccountDao().loadAll().size() < 5)
-            daoSession.getAccountDao().insertOrReplaceInTx(getDummyAccounts(random.nextInt(100),
-                    daoSession.getMemberDao()));
-
-        if (deleteAll) daoSession.getCCardDao().deleteAll();
-        if (daoSession.getCCardDao().loadAll().size() < 5)
-            daoSession.getCCardDao().insertOrReplaceInTx(getDummyCCards(random.nextInt(100),
-                    daoSession.getMemberDao()));
-
-        if (deleteAll) daoSession.getOtpDao().deleteAll();
-        if (daoSession.getOtpDao().loadAll().size() < 5)
-            daoSession.getOtpDao().insertOrReplaceInTx(getDummyOtps(random.nextInt(100), daoSession
-                    .getMemberDao()));
+        new WriteDataTask(app).execute();
     }
 
     private static List<Member> getDummyMembers(int size) {
@@ -89,11 +71,14 @@ public class Constants {
         ArrayList<CCard> data = new ArrayList<>();
         CCard cCard;
         Member member;
+
         for (int i = 0; i < size; i++) {
             member = getRandomMember(memberDao);
+            float percentConsumed = new Random().nextFloat();
+            float maxLimit = new Random().nextFloat() * 10000;
             cCard = new CCard("Card " + i, "000000" + i + "234234234", "bank" + i, "cardholder"
-                    + i, Calendar.getInstance().getTime(), i + 34, member, i *
-                    7800.00f, i * 800.00f, i * 500f);
+                    + i, Calendar.getInstance().getTime(), i + 34, member, maxLimit, maxLimit *
+                    percentConsumed, maxLimit * (1 - percentConsumed));
             cCard.setUpdatedByMemberId(member.getId());
             data.add(cCard);
         }
@@ -115,5 +100,45 @@ public class Constants {
             data.add(otp);
         }
         return data;
+    }
+
+    private static class WriteDataTask extends AsyncTask<Void, Void, Void> {
+        WeakReference<App> appWeakReference;
+
+        WriteDataTask(App app) {
+            appWeakReference = new WeakReference<>(app);
+        }
+
+        protected Void doInBackground(Void... params) {
+            App app = appWeakReference.get();
+            if (app == null)
+                return null;
+            Random random = new Random();
+            DaoSession daoSession = app.getDaoSession();
+            boolean deleteAll = true;
+
+            if (deleteAll) daoSession.getMemberDao().deleteAll();
+            if (daoSession.getMemberDao().loadAll().size() < 5)
+                daoSession.getMemberDao().insertOrReplaceInTx(getDummyMembers(random.nextInt
+                        (100)));
+
+            if (deleteAll) daoSession.getAccountDao().deleteAll();
+            if (daoSession.getAccountDao().loadAll().size() < 5)
+                daoSession.getAccountDao().insertOrReplaceInTx(getDummyAccounts(random
+                                .nextInt(100),
+                        daoSession.getMemberDao()));
+
+            if (deleteAll) daoSession.getCCardDao().deleteAll();
+            if (daoSession.getCCardDao().loadAll().size() < 5)
+                daoSession.getCCardDao().insertOrReplaceInTx(getDummyCCards(random.nextInt(100),
+                        daoSession.getMemberDao()));
+
+            if (deleteAll) daoSession.getOtpDao().deleteAll();
+            if (daoSession.getOtpDao().loadAll().size() < 5)
+                daoSession.getOtpDao().insertOrReplaceInTx(getDummyOtps(random.nextInt(100),
+                        daoSession
+                                .getMemberDao()));
+            return null;
+        }
     }
 }

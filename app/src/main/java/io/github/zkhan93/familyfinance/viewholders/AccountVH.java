@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -68,8 +69,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         accountNumber.setText(account.getAccountNumber());
         bank.setText(account.getBank());
         ifsc.setText(account.getIfsc());
-        balance.setText(String.format(Locale.US, "%.2f %s", account.getBalance(), resources
-                .getString(R.string.rs)));
+        balance.setText(NumberFormat.getCurrencyInstance().format(account.getBalance()));
         updatedBy.setText(account.getUpdatedBy().getName());
         updatedOn.setText(Constants.DATE_FORMAT.format(account.getUpdatedOn()));
     }

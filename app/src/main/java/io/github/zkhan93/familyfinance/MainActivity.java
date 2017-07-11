@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +21,10 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class MainActivity extends AppCompatActivity implements
         FragmentMembers.OnFragmentInteractionListener, FragmentOtps
         .OnFragmentInteractionListener, FragmentAccounts.OnFragmentInteractionListener,
@@ -29,6 +32,18 @@ public class MainActivity extends AppCompatActivity implements
         .OnFragmentInteractionListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+
+
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    @BindView(R.id.container)
+    ViewPager mViewPager;
+
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -40,38 +55,65 @@ public class MainActivity extends AppCompatActivity implements
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
+    private ViewPager.OnPageChangeListener pageChangeListener;
+    private int activePage;
+
+    {
+        activePage = PAGE_POSITION.SUMMARY;
+        pageChangeListener = new ViewPager
+                .OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int
+                    positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                activePage = position;
+                switch (position) {
+                    case PAGE_POSITION.SUMMARY:
+                        hideFab();
+                        break;
+                    case PAGE_POSITION.ACCOUNTS:
+                        showFab();
+                        break;
+                    case PAGE_POSITION.CCARDS:
+                        showFab();
+                        break;
+                    case PAGE_POSITION.OTPS:
+                        hideFab();
+                        break;
+                    case PAGE_POSITION.MEMBERS:
+                        showFab();
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        hideFab();
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        mViewPager.addOnPageChangeListener(pageChangeListener);
         tabLayout.setupWithViewPager(mViewPager);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
     }
 
 
@@ -110,9 +152,39 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-        Log.d(TAG, "dummy interaction");
+    @OnClick(R.id.fab)
+    void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.fab:
+                String message;
+                switch (activePage) {
+                    case PAGE_POSITION.ACCOUNTS:
+                        message = "New account dialog";
+                        break;
+                    case PAGE_POSITION.CCARDS:
+                        message = "New Ccard dialog";
+                        break;
+                    case PAGE_POSITION.MEMBERS:
+                        message = "New member dialog";
+                        break;
+                    default:
+                        message = "action not supported";
+                }
+                Snackbar.make(view, message, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                break;
+            default:
+                Log.d(TAG, "action not implemented");
+        }
+    }
+
+    public void showFab() {
+        if (fab != null)
+            fab.show();
+    }
+
+    public void hideFab() {
+        if (fab != null)
+            fab.hide();
     }
 
     /**
@@ -146,25 +218,36 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 5 total pages.
             return 5;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 0:
+                case PAGE_POSITION.SUMMARY:
                     return getString(R.string.title_summary);
-                case 1:
+                case PAGE_POSITION.ACCOUNTS:
                     return getString(R.string.title_accounts);
-                case 2:
+                case PAGE_POSITION.CCARDS:
                     return getString(R.string.title_ccards);
-                case 3:
+                case PAGE_POSITION.OTPS:
                     return getString(R.string.title_otps);
-                case 4:
+                case PAGE_POSITION.MEMBERS:
                     return getString(R.string.title_members);
             }
             return null;
         }
+
+
+    }
+
+    public interface PAGE_POSITION {
+        int SUMMARY = 0;
+        int ACCOUNTS = 1;
+        int CCARDS = 2;
+        int OTPS = 3;
+        int MEMBERS = 4;
+
     }
 }

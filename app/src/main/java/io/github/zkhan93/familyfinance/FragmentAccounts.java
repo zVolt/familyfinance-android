@@ -105,6 +105,8 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         mListener = null;
     }
 
+
+
     @Override
     public void copy(Account account) {
         //TODO Copy the Account data into clipboard
@@ -141,5 +143,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
      * activity.
      */
     public interface OnFragmentInteractionListener {
+
     }
 }

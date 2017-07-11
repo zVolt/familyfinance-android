@@ -103,6 +103,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         mListener = null;
     }
 
+
     @Override
     public void copy(CCard cCard) {
         //TODO Copy the card data into clipboard
