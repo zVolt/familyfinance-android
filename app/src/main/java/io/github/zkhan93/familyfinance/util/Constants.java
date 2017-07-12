@@ -34,33 +34,69 @@ public class Constants {
         new WriteDataTask(app).execute();
     }
 
-    private static List<Member> getDummyMembers(int size) {
+    private static List<Member> getDummyMembers() {
         List<Member> memberList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            memberList.add(getNewRandomMember());
+        for (int i = 0; i < names.length; i++) {
+            memberList.add(new Member(i + "", names[i], emails[i], names[i].length() % 2 == 0));
         }
         return memberList;
     }
 
     private static Member getRandomMember(MemberDao memberDao) {
         if (memberDao == null)
-            return getNewRandomMember();
+            return null;
         List<Member> members = memberDao.loadAll();
         return members.get(new Random().nextInt(members.size()));
     }
 
-    private static Member getNewRandomMember() {
-        int i = new Random().nextInt();
-        return new Member("Member " + i, "member" + i + "@gmail.com", i + "", i % 5 == 0);
-    }
+    private static String[] names = {
+            "Zeeshan Khan",
+            "Somnath Saha",
+            "Bushra Rehman Khan",
+            "Sarfaraz Nawaz",
+            "Dileep Gupta",
+            "Anurag Khare",
+            "Khushboo Asthana",
+            "Soumya Ojha",
+            "Vyom Srivastava",
+            "Rohit Karpoor",
+            "Swati Kesarwani",
+            "Ambuj Pandey",
+            "Danish Kamal"
+    };
+    private static String[] emails = {
+            "zeeshan.khan@gmail.com",
+            "somnath.saha@gmail.com",
+            "bushra.rehman.khan@gmail.com",
+            "sarfaraz.nawaz@gmail.com",
+            "dileep.gupta@gmail.com",
+            "anurag.khare@gmail.com",
+            "khushboo.asthana@gmail.com",
+            "soumya.ojha@gmail.com",
+            "vyom.srivastava@gmail.com",
+            "rohit.karpoor@gmail.com",
+            "swati.kesarwani@gmail.com",
+            "ambuj.pandey@gmail.com",
+            "danish.kamal@gmail.com"
+    };
+    private static String[] banks = {
+            "SBI",
+            "ICICI", "Bank of Baroda", "PNB", "Allahabad Bank", "IndusInd Bank", "HDFC Bank"
+    };
+//    private static Member getNewRandomMember() {
+//        int i = new Random().nextInt();
+//        return new Member("Member " + i, "member" + i + "@gmail.com", i + "", i % 5 == 0);
+//    }
 
     private static List<Account> getDummyAccounts(int size, MemberDao memberDao) {
         List<Account> accountList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             Member member = getRandomMember(memberDao);
             Account account =
-                    new Account("Account " + i, "bank" + i, "BANK00001234", "0000" + i +
-                            "00000000", i * 45340.4f, Calendar.getInstance().getTime(),
+                    new Account("Account " + i, banks[i % banks.length], "BANK0000234", "0000" +
+                            i +
+                            "00000000", new Random().nextFloat() * 10000, Calendar
+                            .getInstance().getTime(),
                             member);
             account.setUpdatedByMemberId(member.getId());
             accountList.add(account);
@@ -78,10 +114,11 @@ public class Constants {
             member = getRandomMember(memberDao);
             float percentConsumed = new Random().nextFloat();
             float maxLimit = new Random().nextFloat() * 10000;
-            cCard = new CCard("Card " + i, "000000" + i + "234234234", "bank" + i, "cardholder"
-                    + i, cal.getTime(), random.nextInt(30), random.nextInt(30), maxLimit,
+            cCard = new CCard("Card " + i, "000000" + i + "234234234", banks[i % banks.length],
+                    getRandomMember(memberDao).getName(), cal.getTime(), random.nextInt(30),
+                    random.nextInt(30), maxLimit,
                     maxLimit *
-                    percentConsumed, maxLimit * (1 - percentConsumed),member.getId());
+                            percentConsumed, maxLimit * (1 - percentConsumed), member.getId());
             data.add(cCard);
         }
         return data;
@@ -121,8 +158,7 @@ public class Constants {
 
             if (deleteAll) daoSession.getMemberDao().deleteAll();
             if (daoSession.getMemberDao().loadAll().size() < 5)
-                daoSession.getMemberDao().insertOrReplaceInTx(getDummyMembers(random.nextInt
-                        (100)));
+                daoSession.getMemberDao().insertOrReplaceInTx(getDummyMembers());
 
             if (deleteAll) daoSession.getAccountDao().deleteAll();
             if (daoSession.getAccountDao().loadAll().size() < 5)

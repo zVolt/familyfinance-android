@@ -59,8 +59,9 @@
             android:layout_marginTop="4dp"
             android:textIsSelectable="true"
             app:layout_constraintTop_toBottomOf="@+id/account_number"
-            tools:layout_editor_absoluteX="0dp"
-            tools:text="ICICI"/>
+            tools:text="ICICI"
+            android:layout_marginLeft="0dp"
+            app:layout_constraintLeft_toLeftOf="parent"/>
 
         <TextView
             android:id="@+id/ifsc"
