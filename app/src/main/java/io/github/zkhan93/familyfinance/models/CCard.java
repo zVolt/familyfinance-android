@@ -20,7 +20,7 @@ import org.greenrobot.greendao.DaoException;
 public class CCard implements Parcelable {
     @Id
     String number;
-    String name, bank, cardholder;
+    String name, bank, cardholder,userid,password;
     Date updatedOn;
     int paymentDay,billingDay;
     @ToOne(joinProperty = "updatedByMemberId")
@@ -119,7 +119,7 @@ public class CCard implements Parcelable {
     @Override
     public String toString() {
         return "CCard{" +
-                "name='" + name + '\'' +
+                "accountHolder='" + name + '\'' +
                 ", number='" + number + '\'' +
                 ", bank='" + bank + '\'' +
                 ", cardholder='" + cardholder + '\'' +
@@ -242,6 +242,14 @@ public class CCard implements Parcelable {
     @Generated(hash = 1066823846)
     private transient String updatedBy__resolvedKey;
 
+    public int getBillingDay() {
+        return this.billingDay;
+    }
+
+    public void setBillingDay(int billingDay) {
+        this.billingDay = billingDay;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -253,6 +261,8 @@ public class CCard implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.bank);
         dest.writeString(this.cardholder);
+        dest.writeString(this.userid);
+        dest.writeString(this.password);
         dest.writeLong(this.updatedOn != null ? this.updatedOn.getTime() : -1);
         dest.writeInt(this.paymentDay);
         dest.writeInt(this.billingDay);
@@ -263,12 +273,20 @@ public class CCard implements Parcelable {
         dest.writeString(this.updatedByMemberId);
     }
 
-    public int getBillingDay() {
-        return this.billingDay;
+    public String getUserid() {
+        return this.userid;
     }
 
-    public void setBillingDay(int billingDay) {
-        this.billingDay = billingDay;
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -283,6 +301,8 @@ public class CCard implements Parcelable {
         this.name = in.readString();
         this.bank = in.readString();
         this.cardholder = in.readString();
+        this.userid = in.readString();
+        this.password = in.readString();
         long tmpUpdatedOn = in.readLong();
         this.updatedOn = tmpUpdatedOn == -1 ? null : new Date(tmpUpdatedOn);
         this.paymentDay = in.readInt();
@@ -292,6 +312,25 @@ public class CCard implements Parcelable {
         this.consumedLimit = in.readFloat();
         this.remainingLimit = in.readFloat();
         this.updatedByMemberId = in.readString();
+    }
+
+    @Generated(hash = 568237545)
+    public CCard(String number, String name, String bank, String cardholder, String userid,
+            String password, Date updatedOn, int paymentDay, int billingDay, float maxLimit,
+            float consumedLimit, float remainingLimit, String updatedByMemberId) {
+        this.number = number;
+        this.name = name;
+        this.bank = bank;
+        this.cardholder = cardholder;
+        this.userid = userid;
+        this.password = password;
+        this.updatedOn = updatedOn;
+        this.paymentDay = paymentDay;
+        this.billingDay = billingDay;
+        this.maxLimit = maxLimit;
+        this.consumedLimit = consumedLimit;
+        this.remainingLimit = remainingLimit;
+        this.updatedByMemberId = updatedByMemberId;
     }
 
     public static final Creator<CCard> CREATOR = new Creator<CCard>() {

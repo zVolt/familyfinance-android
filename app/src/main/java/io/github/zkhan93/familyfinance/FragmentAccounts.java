@@ -10,13 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
+import io.github.zkhan93.familyfinance.events.InsertEvent;
 import io.github.zkhan93.familyfinance.models.Account;
-import io.github.zkhan93.familyfinance.util.Constants;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 
 
@@ -80,13 +82,25 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_accounts, container, false);
         ButterKnife.bind(this, rootView);
-        accountListAdapter = new AccountListAdapter((App) getActivity().getApplication(), FragmentAccounts.this);
+        accountListAdapter = new AccountListAdapter((App) getActivity().getApplication(),
+                FragmentAccounts.this);
         accountsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         accountsList.setAdapter(accountListAdapter);
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -104,7 +118,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         super.onDetach();
         mListener = null;
     }
-
 
 
     @Override
@@ -134,6 +147,12 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         account.update();
         //TODO: notify adapter about this update
         accountListAdapter.notifyItemChanged(account);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAccountAddedEvent(InsertEvent<Account> event) {
+        accountListAdapter.addItem(event.getItem());
+        Log.d(TAG, "adapter refreshed");
     }
 
     /**

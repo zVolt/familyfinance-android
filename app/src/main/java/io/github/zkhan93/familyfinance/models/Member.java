@@ -7,6 +7,9 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.ToMany;
+
+import java.util.List;
 
 /**
  * Created by zeeshan on 7/7/17.
@@ -16,15 +19,8 @@ public class Member implements Parcelable {
     @Id
     String id;
     String name, email;
-    boolean canRecieveSms;
-
-    @Generated(hash = 1704121277)
-    public Member(String id, String name, String email, boolean canRecieveSms) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.canRecieveSms = canRecieveSms;
-    }
+    boolean smsEnabled;
+    String token,profilePic;
 
     public String getName() {
         return name;
@@ -50,25 +46,52 @@ public class Member implements Parcelable {
         this.id = id;
     }
 
-    public boolean isCanRecieveSms() {
-        return canRecieveSms;
-    }
-
-    public void setCanRecieveSms(boolean canRecieveSms) {
-        this.canRecieveSms = canRecieveSms;
+    public void setSmsEnabled(boolean smsEnabled) {
+        this.smsEnabled = smsEnabled;
     }
 
     @Override
     public String toString() {
         return "Member{" +
-                "name='" + name + '\'' +
+                "accountHolder='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", id='" + id + '\'' +
-                ", canRecieveSms=" + canRecieveSms +
+                ", smsEnabled=" + smsEnabled +
                 '}';
     }
 
     public Member() {
+    }
+
+    public boolean getSmsEnabled() {
+        return this.smsEnabled;
+    }
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getProfilePic() {
+        return this.profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    @Generated(hash = 1246573417)
+    public Member(String id, String name, String email, boolean smsEnabled,
+            String token, String profilePic) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.smsEnabled = smsEnabled;
+        this.token = token;
+        this.profilePic = profilePic;
     }
 
     @Override
@@ -78,22 +101,21 @@ public class Member implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
         dest.writeString(this.name);
         dest.writeString(this.email);
-        dest.writeString(this.id);
-        dest.writeByte(this.canRecieveSms ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.smsEnabled ? (byte) 1 : (byte) 0);
+        dest.writeString(this.token);
+        dest.writeString(this.profilePic);
     }
 
-    public boolean getCanRecieveSms() {
-        return this.canRecieveSms;
-    }
-
-    @Keep
     protected Member(Parcel in) {
+        this.id = in.readString();
         this.name = in.readString();
         this.email = in.readString();
-        this.id = in.readString();
-        this.canRecieveSms = in.readByte() != 0;
+        this.smsEnabled = in.readByte() != 0;
+        this.token = in.readString();
+        this.profilePic = in.readString();
     }
 
     public static final Creator<Member> CREATOR = new Creator<Member>() {

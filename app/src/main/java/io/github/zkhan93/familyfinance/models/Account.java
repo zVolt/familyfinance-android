@@ -19,7 +19,7 @@ import java.util.Date;
 public class Account implements Parcelable {
     @Id
     String accountNumber;
-    String name, bank, ifsc;
+    String accountHolder, bank, ifsc, userid,password;
     float balance;
     Date updatedOn;
     @ToOne(joinProperty = "updatedByMemberId")
@@ -28,9 +28,9 @@ public class Account implements Parcelable {
     private String updatedByMemberId;
 
     @Keep
-    public Account(String name, String bank, String ifsc, String accountNumber, float balance,
+    public Account(String accountHolder, String bank, String ifsc, String accountNumber, float balance,
                    Date updatedOn, Member updatedBy) {
-        this.name = name;
+        this.accountHolder = accountHolder;
         this.bank = bank;
         this.ifsc = ifsc;
         this.accountNumber = accountNumber;
@@ -49,7 +49,7 @@ public class Account implements Parcelable {
     @Override
     public String toString() {
         return "Account{" +
-                "name='" + name + '\'' +
+                "accountHolder='" + accountHolder + '\'' +
                 ", bank='" + bank + '\'' +
                 ", ifsc='" + ifsc + '\'' +
                 ", accountNumber='" + accountNumber + '\'' +
@@ -57,23 +57,6 @@ public class Account implements Parcelable {
                 ", updatedOn=" + updatedOn +
                 ", updatedBy=" + updatedBy +
                 '}';
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.name);
-        dest.writeString(this.bank);
-        dest.writeString(this.ifsc);
-        dest.writeString(this.accountNumber);
-        dest.writeFloat(this.balance);
-        dest.writeLong(this.updatedOn != null ? this.updatedOn.getTime() : -1);
-        dest.writeParcelable(this.updatedBy, flags);
-        dest.writeString(this.updatedByMemberId);
     }
 
 
@@ -87,13 +70,13 @@ public class Account implements Parcelable {
     }
 
 
-    public String getName() {
-        return this.name;
+    public String getAccountHolder() {
+        return this.accountHolder;
     }
 
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAccountHolder(String accountHolder) {
+        this.accountHolder = accountHolder;
     }
 
 
@@ -221,6 +204,58 @@ public class Account implements Parcelable {
     }
 
 
+    public Account() {
+    }
+
+
+    /**
+     * Used to resolve relations
+     */
+    @Generated(hash = 2040040024)
+    private transient DaoSession daoSession;
+    /**
+     * Used for active entity operations.
+     */
+    @Generated(hash = 335469827)
+    private transient AccountDao myDao;
+    @Generated(hash = 1066823846)
+    private transient String updatedBy__resolvedKey;
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.accountNumber);
+        dest.writeString(this.accountHolder);
+        dest.writeString(this.bank);
+        dest.writeString(this.ifsc);
+        dest.writeString(this.userid);
+        dest.writeString(this.password);
+        dest.writeFloat(this.balance);
+        dest.writeLong(this.updatedOn != null ? this.updatedOn.getTime() : -1);
+        dest.writeParcelable(this.updatedBy, flags);
+        dest.writeString(this.updatedByMemberId);
+    }
+
+    public String getUserid() {
+        return this.userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1812283172)
     public void __setDaoSession(DaoSession daoSession) {
@@ -228,15 +263,13 @@ public class Account implements Parcelable {
         myDao = daoSession != null ? daoSession.getAccountDao() : null;
     }
 
-    public Account() {
-    }
-
-    @Keep
     protected Account(Parcel in) {
-        this.name = in.readString();
+        this.accountNumber = in.readString();
+        this.accountHolder = in.readString();
         this.bank = in.readString();
         this.ifsc = in.readString();
-        this.accountNumber = in.readString();
+        this.userid = in.readString();
+        this.password = in.readString();
         this.balance = in.readFloat();
         long tmpUpdatedOn = in.readLong();
         this.updatedOn = tmpUpdatedOn == -1 ? null : new Date(tmpUpdatedOn);
@@ -244,14 +277,15 @@ public class Account implements Parcelable {
         this.updatedByMemberId = in.readString();
     }
 
-
-    @Generated(hash = 1634850484)
-    public Account(String accountNumber, String name, String bank, String ifsc, float balance,
-                   Date updatedOn, String updatedByMemberId) {
+    @Generated(hash = 547547302)
+    public Account(String accountNumber, String accountHolder, String bank, String ifsc, String userid,
+            String password, float balance, Date updatedOn, String updatedByMemberId) {
         this.accountNumber = accountNumber;
-        this.name = name;
+        this.accountHolder = accountHolder;
         this.bank = bank;
         this.ifsc = ifsc;
+        this.userid = userid;
+        this.password = password;
         this.balance = balance;
         this.updatedOn = updatedOn;
         this.updatedByMemberId = updatedByMemberId;
@@ -268,16 +302,4 @@ public class Account implements Parcelable {
             return new Account[size];
         }
     };
-    /**
-     * Used to resolve relations
-     */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-    /**
-     * Used for active entity operations.
-     */
-    @Generated(hash = 335469827)
-    private transient AccountDao myDao;
-    @Generated(hash = 1066823846)
-    private transient String updatedBy__resolvedKey;
 }

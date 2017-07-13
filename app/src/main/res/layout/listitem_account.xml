@@ -18,7 +18,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/account_holder"
             style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
             android:layout_marginTop="4dp"
             android:textIsSelectable="true"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintTop_toBottomOf="@+id/account_holder"
             tools:text="000123456789"/>
 
         <TextView

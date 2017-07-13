@@ -41,6 +41,23 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.github.zkhan93.familyfinance.MainActivity"/>
         </activity>
+        <activity
+            android:name=".SelectFamilyActivity"
+            android:label="@string/title_activity_select_family"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <service
+            android:name=".services.MessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".services.InstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

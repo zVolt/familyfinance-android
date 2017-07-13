@@ -37,12 +37,12 @@ public class Constants {
     private static List<Member> getDummyMembers() {
         List<Member> memberList = new ArrayList<>();
         for (int i = 0; i < names.length; i++) {
-            memberList.add(new Member(i + "", names[i], emails[i], names[i].length() % 2 == 0));
+            memberList.add(new Member(i + "", names[i], emails[i], names[i].length() % 2 == 0,"",""));
         }
         return memberList;
     }
 
-    private static Member getRandomMember(MemberDao memberDao) {
+    public static Member getRandomMember(MemberDao memberDao) {
         if (memberDao == null)
             return null;
         List<Member> members = memberDao.loadAll();
@@ -148,32 +148,34 @@ public class Constants {
             appWeakReference = new WeakReference<>(app);
         }
 
+        boolean recreate = false;
+        boolean deleteAll = false;
+        int max = 20;
+        Random random = new Random();
+
         protected Void doInBackground(Void... params) {
             App app = appWeakReference.get();
             if (app == null)
                 return null;
-            Random random = new Random();
             DaoSession daoSession = app.getDaoSession();
-            boolean deleteAll = false;
-
             if (deleteAll) daoSession.getMemberDao().deleteAll();
-            if (daoSession.getMemberDao().loadAll().size() < 5)
+            if (recreate)
                 daoSession.getMemberDao().insertOrReplaceInTx(getDummyMembers());
 
             if (deleteAll) daoSession.getAccountDao().deleteAll();
-            if (daoSession.getAccountDao().loadAll().size() < 5)
+            if (recreate)
                 daoSession.getAccountDao().insertOrReplaceInTx(getDummyAccounts(random
-                                .nextInt(100),
+                                .nextInt(max),
                         daoSession.getMemberDao()));
 
             if (deleteAll) daoSession.getCCardDao().deleteAll();
-            if (daoSession.getCCardDao().loadAll().size() < 5)
-                daoSession.getCCardDao().insertOrReplaceInTx(getDummyCCards(random.nextInt(100),
+            if (recreate)
+                daoSession.getCCardDao().insertOrReplaceInTx(getDummyCCards(random.nextInt(max),
                         daoSession.getMemberDao()));
 
             if (deleteAll) daoSession.getOtpDao().deleteAll();
-            if (daoSession.getOtpDao().loadAll().size() < 5)
-                daoSession.getOtpDao().insertOrReplaceInTx(getDummyOtps(random.nextInt(100),
+            if (recreate)
+                daoSession.getOtpDao().insertOrReplaceInTx(getDummyOtps(random.nextInt(max),
                         daoSession
                                 .getMemberDao()));
             return null;

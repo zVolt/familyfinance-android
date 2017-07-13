@@ -28,9 +28,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public AccountListAdapter(App app, AccountVH.ItemInteractionListener itemInteractionListener) {
         this.accounts = new ArrayList<>();
         this.itemInteractionListener = itemInteractionListener;
-
-        new LoadFromDbTask<>(app.getDaoSession().getAccountDao(), this).execute();
-
+        reloadFromDisk(app);
     }
 
     @Override
@@ -88,5 +86,14 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public interface ITEM_TYPE {
         int NORMAL = 0;
         int FOOTER = 1;
+    }
+
+    public void reloadFromDisk(App app) {
+        new LoadFromDbTask<>(app.getDaoSession().getAccountDao(), this).execute();
+    }
+
+    public void addItem(Account account) {
+        accounts.add(account);
+        notifyItemInserted(accounts.size());
     }
 }

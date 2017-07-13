@@ -1,7 +1,10 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -11,11 +14,17 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.ResultCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.github.zkhan93.familyfinance.models.Member;
 
 /**
  * A login screen that offers login via email/password.
@@ -33,10 +42,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-    }
-
-    @Override
-    protected void onStart() {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
@@ -44,7 +49,12 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "already logged in");
             startActivity(new Intent(this, MainActivity.class));
             finish();
-        }
+        } else
+            Log.d(TAG, "not already logged in");
+    }
+
+    @Override
+    protected void onStart() {
         super.onStart();
     }
 
@@ -67,9 +77,39 @@ public class LoginActivity extends AppCompatActivity {
 
             // Successfully signed in
             if (resultCode == ResultCodes.OK) {
-//                startActivity(SignedInActivity.createIntent(this, response));
-//                finish();
-                Log.d(TAG, response.toString() + "");
+                //TODO: show progress bar during this process
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    Member member = new Member(user.getUid(), user.getDisplayName(), user
+                            .getEmail(), false, FirebaseInstanceId.getInstance().getToken(), user
+                            .getPhotoUrl().toString());
+                    FirebaseDatabase.getInstance().getReference().child("users").child(user
+                            .getUid()).setValue(member)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+
+                                        if (PreferenceManager.getDefaultSharedPreferences
+                                                (getApplicationContext()).contains("familyId")) {
+                                            startActivity(new Intent(LoginActivity.this,
+                                                    SelectFamilyActivity
+                                                    .class));
+                                        } else {
+                                            startActivity(new Intent(LoginActivity.this,
+                                                    MainActivity
+                                                    .class));
+                                        }
+                                        finish();
+
+                                    } else {
+                                        //wtinting to firebase failed for some reason
+                                    }
+                                }
+                            });
+                } else {
+                    // cannot get user's data
+                }
                 return;
             } else {
                 // Sign in failed

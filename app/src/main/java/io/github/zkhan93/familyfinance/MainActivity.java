@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements
         FragmentMembers.OnFragmentInteractionListener, FragmentOtps
         .OnFragmentInteractionListener, FragmentAccounts.OnFragmentInteractionListener,
         FragmentCCards.OnFragmentInteractionListener, FragmentSummary
-        .OnFragmentInteractionListener {
+        .OnFragmentInteractionListener{
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -160,6 +160,8 @@ public class MainActivity extends AppCompatActivity implements
                 switch (activePage) {
                     case PAGE_POSITION.ACCOUNTS:
                         message = "New account dialog";
+                        DialogFragmentAddAccount.newInstance().show(getSupportFragmentManager(),
+                                DialogFragmentAddAccount.TAG);
                         break;
                     case PAGE_POSITION.CCARDS:
                         message = "New Ccard dialog";
@@ -201,19 +203,25 @@ public class MainActivity extends AppCompatActivity implements
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            Fragment fragment;
             switch (position) {
-                default:
-                    return FragmentSummary.newInstance();
                 case 1:
-                    return FragmentAccounts.newInstance();
+                    fragment = FragmentAccounts.newInstance();
+                    break;
                 case 2:
-                    return FragmentCCards.newInstance();
+                    fragment = FragmentCCards.newInstance();
+                    break;
                 case 3:
-                    return FragmentOtps.newInstance();
+                    fragment = FragmentOtps.newInstance();
+                    break;
                 case 4:
-                    return FragmentMembers.newInstance();
+                    fragment = FragmentMembers.newInstance();
+                    break;
+                default: //0 or other
+                    fragment = FragmentSummary.newInstance();
+                    break;
             }
-
+            return fragment;
         }
 
         @Override
@@ -242,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    public interface PAGE_POSITION {
+    private interface PAGE_POSITION {
         int SUMMARY = 0;
         int ACCOUNTS = 1;
         int CCARDS = 2;

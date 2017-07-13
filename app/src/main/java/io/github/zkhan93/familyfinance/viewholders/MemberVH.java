@@ -44,7 +44,7 @@ public class MemberVH extends RecyclerView.ViewHolder {
         this.member = member;
         name.setText(member.getName());
         email.setText(member.getEmail());
-        toggleSms.setImageDrawable(ContextCompat.getDrawable(context, member.isCanRecieveSms() ?
+        toggleSms.setImageDrawable(ContextCompat.getDrawable(context, member.getSmsEnabled() ?
                 R.drawable
                         .ic_sms_teal_500_24dp : R.drawable.ic_sms_grey_500_24dp));
     }

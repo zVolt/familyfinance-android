@@ -11,14 +11,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.text.NumberFormat;
-import java.util.Locale;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Account;
-import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Constants;
 
 /**
@@ -28,7 +28,7 @@ import io.github.zkhan93.familyfinance.util.Constants;
 public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         .OnMenuItemClickListener {
     public static final String TAG = AccountVH.class.getSimpleName();
-    @BindView(R.id.name)
+    @BindView(R.id.account_holder)
     TextView name;
     @BindView(R.id.account_number)
     TextView accountNumber;
@@ -65,13 +65,17 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
     public void setAccount(Account account) {
         Log.d(TAG, "item: " + account.toString());
         this.account = account;
-        name.setText(account.getName());
+        name.setText(account.getAccountHolder());
         accountNumber.setText(account.getAccountNumber());
         bank.setText(account.getBank());
         ifsc.setText(account.getIfsc());
         balance.setText(NumberFormat.getCurrencyInstance().format(account.getBalance()));
-        updatedBy.setText(account.getUpdatedBy().getName());
-        updatedOn.setText(Constants.DATE_FORMAT.format(account.getUpdatedOn()));
+
+        Member _updatedBy = account.getUpdatedBy();
+        updatedBy.setText(_updatedBy == null ? "Nobody" : _updatedBy.getName());
+
+        Date _updatedOn = account.getUpdatedOn();
+        updatedOn.setText(_updatedOn == null ? "Never" : Constants.DATE_FORMAT.format(_updatedOn));
     }
 
     @OnClick(R.id.menu)

@@ -15,7 +15,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
 import io.github.zkhan93.familyfinance.models.Member;
-import io.github.zkhan93.familyfinance.util.Constants;
 import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 
 
@@ -113,7 +112,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
     @Override
     public void toggleSms(Member member) {
         Log.d(TAG, "toggleSms: " + member.toString());
-        member.setCanRecieveSms(!member.getCanRecieveSms());
+        member.setSmsEnabled(!member.getSmsEnabled());
         ((App) getActivity().getApplication()).getDaoSession().getMemberDao().update(member);
         memberListAdapter.notifyItemChanged(member);
     }
