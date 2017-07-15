@@ -29,10 +29,10 @@ public class MainActivity extends AppCompatActivity implements
         FragmentMembers.OnFragmentInteractionListener, FragmentOtps
         .OnFragmentInteractionListener, FragmentAccounts.OnFragmentInteractionListener,
         FragmentCCards.OnFragmentInteractionListener, FragmentSummary
-        .OnFragmentInteractionListener{
+        .OnFragmentInteractionListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-
+    public String familyId = "family-01";
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements
                 switch (activePage) {
                     case PAGE_POSITION.ACCOUNTS:
                         message = "New account dialog";
-                        DialogFragmentAddAccount.newInstance().show(getSupportFragmentManager(),
+                        DialogFragmentAddAccount.newInstance(familyId).show(getSupportFragmentManager(),
                                 DialogFragmentAddAccount.TAG);
                         break;
                     case PAGE_POSITION.CCARDS:
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements
             Fragment fragment;
             switch (position) {
                 case 1:
-                    fragment = FragmentAccounts.newInstance();
+                    fragment = FragmentAccounts.newInstance(familyId);
                     break;
                 case 2:
                     fragment = FragmentCCards.newInstance();

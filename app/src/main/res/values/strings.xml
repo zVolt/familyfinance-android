@@ -30,6 +30,7 @@
     <string name="action_remove">Remove</string>
     <!--hints -->
     <string name="hint_account_name">Account\'s Name</string>
+    <string name="hint_account_holder_name">Account holder\'s name</string>
     <string name="hint_account_number">Account Number</string>
 
     <string name="hint_ccard_name">Card Name</string>

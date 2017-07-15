@@ -83,6 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                     Member member = new Member(user.getUid(), user.getDisplayName(), user
                             .getEmail(), false, FirebaseInstanceId.getInstance().getToken(), user
                             .getPhotoUrl().toString());
+                    ((App)getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
                     FirebaseDatabase.getInstance().getReference().child("users").child(user
                             .getUid()).setValue(member)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {

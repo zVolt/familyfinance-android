@@ -53,10 +53,12 @@ public class Member implements Parcelable {
     @Override
     public String toString() {
         return "Member{" +
-                "accountHolder='" + name + '\'' +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", id='" + id + '\'' +
                 ", smsEnabled=" + smsEnabled +
+                ", token='" + token + '\'' +
+                ", profilePic='" + profilePic + '\'' +
                 '}';
     }
 

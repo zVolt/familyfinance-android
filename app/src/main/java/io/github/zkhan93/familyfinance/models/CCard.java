@@ -19,17 +19,18 @@ import org.greenrobot.greendao.DaoException;
 @Entity
 public class CCard implements Parcelable {
     @Id
+    String id;
     String number;
-    String name, bank, cardholder,userid,password;
+    String name, bank, cardholder, userid, password;
     Date updatedOn;
-    int paymentDay,billingDay;
+    int paymentDay, billingDay;
     @ToOne(joinProperty = "updatedByMemberId")
     Member updatedBy;
     float maxLimit, consumedLimit, remainingLimit;
 
     private String updatedByMemberId;
 
-
+    Date localModifiedOn;
 
     public String getName() {
         return name;
@@ -119,16 +120,22 @@ public class CCard implements Parcelable {
     @Override
     public String toString() {
         return "CCard{" +
-                "accountHolder='" + name + '\'' +
+                "id='" + id + '\'' +
                 ", number='" + number + '\'' +
+                ", name='" + name + '\'' +
                 ", bank='" + bank + '\'' +
                 ", cardholder='" + cardholder + '\'' +
-                ", paymentDay=" + paymentDay +
+                ", userid='" + userid + '\'' +
+                ", password='" + password + '\'' +
                 ", updatedOn=" + updatedOn +
+                ", paymentDay=" + paymentDay +
+                ", billingDay=" + billingDay +
                 ", updatedBy=" + updatedBy +
                 ", maxLimit=" + maxLimit +
                 ", consumedLimit=" + consumedLimit +
                 ", remainingLimit=" + remainingLimit +
+                ", updatedByMemberId='" + updatedByMemberId + '\'' +
+                ", localModifiedOn=" + localModifiedOn +
                 '}';
     }
 
@@ -214,8 +221,8 @@ public class CCard implements Parcelable {
 
     @Keep
     public CCard(String name, String number, String bank, String cardholder, Date updatedOn,
-            int paymentDay, int billingDay, float maxLimit, float consumedLimit,
-            float remainingLimit, String updatedByMemberId) {
+                 int paymentDay, int billingDay, float maxLimit, float consumedLimit,
+                 float remainingLimit, String updatedByMemberId) {
         this.number = number;
         this.name = name;
         this.bank = bank;
@@ -250,29 +257,6 @@ public class CCard implements Parcelable {
         this.billingDay = billingDay;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.number);
-        dest.writeString(this.name);
-        dest.writeString(this.bank);
-        dest.writeString(this.cardholder);
-        dest.writeString(this.userid);
-        dest.writeString(this.password);
-        dest.writeLong(this.updatedOn != null ? this.updatedOn.getTime() : -1);
-        dest.writeInt(this.paymentDay);
-        dest.writeInt(this.billingDay);
-        dest.writeParcelable(this.updatedBy, flags);
-        dest.writeFloat(this.maxLimit);
-        dest.writeFloat(this.consumedLimit);
-        dest.writeFloat(this.remainingLimit);
-        dest.writeString(this.updatedByMemberId);
-    }
-
     public String getUserid() {
         return this.userid;
     }
@@ -289,6 +273,68 @@ public class CCard implements Parcelable {
         this.password = password;
     }
 
+    @Generated(hash = 2046377622)
+    public CCard(String id, String number, String name, String bank, String cardholder, String userid,
+            String password, Date updatedOn, int paymentDay, int billingDay, float maxLimit,
+            float consumedLimit, float remainingLimit, String updatedByMemberId, Date localModifiedOn) {
+        this.id = id;
+        this.number = number;
+        this.name = name;
+        this.bank = bank;
+        this.cardholder = cardholder;
+        this.userid = userid;
+        this.password = password;
+        this.updatedOn = updatedOn;
+        this.paymentDay = paymentDay;
+        this.billingDay = billingDay;
+        this.maxLimit = maxLimit;
+        this.consumedLimit = consumedLimit;
+        this.remainingLimit = remainingLimit;
+        this.updatedByMemberId = updatedByMemberId;
+        this.localModifiedOn = localModifiedOn;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.number);
+        dest.writeString(this.name);
+        dest.writeString(this.bank);
+        dest.writeString(this.cardholder);
+        dest.writeString(this.userid);
+        dest.writeString(this.password);
+        dest.writeLong(this.updatedOn != null ? this.updatedOn.getTime() : -1);
+        dest.writeInt(this.paymentDay);
+        dest.writeInt(this.billingDay);
+        dest.writeParcelable(this.updatedBy, flags);
+        dest.writeFloat(this.maxLimit);
+        dest.writeFloat(this.consumedLimit);
+        dest.writeFloat(this.remainingLimit);
+        dest.writeString(this.updatedByMemberId);
+        dest.writeLong(this.localModifiedOn != null ? this.localModifiedOn.getTime() : -1);
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Date getLocalModifiedOn() {
+        return this.localModifiedOn;
+    }
+
+    public void setLocalModifiedOn(Date localModifiedOn) {
+        this.localModifiedOn = localModifiedOn;
+    }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1480820516)
     public void __setDaoSession(DaoSession daoSession) {
@@ -297,6 +343,7 @@ public class CCard implements Parcelable {
     }
 
     protected CCard(Parcel in) {
+        this.id = in.readString();
         this.number = in.readString();
         this.name = in.readString();
         this.bank = in.readString();
@@ -312,25 +359,8 @@ public class CCard implements Parcelable {
         this.consumedLimit = in.readFloat();
         this.remainingLimit = in.readFloat();
         this.updatedByMemberId = in.readString();
-    }
-
-    @Generated(hash = 568237545)
-    public CCard(String number, String name, String bank, String cardholder, String userid,
-            String password, Date updatedOn, int paymentDay, int billingDay, float maxLimit,
-            float consumedLimit, float remainingLimit, String updatedByMemberId) {
-        this.number = number;
-        this.name = name;
-        this.bank = bank;
-        this.cardholder = cardholder;
-        this.userid = userid;
-        this.password = password;
-        this.updatedOn = updatedOn;
-        this.paymentDay = paymentDay;
-        this.billingDay = billingDay;
-        this.maxLimit = maxLimit;
-        this.consumedLimit = consumedLimit;
-        this.remainingLimit = remainingLimit;
-        this.updatedByMemberId = updatedByMemberId;
+        long tmpLocalModifiedOn = in.readLong();
+        this.localModifiedOn = tmpLocalModifiedOn == -1 ? null : new Date(tmpLocalModifiedOn);
     }
 
     public static final Creator<CCard> CREATOR = new Creator<CCard>() {

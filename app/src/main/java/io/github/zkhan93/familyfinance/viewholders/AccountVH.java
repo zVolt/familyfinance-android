@@ -1,6 +1,8 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.NumberFormat;
@@ -45,14 +48,14 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
     @BindView(R.id.menu)
     ImageButton menu;
 
-    private Resources resources;
+    private Context context;
     private ItemInteractionListener itemInteractionListener;
     private PopupMenu popup;
     private Account account;
 
     public AccountVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);
-        resources = itemView.getResources();
+        context = itemView.getContext();
         ButterKnife.bind(this, itemView);
         this.itemInteractionListener = itemInteractionListener;
 
@@ -74,7 +77,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         Member _updatedBy = account.getUpdatedBy();
         updatedBy.setText(_updatedBy == null ? "Nobody" : _updatedBy.getName());
 
-        Date _updatedOn = account.getUpdatedOn();
+        Date _updatedOn = account.getUpdatedOn() == -1 ? null : new Date(account.getUpdatedOn());
         updatedOn.setText(_updatedOn == null ? "Never" : Constants.DATE_FORMAT.format(_updatedOn));
     }
 

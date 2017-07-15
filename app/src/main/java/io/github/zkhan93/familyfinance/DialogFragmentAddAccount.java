@@ -8,9 +8,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Calendar;
 
@@ -28,6 +32,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         .OnClickListener {
 
     public static final String TAG = DialogFragmentAddAccount.class.getSimpleName();
+    public static final String ARGS_FAMILY_ID = "familyID";
 
     @BindView(R.id.account_holder)
     TextInputEditText accountHolder;
@@ -44,9 +49,51 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     @BindView(R.id.balance)
     TextInputEditText balance;
 
-    public static DialogFragmentAddAccount newInstance() {
+    private TextWatcher accountNumberWatcher;
+    private String familyId;
+
+    {
+        accountNumberWatcher = new TextWatcher() {
+            String[] segs;
+            StringBuilder strb = new StringBuilder(19);
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String str = s.toString();
+                str = str.trim().replaceAll("[- ]", "");
+                strb.setLength(0);
+                int i = 1;
+                for (char ch : str.toCharArray()) {
+                    strb.append(ch);
+                    if (i % 4 == 0)
+                        strb.append('-');
+                    i++;
+                }
+                if (strb.length() > 19)
+                    strb.delete(19, strb.length());
+                number.removeTextChangedListener(this);
+                number.setText(strb.toString());
+                number.setSelection(strb.length());
+                number.addTextChangedListener(this);
+                Log.d(TAG, strb.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
+    }
+
+    public static DialogFragmentAddAccount newInstance(String familyId) {
         DialogFragmentAddAccount dialogFragmentAddAccount = new DialogFragmentAddAccount();
         Bundle args = new Bundle();
+        args.putString(ARGS_FAMILY_ID, familyId);
         dialogFragmentAddAccount.setArguments(args);
         return dialogFragmentAddAccount;
     }
@@ -54,6 +101,10 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            familyId = bundle.getString(ARGS_FAMILY_ID);
+        }
     }
 
     @NonNull
@@ -83,15 +134,17 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 //TODO: validate values
+
                 Account account = new Account(accountHolder.getText().toString(), bank.getText()
                         .toString
-                        (), ifsc.getText().toString(), number.getText().toString(), Float
-                        .parseFloat(balance.getText().toString()), Calendar.getInstance().getTime
-                        (), null);
+                                (), ifsc.getText().toString(), number.getText().toString(), Float
+                        .parseFloat(balance.getText().toString()), Calendar.getInstance()
+                        .getTimeInMillis(), null);
+                account.setUpdatedByMemberId(FirebaseAuth.getInstance
+                        ().getCurrentUser().getUid());
                 new InsertTask<AccountDao, Account>(((App) getActivity().getApplication())
                         .getDaoSession()
                         .getAccountDao()).execute(account);
-
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
                 //TODO: teardown the view
@@ -100,5 +153,4 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
                 Log.d(TAG, "action not implemented/invalid action");
         }
     }
-
 }

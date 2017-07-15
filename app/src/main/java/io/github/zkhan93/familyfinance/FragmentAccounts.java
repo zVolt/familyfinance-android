@@ -9,15 +9,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Calendar;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
-import io.github.zkhan93.familyfinance.events.InsertEvent;
+import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 
@@ -34,18 +43,42 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     public static final String TAG = FragmentAccounts.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_FAMILY_ID = "familiyID";
 
 
-//    private String mParam1;
-//    private String mParam2;
+    private String familyId;
 
     private OnFragmentInteractionListener mListener;
     private AccountListAdapter accountListAdapter;
-
+    private String accountToDelete;
+    private Toast toast;
     @BindView(R.id.list)
     RecyclerView accountsList;
+    ValueEventListener connectionEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot snapshot) {
+            if (snapshot == null)
+                return;
+            Boolean connected = snapshot.getValue(Boolean.class);
+            if (connected != null && connected) {
+                toast.cancel();
+                toast.setText("connected");
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.show();
+            } else {
+                toast.cancel();
+                toast.setText("not connected");
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError error) {
+            Log.d(TAG, "Listener was cancelled");
+        }
+    };
+
 
     public FragmentAccounts() {
         // Required empty public constructor
@@ -57,12 +90,10 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
      *
      * @return A new instance of fragment FragmentAccounts.
      */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentAccounts newInstance() {
+    public static FragmentAccounts newInstance(String familyId) {
         FragmentAccounts fragment = new FragmentAccounts();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_FAMILY_ID, familyId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -71,8 +102,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+            familyId = getArguments().getString(ARG_FAMILY_ID);
         }
     }
 
@@ -82,7 +112,10 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_accounts, container, false);
         ButterKnife.bind(this, rootView);
-        accountListAdapter = new AccountListAdapter((App) getActivity().getApplication(),
+        toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
+        FirebaseDatabase.getInstance().getReference(".info/connected").addValueEventListener
+                (connectionEventListener);
+        accountListAdapter = new AccountListAdapter((App) getActivity().getApplication(), familyId,
                 FragmentAccounts.this);
         accountsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
@@ -94,12 +127,14 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        accountListAdapter.registerForEvents();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+        accountListAdapter.unregisterForEvents();
     }
 
     @Override
@@ -130,7 +165,14 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     public void delete(Account account) {
         //TODO: delete the Account from local database and sync the action to cloud(firebase
         // realtime database)
-        Log.d(TAG, "delete: " + account.toString());
+        accountToDelete = account.getAccountNumber();
+        String title = "You want to delete account " + account.getAccountNumber();
+        DialogFragmentConfirm<Account> dialogFragmentConfirm = new DialogFragmentConfirm<>();
+        Bundle bundle = new Bundle();
+        bundle.putString(DialogFragmentConfirm.ARGS_TITLE, title);
+        dialogFragmentConfirm.setArguments(bundle);
+        dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
+                DialogFragmentConfirm.TAG);
     }
 
     @Override
@@ -144,15 +186,23 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         //TODO: Show edit dialog for updating the Account
         Log.d(TAG, "edit: " + account.toString());
         account.setBank(account.getBank() + "X");
-        account.update();
-        //TODO: notify adapter about this update
-        accountListAdapter.notifyItemChanged(account);
+        account.setUpdatedByMemberId(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        account.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
+        FirebaseDatabase.getInstance().getReference("accounts").child(familyId).child(account
+                .getAccountNumber()).setValue(account);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAccountAddedEvent(InsertEvent<Account> event) {
-        accountListAdapter.addItem(event.getItem());
-        Log.d(TAG, "adapter refreshed");
+    /**
+     * Events fired from DialogFragmentConfirm
+     */
+    @Subscribe()
+    public void deleteActiveAccount(DeleteConfirmedEvent<Account> event) {
+        if (accountToDelete != null) {
+            ((App) getActivity().getApplication()).getDaoSession().getAccountDao().deleteByKey
+                    (accountToDelete);
+            accountListAdapter.deleteAccount(accountToDelete);
+        }
+
     }
 
     /**

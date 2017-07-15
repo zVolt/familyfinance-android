@@ -1,5 +1,8 @@
 package io.github.zkhan93.familyfinance.events;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.zkhan93.familyfinance.models.Account;
 
 /**
@@ -7,16 +10,20 @@ import io.github.zkhan93.familyfinance.models.Account;
  */
 
 public class InsertEvent<T> {
-    private T item;
+    private List<T> items;
 
     public InsertEvent() {
+        items = new ArrayList<>();
     }
 
-    public InsertEvent(T item) {
-        this.item = item;
+    public InsertEvent(List<T> items) {
+        if (items == null)
+            items = new ArrayList<>();
+        else
+            this.items = items;
     }
 
-    public T getItem() {
-        return item;
+    public List<T> getItems() {
+        return items;
     }
 }

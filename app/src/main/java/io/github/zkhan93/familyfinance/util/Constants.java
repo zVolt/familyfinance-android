@@ -37,7 +37,8 @@ public class Constants {
     private static List<Member> getDummyMembers() {
         List<Member> memberList = new ArrayList<>();
         for (int i = 0; i < names.length; i++) {
-            memberList.add(new Member(i + "", names[i], emails[i], names[i].length() % 2 == 0,"",""));
+            memberList.add(new Member(i + "", names[i], emails[i], names[i].length() % 2 == 0,
+                    "", ""));
         }
         return memberList;
     }
@@ -96,7 +97,7 @@ public class Constants {
                     new Account("Account " + i, banks[i % banks.length], "BANK0000234", "0000" +
                             i +
                             "00000000", new Random().nextFloat() * 10000, Calendar
-                            .getInstance().getTime(),
+                            .getInstance().getTimeInMillis(),
                             member);
             account.setUpdatedByMemberId(member.getId());
             accountList.add(account);
@@ -179,6 +180,73 @@ public class Constants {
                         daoSession
                                 .getMemberDao()));
             return null;
+        }
+    }
+
+    interface CARD_TYPE {
+        int VISA = 1;
+        int AMERICAL_EXPRESS = 2;
+        int CHINA_PAY = 3;
+        int DINERS_CLUB = 4;
+        int DISCOVER_CARD = 5;
+        int JBC = 6;
+        int LASER = 7;
+        int MASTERO = 8;
+        int MASTERCARD = 9;
+        int DANKORT = 10;
+        int UNKNOWN = 11;
+    }
+
+    private static int getCardType(int cardPrefix4d) {
+
+        if (cardPrefix4d / 1000 == 4) return CARD_TYPE.VISA;
+
+        switch (cardPrefix4d / 100) {
+            case 34:
+            case 37:
+                return CARD_TYPE.AMERICAL_EXPRESS;
+            case 62:
+            case 68:
+                return CARD_TYPE.CHINA_PAY;
+            case 36:
+            case 38:
+            case 39:
+                return CARD_TYPE.DINERS_CLUB;
+            case 65:
+                return CARD_TYPE.DISCOVER_CARD;
+            case 50:
+            case 51:
+            case 52:
+            case 53:
+            case 54:
+            case 55:
+                return CARD_TYPE.MASTERCARD;
+        }
+        switch (cardPrefix4d / 10) {
+
+            case 300:
+            case 301:
+            case 302:
+            case 303:
+            case 304:
+            case 305:
+            case 309:
+                return CARD_TYPE.DINERS_CLUB;
+
+            case 644:
+            case 645:
+            case 646:
+            case 647:
+            case 648:
+            case 649:
+                return CARD_TYPE.DISCOVER_CARD;
+        }
+        switch (cardPrefix4d) {
+            case 6011:
+            case 3528:
+            case 3589:
+            default:
+                return CARD_TYPE.UNKNOWN;
         }
     }
 }

@@ -3,6 +3,8 @@ package io.github.zkhan93.familyfinance.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
@@ -19,17 +21,23 @@ import java.util.Date;
 public class Account implements Parcelable {
     @Id
     String accountNumber;
-    String accountHolder, bank, ifsc, userid,password;
+    String accountHolder, bank, ifsc, userid, password;
     float balance;
-    Date updatedOn;
+    long updatedOn;
+
     @ToOne(joinProperty = "updatedByMemberId")
+    @Exclude
     Member updatedBy;
+
+    @Exclude
+    Date localModifiedOn;
 
     private String updatedByMemberId;
 
     @Keep
-    public Account(String accountHolder, String bank, String ifsc, String accountNumber, float balance,
-                   Date updatedOn, Member updatedBy) {
+    public Account(String accountHolder, String bank, String ifsc, String accountNumber, float
+            balance,
+                   long updatedOn, Member updatedBy) {
         this.accountHolder = accountHolder;
         this.bank = bank;
         this.ifsc = ifsc;
@@ -110,12 +118,12 @@ public class Account implements Parcelable {
     }
 
 
-    public Date getUpdatedOn() {
+    public long getUpdatedOn() {
         return this.updatedOn;
     }
 
 
-    public void setUpdatedOn(Date updatedOn) {
+    public void setUpdatedOn(long updatedOn) {
         this.updatedOn = updatedOn;
     }
 
@@ -124,11 +132,21 @@ public class Account implements Parcelable {
         return this.updatedByMemberId;
     }
 
-
     public void setUpdatedByMemberId(String updatedByMemberId) {
         this.updatedByMemberId = updatedByMemberId;
     }
 
+    public void updateFrom(Account account) {
+        setAccountNumber(account.getAccountNumber());
+        setAccountHolder(account.getAccountHolder());
+        setBank(account.getBank());
+        setIfsc(account.getIfsc());
+        setUserid(account.getUserid());
+        setPassword(account.getPassword());
+        setBalance(account.getBalance());
+        setUpdatedOn(account.getUpdatedOn());
+        setUpdatedByMemberId(account.getUpdatedByMemberId());
+    }
 
     /**
      * To-one relationship, resolved on first access.
@@ -221,25 +239,6 @@ public class Account implements Parcelable {
     @Generated(hash = 1066823846)
     private transient String updatedBy__resolvedKey;
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.accountNumber);
-        dest.writeString(this.accountHolder);
-        dest.writeString(this.bank);
-        dest.writeString(this.ifsc);
-        dest.writeString(this.userid);
-        dest.writeString(this.password);
-        dest.writeFloat(this.balance);
-        dest.writeLong(this.updatedOn != null ? this.updatedOn.getTime() : -1);
-        dest.writeParcelable(this.updatedBy, flags);
-        dest.writeString(this.updatedByMemberId);
-    }
-
     public String getUserid() {
         return this.userid;
     }
@@ -256,6 +255,51 @@ public class Account implements Parcelable {
         this.password = password;
     }
 
+    public Date getLocalModifiedOn() {
+        return this.localModifiedOn;
+    }
+
+    public void setLocalModifiedOn(Date localModifiedOn) {
+        this.localModifiedOn = localModifiedOn;
+    }
+
+    @Generated(hash = 1618306691)
+    public Account(String accountNumber, String accountHolder, String bank, String ifsc, String userid,
+            String password, float balance, long updatedOn, Date localModifiedOn,
+            String updatedByMemberId) {
+        this.accountNumber = accountNumber;
+        this.accountHolder = accountHolder;
+        this.bank = bank;
+        this.ifsc = ifsc;
+        this.userid = userid;
+        this.password = password;
+        this.balance = balance;
+        this.updatedOn = updatedOn;
+        this.localModifiedOn = localModifiedOn;
+        this.updatedByMemberId = updatedByMemberId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.accountNumber);
+        dest.writeString(this.accountHolder);
+        dest.writeString(this.bank);
+        dest.writeString(this.ifsc);
+        dest.writeString(this.userid);
+        dest.writeString(this.password);
+        dest.writeFloat(this.balance);
+        dest.writeLong(this.updatedOn);
+        dest.writeParcelable(this.updatedBy, flags);
+        dest.writeLong(this.localModifiedOn != null ? this.localModifiedOn.getTime() : -1);
+        dest.writeString(this.updatedByMemberId);
+    }
+
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1812283172)
     public void __setDaoSession(DaoSession daoSession) {
@@ -271,24 +315,11 @@ public class Account implements Parcelable {
         this.userid = in.readString();
         this.password = in.readString();
         this.balance = in.readFloat();
-        long tmpUpdatedOn = in.readLong();
-        this.updatedOn = tmpUpdatedOn == -1 ? null : new Date(tmpUpdatedOn);
+        this.updatedOn = in.readLong();
         this.updatedBy = in.readParcelable(Member.class.getClassLoader());
+        long tmpLocalModifiedOn = in.readLong();
+        this.localModifiedOn = tmpLocalModifiedOn == -1 ? null : new Date(tmpLocalModifiedOn);
         this.updatedByMemberId = in.readString();
-    }
-
-    @Generated(hash = 547547302)
-    public Account(String accountNumber, String accountHolder, String bank, String ifsc, String userid,
-            String password, float balance, Date updatedOn, String updatedByMemberId) {
-        this.accountNumber = accountNumber;
-        this.accountHolder = accountHolder;
-        this.bank = bank;
-        this.ifsc = ifsc;
-        this.userid = userid;
-        this.password = password;
-        this.balance = balance;
-        this.updatedOn = updatedOn;
-        this.updatedByMemberId = updatedByMemberId;
     }
 
     public static final Creator<Account> CREATOR = new Creator<Account>() {
