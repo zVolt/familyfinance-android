@@ -17,8 +17,7 @@ import io.github.zkhan93.familyfinance.viewholders.MemberVH;
  * Created by zeeshan on 8/7/17.
  */
 
-public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements LoadFromDbTask
-        .Callbacks<Member> {
+public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements LoadFromDbTask.Listener<Member> {
     public static final String TAG = MemberListAdapter.class.getSimpleName();
     private List<Member> members;
     private MemberVH.ItemInteractionListener itemInteractionListener;
@@ -46,7 +45,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
     }
 
     @Override
-    public void onTaskComplete(List<Member> data) {
+    public void onLoadTaskComplete(List<Member> data) {
         members.clear();
         members.addAll(data);
         notifyDataSetChanged();

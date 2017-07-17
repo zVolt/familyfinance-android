@@ -27,6 +27,7 @@ import io.github.zkhan93.familyfinance.events.InsertEvent;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.AccountDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
+import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 
@@ -35,7 +36,7 @@ import io.github.zkhan93.familyfinance.viewholders.FooterVH;
  */
 
 public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
-        InsertTask.Listener<Account>,
+        InsertTask.Listener<Account>, LoadFromDbTask.Listener<Account>,
         ChildEventListener, ValueEventListener {
     public static final String TAG = AccountListAdapter.class.getSimpleName();
     private ArrayList<Account> accounts;
@@ -58,8 +59,8 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.familyId = familyId;
         accountsRef = FirebaseDatabase.getInstance().getReference("accounts").child(familyId);
 
-        accountsRef.addChildEventListener(this);
-        accountsRef.addListenerForSingleValueEvent(this);
+        new LoadFromDbTask<AccountDao, Account>(app.getDaoSession().getAccountDao(), this)
+                .execute();
 
         this.itemInteractionListener = itemInteractionListener;
     }
@@ -250,5 +251,16 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         accounts.addAll(items);
         notifyDataSetChanged();
         ignoreChildEvents = false;
+    }
+
+    @Override
+    public void onLoadTaskComplete(List<Account> data) {
+        if (data != null) {
+            accounts.addAll(data);
+            notifyDataSetChanged();
+        }
+
+        accountsRef.addListenerForSingleValueEvent(this);
+        accountsRef.addChildEventListener(this);
     }
 }

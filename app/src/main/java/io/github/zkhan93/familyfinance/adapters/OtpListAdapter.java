@@ -9,18 +9,15 @@ import java.util.List;
 
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
-import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
 /**
  * Created by zeeshan on 8/7/17.
  */
 
-public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadFromDbTask
-        .Callbacks<Otp> {
+public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadFromDbTask.Listener<Otp> {
     public static final String TAG = OtpListAdapter.class.getSimpleName();
     ArrayList<Otp> otps;
 
@@ -46,7 +43,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
     }
 
     @Override
-    public void onTaskComplete(List<Otp> data) {
+    public void onLoadTaskComplete(List<Otp> data) {
         otps.clear();
         otps.addAll(data);
         notifyDataSetChanged();

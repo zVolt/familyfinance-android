@@ -20,7 +20,7 @@ public class Member implements Parcelable {
     String id;
     String name, email;
     boolean smsEnabled;
-    String token,profilePic;
+    String profilePic;
 
     public String getName() {
         return name;
@@ -57,7 +57,6 @@ public class Member implements Parcelable {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", smsEnabled=" + smsEnabled +
-                ", token='" + token + '\'' +
                 ", profilePic='" + profilePic + '\'' +
                 '}';
     }
@@ -69,13 +68,6 @@ public class Member implements Parcelable {
         return this.smsEnabled;
     }
 
-    public String getToken() {
-        return this.token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     public String getProfilePic() {
         return this.profilePic;
@@ -85,14 +77,12 @@ public class Member implements Parcelable {
         this.profilePic = profilePic;
     }
 
-    @Generated(hash = 1246573417)
-    public Member(String id, String name, String email, boolean smsEnabled,
-            String token, String profilePic) {
+    @Generated(hash = 217423531)
+    public Member(String id, String name, String email, boolean smsEnabled, String profilePic) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.smsEnabled = smsEnabled;
-        this.token = token;
         this.profilePic = profilePic;
     }
 
@@ -107,7 +97,6 @@ public class Member implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.email);
         dest.writeByte(this.smsEnabled ? (byte) 1 : (byte) 0);
-        dest.writeString(this.token);
         dest.writeString(this.profilePic);
     }
 
@@ -116,7 +105,6 @@ public class Member implements Parcelable {
         this.name = in.readString();
         this.email = in.readString();
         this.smsEnabled = in.readByte() != 0;
-        this.token = in.readString();
         this.profilePic = in.readString();
     }
 

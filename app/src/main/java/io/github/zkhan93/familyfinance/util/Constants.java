@@ -38,7 +38,7 @@ public class Constants {
         List<Member> memberList = new ArrayList<>();
         for (int i = 0; i < names.length; i++) {
             memberList.add(new Member(i + "", names[i], emails[i], names[i].length() % 2 == 0,
-                    "", ""));
+                    ""));
         }
         return memberList;
     }

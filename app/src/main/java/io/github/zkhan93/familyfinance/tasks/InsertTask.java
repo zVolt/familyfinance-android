@@ -59,7 +59,6 @@ public class InsertTask<D extends AbstractDao, T> extends AsyncTask<T, Void, Lis
             if (listener != null)
                 listener.onInsertTaskComplete(items);
         }
-
     }
 
     public interface Listener<T> {

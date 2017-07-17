@@ -10,17 +10,14 @@ import java.util.List;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.CCard;
-import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
-import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
 /**
  * Created by zeeshan on 8/7/17.
  */
 
-public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements LoadFromDbTask
-        .Callbacks<CCard> {
+public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements LoadFromDbTask.Listener<CCard> {
     public static final String TAG = CCardListAdapter.class.getSimpleName();
     private ArrayList<CCard> ccards;
     private CCardVH.ItemInteractionListener itemInteractionListener;
@@ -49,7 +46,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
     }
 
     @Override
-    public void onTaskComplete(List<CCard> data) {
+    public void onLoadTaskComplete(List<CCard> data) {
         ccards.clear();
         ccards.addAll(data);
         notifyDataSetChanged();

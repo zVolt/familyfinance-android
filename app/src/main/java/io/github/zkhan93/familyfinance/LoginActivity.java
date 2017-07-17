@@ -21,6 +21,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -45,9 +48,14 @@ public class LoginActivity extends AppCompatActivity {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
+            FirebaseUser user = auth.getCurrentUser();
             // already signed in
+            Member member = new Member(user.getUid(), user.getDisplayName(), user
+                    .getEmail(), false, user
+                    .getPhotoUrl().toString());
+            ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
             Log.d(TAG, "already logged in");
-            startActivity(new Intent(this, MainActivity.class));
+            startMainActivity();
             finish();
         } else
             Log.d(TAG, "not already logged in");
@@ -69,6 +77,23 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void startMainActivity() {
+        if (PreferenceManager.getDefaultSharedPreferences
+                (getApplicationContext()).contains("familyId")) {
+            //TODO: check if I'm a member of this family if not then delete familyId from
+            // preference and show Select Family Activity
+            startActivity(new Intent(LoginActivity.this,
+                    MainActivity
+                            .class));
+        } else {
+            startActivity(new Intent(LoginActivity.this,
+                    SelectFamilyActivity
+                            .class));
+        }
+        finish();
+
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when
         // starting the sign in flow.
@@ -81,30 +106,23 @@ public class LoginActivity extends AppCompatActivity {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
                     Member member = new Member(user.getUid(), user.getDisplayName(), user
-                            .getEmail(), false, FirebaseInstanceId.getInstance().getToken(), user
+                            .getEmail(), false, user
                             .getPhotoUrl().toString());
-                    ((App)getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
-                    FirebaseDatabase.getInstance().getReference().child("users").child(user
-                            .getUid()).setValue(member)
+                    ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("users/" + user.getUid(), member);
+                    updates.put("users/" + user.getUid() + "/token", FirebaseInstanceId
+                            .getInstance().getToken());
+                    FirebaseDatabase.getInstance().getReference().updateChildren(updates)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-
-                                        if (PreferenceManager.getDefaultSharedPreferences
-                                                (getApplicationContext()).contains("familyId")) {
-                                            startActivity(new Intent(LoginActivity.this,
-                                                    SelectFamilyActivity
-                                                    .class));
-                                        } else {
-                                            startActivity(new Intent(LoginActivity.this,
-                                                    MainActivity
-                                                    .class));
-                                        }
-                                        finish();
-
+                                        startMainActivity();
                                     } else {
-                                        //wtinting to firebase failed for some reason
+                                        //writing to firebase failed for some reason
+                                        Log.d(TAG, "failed write operation" + task.getException()
+                                                .getLocalizedMessage());
                                     }
                                 }
                             });
