@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
@@ -29,6 +30,8 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,11 +39,12 @@ import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.adapters.RequestListAdapter;
 import io.github.zkhan93.familyfinance.events.CheckRequestEvent;
 import io.github.zkhan93.familyfinance.events.DeleteRequestEvent;
+import io.github.zkhan93.familyfinance.events.FamilySetEvent;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.viewholders.RequestVH;
 
 public class SelectFamilyActivity extends AppCompatActivity implements ValueEventListener,
-        RequestVH.ItemInteractionListener {
+        RequestVH.ItemInteractionListener,PreferenceChangeListener {
 
     public static final String TAG = SelectFamilyActivity.class.getSimpleName();
 
@@ -63,6 +67,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     private String familyId;
     private Member me;
     private RequestListAdapter requestListAdapter;
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +77,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
 
         setSupportActionBar(toolbar);
         message.setVisibility(View.GONE);
-
+        toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
         FirebaseUser fbUser = FirebaseAuth
                 .getInstance().getCurrentUser();
         if (fbUser == null) {
@@ -174,8 +179,12 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         FirebaseDatabase.getInstance().getReference().updateChildren(updates);
     }
 
-    @Override
-    public void checkRequest(String familyId) {
+    /**
+     * Check whether I am a moderator or an approved member of this familyId
+     *
+     * @param familyId
+     */
+    public void checkActiveFamily(String familyId) {
         progressDialog.setMessage("Checking request status");
         progressDialog.show();
         if (familyId == null)
@@ -219,13 +228,31 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                 });
     }
 
-    @Subscribe()
+    @Subscribe
     public void deleteRequest(DeleteRequestEvent deleteRequestEvent) {
         deleteRequest(deleteRequestEvent.getFamilyId());
     }
 
-    @Subscribe()
-    public void checkRequest(CheckRequestEvent checkRequestEvent) {
-        checkRequest(checkRequestEvent.getFamilyId());
+    @Subscribe
+    public void setActiveFamily(FamilySetEvent familySetEvent) {
+        if (!familySetEvent.getRequest().getBlocked() && familySetEvent.getRequest().getApproved
+                ()) {
+            Log.d(TAG, "change family:" + familySetEvent.getRequest().getFamilyId());
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putString("activeFamilyId",familySetEvent.getRequest().getFamilyId()).apply();
+        } else {
+            toast.setText(String.format("Cannot join %s right now!", familySetEvent.getRequest()
+                    .getFamilyId()));
+            toast.show();
+            Log.d(TAG, "cannot join");
+        }
+
+    }
+
+    @Override
+    public void preferenceChange(PreferenceChangeEvent evt) {
+        if(evt.getKey().equals("activeFamilyId")){
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
     }
 }

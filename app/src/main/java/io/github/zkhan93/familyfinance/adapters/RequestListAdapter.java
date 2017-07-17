@@ -195,9 +195,4 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestVH> implemen
         //trigger event so that the listener deletes it from firebase
         EventBus.getDefault().post(new DeleteRequestEvent(familyId.trim()));
     }
-
-    @Override
-    public void checkRequest(String familyId) {
-
-    }
 }

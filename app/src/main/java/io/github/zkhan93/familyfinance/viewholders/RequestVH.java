@@ -6,28 +6,26 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.events.CheckRequestEvent;
 import io.github.zkhan93.familyfinance.events.DeleteRequestEvent;
+import io.github.zkhan93.familyfinance.events.FamilySetEvent;
 import io.github.zkhan93.familyfinance.models.Request;
-import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 
 /**
  * Created by zeeshan on 16/7/17.
  */
 
-public class RequestVH extends RecyclerView.ViewHolder {
+public class RequestVH extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public static String TAG = RequestVH.class.getSimpleName();
     public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM YY");
@@ -40,45 +38,35 @@ public class RequestVH extends RecyclerView.ViewHolder {
     @BindView(R.id.delete)
     ImageButton delete;
 
-    private Context context;
+    private Request request;
     private WeakReference<ItemInteractionListener> itemInteractionListenerWeakReference;
+    private Toast toast;
 
     public RequestVH(View itemView) {
         super(itemView);
-        context = itemView.getContext();
+        Context context = itemView.getContext();
+        toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
         ButterKnife.bind(this, itemView);
+        itemView.setOnClickListener(this);
+        delete.setOnClickListener(this);
     }
 
     public RequestVH(View itemView, ItemInteractionListener itemInteractionListener) {
-        super(itemView);
+        this(itemView);
         itemInteractionListenerWeakReference = new WeakReference<>
                 (itemInteractionListener);
-        context = itemView.getContext();
-        ButterKnife.bind(this, itemView);
     }
 
     public void setRequest(Request request) {
+        this.request = request;
         status.setText(request.getBlocked() ? "Blocked" : request.getApproved() ? "Approved" :
                 "Pending");
         familyId.setText(request.getFamilyId());
         timestamp.setText(DATE_FORMAT.format(new Date(request.getUpdatedOn())));
     }
 
-    @OnClick(R.id.delete)
     public void onClick(View view) {
         switch (view.getId()) {
-//            case R.id.check:
-//                if (itemInteractionListenerWeakReference == null)
-//                    EventBus.getDefault().post(new CheckRequestEvent(familyId.getText().toString()
-//                            .trim()));
-//                else {
-//                    ItemInteractionListener itemInteractionListener =
-//                            itemInteractionListenerWeakReference.get();
-//                    if (itemInteractionListener == null)
-//                        return;
-//                    itemInteractionListener.checkRequest(familyId.getText().toString().trim());
-//                }
-//                break;
             case R.id.delete:
                 if (itemInteractionListenerWeakReference == null)
                     EventBus.getDefault().post(new DeleteRequestEvent(familyId.getText().toString()
@@ -92,13 +80,14 @@ public class RequestVH extends RecyclerView.ViewHolder {
                 }
                 break;
             default:
-                Log.d(TAG, "click not implmented");
+                Log.d(TAG,"request clicked");
+
+                    EventBus.getDefault().post(new FamilySetEvent(request));
+
         }
     }
 
     public interface ItemInteractionListener {
         void deleteRequest(String familyId);
-
-        void checkRequest(String familyId);
     }
 }
