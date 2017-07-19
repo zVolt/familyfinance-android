@@ -3,6 +3,7 @@ package io.github.zkhan93.familyfinance.listeners;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -36,10 +37,11 @@ import io.github.zkhan93.familyfinance.tasks.InsertTask;
  * Created by zeeshan on 17/7/17.
  */
 
-public class SmsListener extends BroadcastReceiver implements OnCompleteListener<Void>{
+public class SmsListener extends BroadcastReceiver {
     public static final String TAG = SmsListener.class.getSimpleName();
-    private WeakReference<Context> contextWeakReference;
+
     private List<Otp> otps;
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -51,7 +53,7 @@ public class SmsListener extends BroadcastReceiver implements OnCompleteListener
         if (fbUser != null && activeFamilyId != null && intent.getAction().equals("android" +
                 ".provider.Telephony" +
                 ".SMS_RECEIVED")) {
-            contextWeakReference = new WeakReference<>(context);
+
             otps = new ArrayList<>();
             String mePk = fbUser.getUid();
             Member me = ((App) context.getApplicationContext()).getDaoSession().getMemberDao()
@@ -74,48 +76,70 @@ public class SmsListener extends BroadcastReceiver implements OnCompleteListener
             if (bundle != null) {
                 //---retrieve the SMS message received---
                 String format = bundle.getString("format", null);
-                try {
-                    pdus = (Object[]) bundle.get("pdus");
+                String id;
 
-                    msgs = new SmsMessage[pdus.length];
-                    for (int i = 0; i < msgs.length; i++) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                            msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i], format);
-                        else
-                            msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
-                        smsFrom = msgs[i].getOriginatingAddress();
-                        smsBody = msgs[i].getMessageBody();
-                        //only if sms contains string "OTP"
-                        if (smsBody.contains("OTP")) {
-                            DatabaseReference otpRef = FirebaseDatabase.getInstance().getReference
-                                    ("otps").child(activeFamilyId).push();
-                            otp = new Otp();
-                            otp.setFrom(me);
-                            otp.setFromMemberId(mePk);
-                            otp.setContent(smsBody);
-                            otp.setNumber(smsFrom);
-                            otp.setTimestamp(Calendar.getInstance().getTimeInMillis());
-                            otp.setId(otpRef.getKey());
-                            otps.add(otp);
-                            otpRef.setValue(otp).addOnCompleteListener(this);
-                        }
+                pdus = (Object[]) bundle.get("pdus");
+
+                msgs = new SmsMessage[pdus.length];
+                for (int i = 0; i < msgs.length; i++) {
+                    if (format != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                        msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i], format);
+                    else
+                        msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+                    smsFrom = msgs[i].getOriginatingAddress();
+                    smsBody = msgs[i].getMessageBody();
+                    //only if sms contains string "OTP"
+                    if (smsBody.contains("OTP")) {
+                        id = FirebaseDatabase.getInstance().getReference
+                                ("otps").child(activeFamilyId).push().getKey();
+                        otp = new Otp();
+                        otp.setFrom(me);
+                        otp.setFromMemberId(mePk);
+                        otp.setContent(smsBody);
+                        otp.setNumber(smsFrom);
+                        otp.setTimestamp(Calendar.getInstance().getTimeInMillis());
+                        otp.setId(id);
+                        Log.d(TAG, otp.toString());
+                        otps.add(otp);
+
+                    } else {
+                        Log.d(TAG, "No OTP in sms");
                     }
-                } catch (Exception e) {
-                    Log.d("Exception caught", e.getMessage());
                 }
+                new InsertTask<>(((App) context.getApplicationContext()).getDaoSession()
+                        .getOtpDao())
+                        .execute(otps.toArray(new Otp[otps.size()]));
+                new PushOtpTask(activeFamilyId).execute(otps.toArray(new Otp[otps.size()
+                        ]));
             }
         }
     }
 
-    @Override
-    public void onComplete(@NonNull Task task) {
-        if (task.isSuccessful()) {
-            Context context = contextWeakReference.get();
-            if (context == null)
-                return;
-            //because this may be called multiple times
-            new InsertTask<>(((App) context.getApplicationContext()).getDaoSession().getOtpDao())
-                    .execute(otps.toArray(new Otp[otps.size()]));
+
+    private static class PushOtpTask extends AsyncTask<Otp, Void, Void> implements
+            OnCompleteListener<Void> {
+        DatabaseReference otpRef;
+
+        public PushOtpTask(String activeFamilyId) {
+            otpRef = FirebaseDatabase.getInstance().getReference
+                    ("otps").child(activeFamilyId);
+        }
+
+        @Override
+        protected Void doInBackground(Otp[] otps) {
+            DatabaseReference newOtpRef;
+            for (Otp otp : otps) {
+                newOtpRef = otpRef.push();
+                otp.setId(newOtpRef.getKey());
+                newOtpRef.setValue(otp).addOnCompleteListener(this);
+            }
+            return null;
+        }
+
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+            Log.d(TAG, "otp pushed on firebase " + (task.isSuccessful() ? "successfully" :
+                    "failed"));
         }
     }
 }

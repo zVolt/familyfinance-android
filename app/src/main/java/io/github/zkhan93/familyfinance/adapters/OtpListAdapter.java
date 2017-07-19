@@ -16,6 +16,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -104,6 +106,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
         // initial load from local db
         otps.clear();
         otps.addAll(data);
+        Collections.sort(otps, Otp.BY_TIMESTAMP);
         notifyDataSetChanged();
         otpRef.addListenerForSingleValueEvent(this);
         otpRef.addChildEventListener(this);
@@ -188,8 +191,8 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
     public void onInsertTaskComplete(List<Otp> items) {
         //initial data load callback
         otps.clear();
-        for (Otp otp : items)
-            otps.add(otp);
+        otps.addAll(items);
+        Collections.sort(otps, Otp.BY_TIMESTAMP);
         notifyDataSetChanged();
         ignoreChildEvents = false;
     }

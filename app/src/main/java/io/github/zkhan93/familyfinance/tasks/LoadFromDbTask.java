@@ -33,7 +33,7 @@ public class LoadFromDbTask<D extends AbstractDao<T, ?>, T>
         if (dao == null)
             return data;
         if (dao instanceof OtpDao)
-            data = dao.queryBuilder().orderAsc(OtpDao.Properties.Timestamp).list();
+            data = dao.queryBuilder().orderDesc(OtpDao.Properties.Timestamp).list();
         else
             data = dao.loadAll();
         return data;

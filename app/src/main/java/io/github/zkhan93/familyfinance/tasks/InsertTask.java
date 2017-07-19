@@ -12,6 +12,7 @@ import java.util.List;
 
 import io.github.zkhan93.familyfinance.events.InsertEvent;
 import io.github.zkhan93.familyfinance.models.Account;
+import io.github.zkhan93.familyfinance.models.Otp;
 
 /**
  * Inserted a given object of type T into database and triggers a EventBus event woth the
@@ -54,6 +55,9 @@ public class InsertTask<D extends AbstractDao, T> extends AsyncTask<T, Void, Lis
                 insertedItems.add(item);
             }
         }
+//        if (insertedItems.size() > 0 && insertedItems.get(0) instanceof Otp) {
+//            insertedItems.sort(Otp.BY_TIMESTAMP);
+//        }
         return insertedItems;
     }
 

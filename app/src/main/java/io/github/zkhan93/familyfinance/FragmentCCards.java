@@ -76,7 +76,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_ccards, container, false);
         ButterKnife.bind(this, rootView);
-        cCardListAdapter = new CCardListAdapter((App) getActivity().getApplication(),
+        cCardListAdapter = new CCardListAdapter((App) getActivity().getApplication(), familyId,
                 FragmentCCards.this);
         ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);

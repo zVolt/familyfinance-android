@@ -10,6 +10,7 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import org.greenrobot.greendao.annotation.Generated;
@@ -193,7 +194,7 @@ public class Otp implements Parcelable {
 
     @Generated(hash = 792587313)
     public Otp(String id, String number, String content, long timestamp,
-            String fromMemberId) {
+               String fromMemberId) {
         this.id = id;
         this.number = number;
         this.content = content;
@@ -210,6 +211,12 @@ public class Otp implements Parcelable {
         @Override
         public Otp[] newArray(int size) {
             return new Otp[size];
+        }
+    };
+    public static final Comparator<Otp> BY_TIMESTAMP = new Comparator<Otp>() {
+        @Override
+        public int compare(Otp o1, Otp o2) {
+            return Long.compare(o2.getTimestamp(), o1.getTimestamp());
         }
     };
     /**
