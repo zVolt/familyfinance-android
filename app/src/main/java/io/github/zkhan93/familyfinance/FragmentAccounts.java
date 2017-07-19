@@ -164,8 +164,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     @Override
     public void delete(Account account) {
-        //TODO: delete the Account from local database and sync the action to cloud(firebase
-        // realtime database)
         accountToDelete = account.getAccountNumber();
         String title = "You want to delete account " + account.getAccountNumber();
         DialogFragmentConfirm<Account> dialogFragmentConfirm = new DialogFragmentConfirm<>();
@@ -189,12 +187,9 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     @Override
     public void edit(Account account) {
-        //TODO: Show edit dialog for updating the Account
         Log.d(TAG, "edit: " + account.toString());
         DialogFragmentAddAccount.newInstance(familyId, account).show(getFragmentManager(),
                 DialogFragmentAddAccount.TAG);
-//        FirebaseDatabase.getInstance().getReference("accounts").child(familyId).child(account
-//                .getAccountNumber()).setValue(account);
     }
 
     /**

@@ -136,11 +136,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void delete(CCard cCard) {
-        //TODO: delete the card from local database and sync the action to cloud(firebase
-        // realtime database)
         Log.d(TAG, "delete: " + cCard.toString());
-        //TODO: delete the Account from local database and sync the action to cloud(firebase
-        // realtime database)
         cCardToDelete = cCard.getNumber();
         String title = "You want to delete account " + cCard.getNumber();
         DialogFragmentConfirm<CCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
