@@ -27,15 +27,12 @@ import io.github.zkhan93.familyfinance.util.Constants;
 public class FragmentOtps extends Fragment {
     public static final String TAG = FragmentOtps.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_FAMILY_ID = "familyId";
 
-
-//    private String mParam1;
-//    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
     private OtpListAdapter otpListAdapter;
+    private String familyId;
 
     @BindView(R.id.list)
     RecyclerView otpsList;
@@ -51,11 +48,10 @@ public class FragmentOtps extends Fragment {
      * @return A new instance of fragment FragmentOtps.
      */
 
-    public static FragmentOtps newInstance() {
+    public static FragmentOtps newInstance(String familyId) {
         FragmentOtps fragment = new FragmentOtps();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_FAMILY_ID, familyId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,8 +60,7 @@ public class FragmentOtps extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+            familyId = getArguments().getString(ARG_FAMILY_ID, null);
         }
     }
 
@@ -75,7 +70,7 @@ public class FragmentOtps extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
         ButterKnife.bind(this, rootView);
-        otpListAdapter = new OtpListAdapter((App) getActivity().getApplication());
+        otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(), familyId);
         otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         otpsList.setAdapter(otpListAdapter);
 

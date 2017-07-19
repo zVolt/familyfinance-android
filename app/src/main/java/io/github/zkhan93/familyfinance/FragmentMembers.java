@@ -1,9 +1,14 @@
 package io.github.zkhan93.familyfinance;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,6 +22,8 @@ import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 
+import static android.support.v4.content.ContextCompat.checkSelfPermission;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,7 +36,7 @@ import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 public class FragmentMembers extends Fragment implements MemberVH.ItemInteractionListener {
 
     public static final String TAG = FragmentMembers.class.getSimpleName();
-
+    public static final int PERMISSION_REQUEST_CODE = 42;
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
 //    private static final String ARG_PARAM2 = "param2";
@@ -41,8 +48,8 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
     @BindView(R.id.list)
     RecyclerView membersList;
 
+    private Member enableSmsFor;
     private MemberListAdapter memberListAdapter;
-
     private OnFragmentInteractionListener mListener;
 
     public FragmentMembers() {
@@ -108,13 +115,61 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         mListener = null;
     }
 
-
     @Override
     public void toggleSms(Member member) {
         Log.d(TAG, "toggleSms: " + member.toString());
-        member.setSmsEnabled(!member.getSmsEnabled());
-        ((App) getActivity().getApplication()).getDaoSession().getMemberDao().update(member);
-        memberListAdapter.notifyItemChanged(member);
+        boolean setEnabled = !member.getSmsEnabled();
+        enableSmsFor = member;
+        if (setEnabled) {
+            int permissionCheck = checkSelfPermission(getActivity(), Manifest
+                    .permission.RECEIVE_SMS) & checkSelfPermission(getActivity(), Manifest
+                    .permission.READ_PHONE_STATE);
+
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest
+                        .permission.RECEIVE_SMS)) {
+                    //explain the need of this permission
+                    //todo show a dialog and then on positive show request permission
+                    Log.d(TAG, "lol we need it :D");
+                    requestPermissions(new String[]{
+                            Manifest.permission.RECEIVE_SMS,Manifest.permission.READ_PHONE_STATE
+                    }, PERMISSION_REQUEST_CODE);
+
+                } else {
+                    requestPermissions(new String[]{
+                            Manifest.permission.RECEIVE_SMS,Manifest.permission.READ_PHONE_STATE
+                    }, PERMISSION_REQUEST_CODE);
+                }
+            }
+        } else {
+            member.setSmsEnabled(false);
+            ((App) getActivity().getApplication()).getDaoSession().getMemberDao().update
+                    (member);
+            memberListAdapter.notifyItemChanged(member);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 1 && grantResults[0] == PackageManager
+                        .PERMISSION_GRANTED && grantResults[1] == PackageManager
+                        .PERMISSION_GRANTED) {
+                    Log.d(TAG, "granted");
+                    //granted
+                    //todo: update firebase only
+                    enableSmsFor.setSmsEnabled(true);
+                    ((App) getActivity().getApplication()).getDaoSession().getMemberDao().update
+                            (enableSmsFor);
+                    memberListAdapter.notifyItemChanged(enableSmsFor);
+                } else {
+                    //todo: show that permission rejected hence cannot share sms
+                    Log.d(TAG, "rejected");
+                }
+                break;
+        }
     }
 
     @Override

@@ -3,12 +3,15 @@ package io.github.zkhan93.familyfinance.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.util.Date;
+
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
@@ -22,10 +25,12 @@ public class Otp implements Parcelable {
     String number, content;
     @ToOne(joinProperty = "fromMemberId")
     Member from;
-    Date timestamp;
+    long timestamp;
+    @Exclude
     private String fromMemberId;
+
     @Keep
-    public Otp(String id, String number, String content, Member from, Date timestamp) {
+    public Otp(String id, String number, String content, Member from, long timestamp) {
         this.id = id;
         this.number = number;
         this.content = content;
@@ -58,12 +63,11 @@ public class Otp implements Parcelable {
     }
 
 
-
-    public Date getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -89,7 +93,7 @@ public class Otp implements Parcelable {
         dest.writeString(this.number);
         dest.writeString(this.content);
         dest.writeParcelable(this.from, flags);
-        dest.writeLong(this.timestamp != null ? this.timestamp.getTime() : -1);
+        dest.writeLong(this.timestamp);
     }
 
     public String getFromMemberId() {
@@ -100,7 +104,9 @@ public class Otp implements Parcelable {
         this.fromMemberId = fromMemberId;
     }
 
-    /** To-one relationship, resolved on first access. */
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Generated(hash = 841990476)
     public Member getFrom() {
         String __key = this.fromMemberId;
@@ -119,7 +125,9 @@ public class Otp implements Parcelable {
         return from;
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 354503711)
     public void setFrom(Member from) {
         synchronized (this) {
@@ -180,12 +188,11 @@ public class Otp implements Parcelable {
         this.number = in.readString();
         this.content = in.readString();
         this.from = in.readParcelable(Member.class.getClassLoader());
-        long tmpTimestamp = in.readLong();
-        this.timestamp = tmpTimestamp == -1 ? null : new Date(tmpTimestamp);
+        this.timestamp = in.readLong();
     }
 
-    @Generated(hash = 343228048)
-    public Otp(String id, String number, String content, Date timestamp,
+    @Generated(hash = 792587313)
+    public Otp(String id, String number, String content, long timestamp,
             String fromMemberId) {
         this.id = id;
         this.number = number;
@@ -205,10 +212,14 @@ public class Otp implements Parcelable {
             return new Otp[size];
         }
     };
-    /** Used to resolve relations */
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 567553970)
     private transient OtpDao myDao;
     @Generated(hash = 126835137)

@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -179,17 +180,22 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     public void share(Account account) {
         //TODO: Fire a Intent with Account details as plain text
         Log.d(TAG, "share: " + account.toString());
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, account.getReadableContent());
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string
+                .action_share)));
     }
 
     @Override
     public void edit(Account account) {
         //TODO: Show edit dialog for updating the Account
         Log.d(TAG, "edit: " + account.toString());
-        account.setBank(account.getBank() + "X");
-        account.setUpdatedByMemberId(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        account.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
-        FirebaseDatabase.getInstance().getReference("accounts").child(familyId).child(account
-                .getAccountNumber()).setValue(account);
+        DialogFragmentAddAccount.newInstance(familyId, account).show(getFragmentManager(),
+                DialogFragmentAddAccount.TAG);
+//        FirebaseDatabase.getInstance().getReference("accounts").child(familyId).child(account
+//                .getAccountNumber()).setValue(account);
     }
 
     /**

@@ -2,10 +2,12 @@ package io.github.zkhan93.familyfinance;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -32,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements
         .OnFragmentInteractionListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    public String familyId = "family-01";
+    public String familyId;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -103,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -116,6 +117,16 @@ public class MainActivity extends AppCompatActivity implements
         tabLayout.setupWithViewPager(mViewPager);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        familyId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getString("activeFamilyId", null);
+        if (familyId == null) {
+            startActivity(new Intent(this, SelectFamilyActivity.class));
+            finish();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -147,6 +158,12 @@ public class MainActivity extends AppCompatActivity implements
                             }
                         });
                 return true;
+            case R.id.action_switch_family:
+                PreferenceManager.getDefaultSharedPreferences(this).edit().remove
+                        ("activeFamilyId").apply();
+                startActivity(new Intent(this, SelectFamilyActivity.class));
+                finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -159,20 +176,21 @@ public class MainActivity extends AppCompatActivity implements
                 String message;
                 switch (activePage) {
                     case PAGE_POSITION.ACCOUNTS:
-                        message = "New account dialog";
-                        DialogFragmentAddAccount.newInstance(familyId).show(getSupportFragmentManager(),
-                                DialogFragmentAddAccount.TAG);
+                        DialogFragmentAddAccount.newInstance(familyId).show
+                                (getSupportFragmentManager(),
+                                        DialogFragmentAddAccount.TAG);
                         break;
                     case PAGE_POSITION.CCARDS:
-                        message = "New Ccard dialog";
+                        DialogFragmentCcard.newInstance(familyId).show(getSupportFragmentManager
+                                (), DialogFragmentCcard.TAG);
                         break;
                     case PAGE_POSITION.MEMBERS:
-                        message = "New member dialog";
+
                         break;
                     default:
-                        message = "action not supported";
+
                 }
-                Snackbar.make(view, message, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
                 break;
             default:
                 Log.d(TAG, "action not implemented");
@@ -209,10 +227,10 @@ public class MainActivity extends AppCompatActivity implements
                     fragment = FragmentAccounts.newInstance(familyId);
                     break;
                 case 2:
-                    fragment = FragmentCCards.newInstance();
+                    fragment = FragmentCCards.newInstance(familyId);
                     break;
                 case 3:
-                    fragment = FragmentOtps.newInstance();
+                    fragment = FragmentOtps.newInstance(familyId);
                     break;
                 case 4:
                     fragment = FragmentMembers.newInstance();

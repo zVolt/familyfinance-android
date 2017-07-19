@@ -18,7 +18,8 @@
     <string name="title_otps">OTPs</string>
     <string name="title_ccards">Credit Cards</string>
     <string name="title_settings">Settings</string>
-    <string name="title_new_account">New account</string>
+    <string name="title_new_account">Add Account</string>
+    <string name="title_new_card">Add Card</string>
     <string name="title_activity_select_family">Family</string>
 
     <!--Menu Titles-->
@@ -28,17 +29,21 @@
     <string name="action_share">Share</string>
     <string name="action_delete">Delete</string>
     <string name="action_remove">Remove</string>
+    <string name="action_switch_family">Switch Family</string>
     <!--hints -->
     <string name="hint_account_name">Account\'s Name</string>
     <string name="hint_account_holder_name">Account holder\'s name</string>
     <string name="hint_account_number">Account Number</string>
 
     <string name="hint_ccard_name">Card Name</string>
+    <string name="hint_ccard_holder_name">Card Holder\'s Name</string>
     <string name="hint_ccard_number">Card Number</string>
+    <string name="hint_ccard_limit">Max Limit</string>
+    <string name="hint_ccard_consumed">Consumed Amount</string>
 
     <string name="hint_name">Name</string>
-    <string name="hint_userid">Userid</string>
-    <string name="hint_password">password</string>
+    <string name="hint_userid">User Id</string>
+    <string name="hint_password">Password</string>
     <string name="hint_bank">Bank Name</string>
     <string name="hint_ifsc">Branch IFSC Code</string>
     <string name="hint_balance">Balance</string>

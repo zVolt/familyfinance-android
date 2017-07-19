@@ -31,11 +31,11 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     public static final String TAG = FragmentCCards.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    //private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_FAMILY_ID = "familyId";
     //private static final String ARG_PARAM2 = "param2";
 
     //private String mParam1;
-    //private String mParam2;
+    private String familyId;
 
     private OnFragmentInteractionListener mListener;
     private CCardListAdapter cCardListAdapter;
@@ -53,9 +53,10 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
      *
      * @return A new instance of fragment FragmentCCards.
      */
-    public static FragmentCCards newInstance() {
+    public static FragmentCCards newInstance(String familyId) {
         FragmentCCards fragment = new FragmentCCards();
         Bundle args = new Bundle();
+        args.putString(ARG_FAMILY_ID, familyId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,6 +65,8 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            Bundle bundle = getArguments();
+            familyId = bundle.getString(ARG_FAMILY_ID, null);
         }
     }
 
@@ -125,12 +128,9 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void edit(CCard cCard) {
-        //TODO: Show edit dialog for updating a Card
-        //TODO: notify adapter about this update
         Log.d(TAG, "edit: " + cCard.toString());
-        cCard.setBank(cCard.getBank() + "X");
-        cCard.update();
-        cCardListAdapter.notifyItemChanged(cCard);
+        DialogFragmentCcard.newInstance(familyId, cCard).show(getFragmentManager(),
+                DialogFragmentAddAccount.TAG);
 
     }
 

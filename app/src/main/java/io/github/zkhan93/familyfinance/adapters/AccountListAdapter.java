@@ -59,8 +59,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.familyId = familyId;
         accountsRef = FirebaseDatabase.getInstance().getReference("accounts").child(familyId);
 
-        new LoadFromDbTask<AccountDao, Account>(app.getDaoSession().getAccountDao(), this)
-                .execute();
+        new LoadFromDbTask<>(app.getDaoSession().getAccountDao(), this).execute();
 
         this.itemInteractionListener = itemInteractionListener;
     }
@@ -128,6 +127,12 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         EventBus.getDefault().unregister(this);
     }
 
+    /**
+     * return true if this was an update else false
+     *
+     * @param newAccount
+     * @return
+     */
     private boolean addOrUpdate(Account newAccount) {
         Account oldAccount;
         ListIterator<Account> itr = accounts.listIterator();
@@ -171,11 +176,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (ignoreChildEvents) return;
         Log.d(TAG, "adapter notified about the account insertion");
         for (final Account newAccount : event.getItems()) {
-            if (!addOrUpdate(newAccount)) {
-                //items is created from UI of application
-                FirebaseDatabase.getInstance().getReference("accounts").child(familyId).child
-                        (newAccount.getAccountNumber());
-            }
+            addOrUpdate(newAccount);
         }
     }
 
@@ -239,7 +240,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 accounts.add(account);
             }
         }
-        new InsertTask<AccountDao, Account>(accountDao, this)
+        new InsertTask<>(accountDao, this)
                 .execute(accounts.toArray(new Account[accounts.size()]));
 
     }

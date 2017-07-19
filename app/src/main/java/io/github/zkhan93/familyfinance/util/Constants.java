@@ -116,7 +116,7 @@ public class Constants {
             float percentConsumed = new Random().nextFloat();
             float maxLimit = new Random().nextFloat() * 10000;
             cCard = new CCard("Card " + i, "000000" + i + "234234234", banks[i % banks.length],
-                    getRandomMember(memberDao).getName(), cal.getTime(), random.nextInt(30),
+                    getRandomMember(memberDao).getName(), cal.getTimeInMillis(), random.nextInt(30),
                     random.nextInt(30), maxLimit,
                     maxLimit *
                             percentConsumed, maxLimit * (1 - percentConsumed), member.getId());
@@ -135,7 +135,7 @@ public class Constants {
                     "printing and typesetting industry. Lorem Ipsum has been the industry's " +
                     "standard dummy text ever since the 1500s,", member,
                     Calendar
-                            .getInstance().getTime());
+                            .getInstance().getTimeInMillis());
             otp.setFromMemberId(member.getId());
             data.add(otp);
         }

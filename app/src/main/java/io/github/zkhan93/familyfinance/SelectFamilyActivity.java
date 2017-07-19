@@ -44,7 +44,7 @@ import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.viewholders.RequestVH;
 
 public class SelectFamilyActivity extends AppCompatActivity implements ValueEventListener,
-        RequestVH.ItemInteractionListener,PreferenceChangeListener {
+        RequestVH.ItemInteractionListener {
 
     public static final String TAG = SelectFamilyActivity.class.getSimpleName();
 
@@ -96,6 +96,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         requestListAdapter = new RequestListAdapter((App) getApplication(), me);
         requestList.setLayoutManager(new LinearLayoutManager(this));
         requestList.setAdapter(requestListAdapter);
+        checkActiveFamily();
     }
 
     @OnClick({R.id.start_new, R.id.join_family})
@@ -103,7 +104,6 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         message.setVisibility(View.GONE);
         switch (button.getId()) {
             case R.id.join_family:
-                //TODO: verify family id and add a request
                 familyId = edtTxtFamilyId.getText().toString().trim();
                 progressDialog.setMessage("Please wait verifying family ...");
                 progressDialog.show();
@@ -129,6 +129,11 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         EventBus.getDefault().unregister(this);
     }
 
+    /**
+     * called after user clicks on send request button in UI
+     *
+     * @param dataSnapshot
+     */
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         String moderatorId = null;
@@ -181,49 +186,56 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
 
     /**
      * Check whether I am a moderator or an approved member of this familyId
-     *
-     * @param familyId
      */
-    public void checkActiveFamily(String familyId) {
-        progressDialog.setMessage("Checking request status");
-        progressDialog.show();
+    public void checkActiveFamily() {
+        familyId = PreferenceManager.getDefaultSharedPreferences(this).getString
+                ("activeFamilyId", null);
+        Log.d(TAG, "switching to: " + familyId);
+        //if no active family is set then fail silently and let the user choose the family
         if (familyId == null)
             return;
-        //Todo: check for approved status
         requestRef.child(familyId).child(me.getId())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        progressDialog.hide();
+
                         if (!dataSnapshot.exists()) {
-                            message.setText("No such request found, Try requesting first");
+                            //invalid family Id present in preferences
+                            //TODO: delete the activeFamilyId preference
+                            Log.d(TAG,"data does not exist");
                             return;
                         }
 
                         if (dataSnapshot.hasChild("blocked")) {
                             //You just got blocked :P Lol bad
                             //remove this blocked from firebase to unblock yourself
+                            //Todo: remove activeFamilyId from preferences and show them requests
+                            // list, also they are blocked from the family
+                            Log.d(TAG, "you are blocked");
+
                         } else if (dataSnapshot.hasChild("approved")) {
                             Boolean approved = dataSnapshot.child("approved").getValue(Boolean
                                     .class);
                             if (approved == null)
                                 approved = false;
                             if (approved) {
-                                //yeee you are approved
-                                message.setText("approved");
+                                //yeee you are approved start MainActivity
+                                startActivity(new Intent(SelectFamilyActivity.this, MainActivity
+                                        .class));
+                                finish();
                             } else {
-                                //yet not approved
-                                message.setText("yet not approved");
+                                //yet not approved do nothing
+                                Log.d(TAG, "not approved yet");
                             }
-                            message.setVisibility(View.VISIBLE);
                         } else {
                             //no such request
+                            Log.d(TAG, "no such request");
                         }
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.d(TAG, "request cancelled");
                     }
                 });
     }
@@ -237,8 +249,9 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     public void setActiveFamily(FamilySetEvent familySetEvent) {
         if (!familySetEvent.getRequest().getBlocked() && familySetEvent.getRequest().getApproved
                 ()) {
-            Log.d(TAG, "change family:" + familySetEvent.getRequest().getFamilyId());
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putString("activeFamilyId",familySetEvent.getRequest().getFamilyId()).apply();
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putString
+                    ("activeFamilyId", familySetEvent.getRequest().getFamilyId()).apply();
+            checkActiveFamily();
         } else {
             toast.setText(String.format("Cannot join %s right now!", familySetEvent.getRequest()
                     .getFamilyId()));
@@ -248,11 +261,4 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
 
     }
 
-    @Override
-    public void preferenceChange(PreferenceChangeEvent evt) {
-        if(evt.getKey().equals("activeFamilyId")){
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
-    }
 }

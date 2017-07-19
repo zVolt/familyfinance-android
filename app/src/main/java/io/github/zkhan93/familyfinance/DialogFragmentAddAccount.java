@@ -15,8 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,10 +31,11 @@ import io.github.zkhan93.familyfinance.tasks.InsertTask;
  */
 
 public class DialogFragmentAddAccount extends DialogFragment implements DialogInterface
-        .OnClickListener {
+        .OnClickListener, InsertTask.Listener<Account> {
 
     public static final String TAG = DialogFragmentAddAccount.class.getSimpleName();
-    public static final String ARGS_FAMILY_ID = "familyID";
+    public static final String ARG_FAMILY_ID = "familyID";
+    public static final String ARG_ACCOUNT = "account";
 
     @BindView(R.id.account_holder)
     TextInputEditText accountHolder;
@@ -49,51 +52,22 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     @BindView(R.id.balance)
     TextInputEditText balance;
 
-    private TextWatcher accountNumberWatcher;
     private String familyId;
-
-    {
-        accountNumberWatcher = new TextWatcher() {
-            String[] segs;
-            StringBuilder strb = new StringBuilder(19);
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String str = s.toString();
-                str = str.trim().replaceAll("[- ]", "");
-                strb.setLength(0);
-                int i = 1;
-                for (char ch : str.toCharArray()) {
-                    strb.append(ch);
-                    if (i % 4 == 0)
-                        strb.append('-');
-                    i++;
-                }
-                if (strb.length() > 19)
-                    strb.delete(19, strb.length());
-                number.removeTextChangedListener(this);
-                number.setText(strb.toString());
-                number.setSelection(strb.length());
-                number.addTextChangedListener(this);
-                Log.d(TAG, strb.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        };
-    }
+    private Account account;
 
     public static DialogFragmentAddAccount newInstance(String familyId) {
         DialogFragmentAddAccount dialogFragmentAddAccount = new DialogFragmentAddAccount();
         Bundle args = new Bundle();
-        args.putString(ARGS_FAMILY_ID, familyId);
+        args.putString(ARG_FAMILY_ID, familyId);
+        dialogFragmentAddAccount.setArguments(args);
+        return dialogFragmentAddAccount;
+    }
+
+    public static DialogFragmentAddAccount newInstance(String familyId, Account account) {
+        DialogFragmentAddAccount dialogFragmentAddAccount = new DialogFragmentAddAccount();
+        Bundle args = new Bundle();
+        args.putString(ARG_FAMILY_ID, familyId);
+        args.putParcelable(ARG_ACCOUNT, account);
         dialogFragmentAddAccount.setArguments(args);
         return dialogFragmentAddAccount;
     }
@@ -103,7 +77,8 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         if (bundle != null) {
-            familyId = bundle.getString(ARGS_FAMILY_ID);
+            familyId = bundle.getString(ARG_FAMILY_ID);
+            account = bundle.getParcelable(ARG_ACCOUNT);
         }
     }
 
@@ -119,6 +94,15 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_account,
                 null);
         ButterKnife.bind(this, rootView);
+        if (account != null) {
+            number.setText(account.getAccountNumber());
+            accountHolder.setText(account.getAccountHolder());
+            ifsc.setText(account.getIfsc());
+            bank.setText(account.getBank());
+            balance.setText(String.valueOf(account.getBalance()));
+            userid.setText(account.getUserid());
+            password.setText(account.getPassword());
+        }
         builder.setView(rootView);
 
         return builder.create();
@@ -134,7 +118,6 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 //TODO: validate values
-
                 Account account = new Account(accountHolder.getText().toString(), bank.getText()
                         .toString
                                 (), ifsc.getText().toString(), number.getText().toString(), Float
@@ -142,15 +125,25 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
                         .getTimeInMillis(), null);
                 account.setUpdatedByMemberId(FirebaseAuth.getInstance
                         ().getCurrentUser().getUid());
-                new InsertTask<AccountDao, Account>(((App) getActivity().getApplication())
+                account.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
+
+                new InsertTask<>(((App) getActivity().getApplication())
                         .getDaoSession()
-                        .getAccountDao()).execute(account);
+                        .getAccountDao(), this).execute(account);
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
-                //TODO: teardown the view
                 break;
             default:
                 Log.d(TAG, "action not implemented/invalid action");
         }
+    }
+
+    @Override
+    public void onInsertTaskComplete(List<Account> items) {
+        if (items == null || items.size() == 0)
+            return;
+        Account account = items.get(0);
+        FirebaseDatabase.getInstance().getReference("accounts").child(familyId).child
+                (items.get(0).getAccountNumber()).setValue(account);
     }
 }

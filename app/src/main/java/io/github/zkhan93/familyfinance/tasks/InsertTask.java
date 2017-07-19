@@ -24,6 +24,7 @@ public class InsertTask<D extends AbstractDao, T> extends AsyncTask<T, Void, Lis
 
     private WeakReference<D> daoWeakReference;
     private WeakReference<Listener<T>> listenerWeakReference;
+    private boolean clean;
 
     public InsertTask(D dao) {
         daoWeakReference = new WeakReference<>(dao);
@@ -34,11 +35,18 @@ public class InsertTask<D extends AbstractDao, T> extends AsyncTask<T, Void, Lis
         listenerWeakReference = new WeakReference<>(listener);
     }
 
+    public InsertTask(D dao, Listener<T> listener, boolean cleanBeforeInsert) {
+        this(dao, listener);
+        clean = cleanBeforeInsert;
+    }
+
     @Override
     protected List<T> doInBackground(T[] params) {
         D dao = daoWeakReference.get();
         if (dao == null)
             return null;
+        if (clean)
+            dao.deleteAll();
         List<T> insertedItems = new ArrayList<>();
         for (T item : params) {
             if (item != null) {

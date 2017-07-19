@@ -3,6 +3,12 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="io.github.zkhan93.familyfinance.MainActivity">
     <item
+        android:id="@+id/action_switch_family"
+        android:icon="@drawable/ic_people_grey_50_24dp"
+        android:orderInCategory="100"
+        android:title="@string/action_switch_family"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"

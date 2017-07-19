@@ -263,10 +263,21 @@ public class Account implements Parcelable {
         this.localModifiedOn = localModifiedOn;
     }
 
+    @Keep
+    public String getReadableContent() {
+        StringBuilder strb = new StringBuilder();
+        strb.append("Account Number: ").append(getAccountNumber()).append("\n");
+        strb.append("Name: ").append(getAccountHolder()).append("\n");
+        strb.append("IFSC: ").append(getIfsc()).append("\n");
+        strb.append("Bank: ").append(getBank()).append("\n");
+        return strb.toString();
+    }
+
     @Generated(hash = 1618306691)
-    public Account(String accountNumber, String accountHolder, String bank, String ifsc, String userid,
-            String password, float balance, long updatedOn, Date localModifiedOn,
-            String updatedByMemberId) {
+    public Account(String accountNumber, String accountHolder, String bank, String ifsc, String
+            userid,
+                   String password, float balance, long updatedOn, Date localModifiedOn,
+                   String updatedByMemberId) {
         this.accountNumber = accountNumber;
         this.accountHolder = accountHolder;
         this.bank = bank;

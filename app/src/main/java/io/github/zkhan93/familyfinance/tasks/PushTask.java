@@ -62,7 +62,7 @@ public class PushTask<T> extends AsyncTask<T, Void, Void> {
             DatabaseReference cCardRef = ref.child("ccards");
             CCard ccard = (CCard) data;
             try {
-                Tasks.await(cCardRef.child(ccard.getId()).setValue(ccard));
+                Tasks.await(cCardRef.child(ccard.getNumber()).setValue(ccard));
             } catch (ExecutionException | InterruptedException ex) {
                 Log.d(TAG, "error pushing Ccard: " + ex.getLocalizedMessage());
             }
