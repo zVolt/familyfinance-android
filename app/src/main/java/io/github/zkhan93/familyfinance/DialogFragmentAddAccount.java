@@ -102,6 +102,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
             balance.setText(String.valueOf(account.getBalance()));
             userid.setText(account.getUserid());
             password.setText(account.getPassword());
+            builder.setPositiveButton(R.string.update, this);
         }
         builder.setView(rootView);
 

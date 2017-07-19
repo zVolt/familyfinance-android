@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,9 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
+import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.util.Constants;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
@@ -36,7 +43,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     //private String mParam1;
     private String familyId;
-
+    private String cCardToDelete;
     private OnFragmentInteractionListener mListener;
     private CCardListAdapter cCardListAdapter;
 
@@ -83,6 +90,20 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+        cCardListAdapter.registerForEvent();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+        cCardListAdapter.unregisterForEvent();
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             //call the function inside the interface
@@ -118,12 +139,27 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         //TODO: delete the card from local database and sync the action to cloud(firebase
         // realtime database)
         Log.d(TAG, "delete: " + cCard.toString());
+        //TODO: delete the Account from local database and sync the action to cloud(firebase
+        // realtime database)
+        cCardToDelete = cCard.getNumber();
+        String title = "You want to delete account " + cCard.getNumber();
+        DialogFragmentConfirm<CCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
+        Bundle bundle = new Bundle();
+        bundle.putString(DialogFragmentConfirm.ARGS_TITLE, title);
+        dialogFragmentConfirm.setArguments(bundle);
+        dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
+                DialogFragmentConfirm.TAG);
     }
 
     @Override
     public void share(CCard cCard) {
-        //TODO: Fire a Intent with card details as plain text
         Log.d(TAG, "share: " + cCard.toString());
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, cCard.getReadableContent());
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string
+                .action_share)));
     }
 
     @Override
@@ -131,6 +167,18 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         Log.d(TAG, "edit: " + cCard.toString());
         DialogFragmentCcard.newInstance(familyId, cCard).show(getFragmentManager(),
                 DialogFragmentAddAccount.TAG);
+    }
+
+    /**
+     * Events fired from DialogFragmentConfirm
+     */
+    @Subscribe()
+    public void deleteActiveCcardConfirmed(DeleteConfirmedEvent<CCard> event) {
+        if (cCardToDelete != null) {
+            ((App) getActivity().getApplication()).getDaoSession().getCCardDao().deleteByKey
+                    (cCardToDelete);
+            cCardListAdapter.deleteAccount(cCardToDelete);
+        }
 
     }
 

@@ -17,7 +17,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -111,6 +113,7 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
 
             userid.setText(cCard.getUserid());
             password.setText(cCard.getPassword());
+            builder.setPositiveButton(R.string.update,this);
         }
         builder.setView(rootView);
 
@@ -127,23 +130,22 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 //TODO: validate values
-                CCard cCard = new CCard();
-                cCard.setUpdatedByMemberId(FirebaseAuth.getInstance
+                CCard newCcard = new CCard();
+                newCcard.setUpdatedByMemberId(FirebaseAuth.getInstance
                         ().getCurrentUser().getUid());
-                cCard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
-                cCard.setBank(bank.getText().toString());
-                cCard.setNumber(number.getText().toString());
-                cCard.setCardholder(cardHolder.getText().toString());
-                cCard.setMaxLimit(Float.parseFloat(maxLimit.getText().toString()));
-                cCard.setConsumedLimit(Float.parseFloat(consumedLimit.getText().toString()));
-                cCard.setPaymentDay(paymentDay.getValue());
-                cCard.setBillingDay(billingDay.getValue());
-                cCard.setUserid(userid.getText().toString());
-                cCard.setPassword(password.getText().toString());
-
+                newCcard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
+                newCcard.setBank(bank.getText().toString());
+                newCcard.setNumber(number.getText().toString());
+                newCcard.setCardholder(cardHolder.getText().toString());
+                newCcard.setMaxLimit(Float.parseFloat(maxLimit.getText().toString()));
+                newCcard.setConsumedLimit(Float.parseFloat(consumedLimit.getText().toString()));
+                newCcard.setPaymentDay(paymentDay.getValue());
+                newCcard.setBillingDay(billingDay.getValue());
+                newCcard.setUserid(userid.getText().toString());
+                newCcard.setPassword(password.getText().toString());
                 new InsertTask<>(((App) getActivity().getApplication())
                         .getDaoSession()
-                        .getCCardDao(), this).execute(cCard);
+                        .getCCardDao(), this).execute(newCcard);
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
                 break;
@@ -156,9 +158,18 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
     public void onInsertTaskComplete(List<CCard> items) {
         if (items == null || items.size() == 0)
             return;
-        CCard ccard = items.get(0);
-        FirebaseDatabase.getInstance().getReference("ccards").child(familyId).child
-                (items.get(0).getNumber()).setValue(ccard);
+        CCard newCcard = items.get(0);
+        if (!newCcard.getNumber().trim().equals(cCard.getNumber().trim())) {
+            //cards id changed delete previous from firebase , different node
+            //
+            Map<String, Object> updates = new HashMap<>();
+            updates.put(newCcard.getNumber(), newCcard);
+            updates.put(cCard.getNumber(), null);//delete old card
+            FirebaseDatabase.getInstance().getReference("ccards").child(familyId).updateChildren
+                    (updates);
+        } else
+            FirebaseDatabase.getInstance().getReference("ccards").child(familyId).child
+                    (items.get(0).getNumber()).setValue(newCcard);
     }
 
 

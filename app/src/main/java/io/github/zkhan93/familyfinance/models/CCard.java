@@ -8,6 +8,7 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.greenrobot.greendao.annotation.Generated;
@@ -18,14 +19,58 @@ import org.greenrobot.greendao.DaoException;
  */
 @Entity
 public class CCard implements Parcelable {
+    public static final SimpleDateFormat EXPIRE_ON = new SimpleDateFormat("mm/yy");
     @Id
     String number;
-    String name, bank, cardholder, userid, password;
-    long updatedOn;
+    String name, bank, cardholder, userid, password, cvv;
+    long updatedOn, expireOn;
     int paymentDay, billingDay;
     @ToOne(joinProperty = "updatedByMemberId")
     Member updatedBy;
     float maxLimit, consumedLimit, remainingLimit;
+
+    public void updateFrom(CCard cCard) {
+        number = cCard.getNumber();
+        name = cCard.getName();
+        bank = cCard.getBank();
+        cardholder = cCard.getCardholder();
+        userid = cCard.getUserid();
+        password = cCard.getPassword();
+        updatedOn = cCard.getUpdatedOn();
+        paymentDay = cCard.getPaymentDay();
+        billingDay = cCard.getBillingDay();
+        maxLimit = cCard.getMaxLimit();
+        consumedLimit = cCard.getConsumedLimit();
+        cvv = cCard.getCvv();
+        expireOn = cCard.getExpireOn();
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
+    }
+
+    public long getExpireOn() {
+        return expireOn;
+    }
+
+    public void setExpireOn(long expireOn) {
+        this.expireOn = expireOn;
+    }
+
+    public String getReadableContent() {
+        StringBuilder strb = new StringBuilder();
+        strb.append("Card Holder: ").append(cardholder).append("\n")
+                .append("Number: ").append(number).append("\n")
+                .append("CVV: ").append(cvv).append("\n")
+                .append("Expire On (MM/YY): ").append(EXPIRE_ON.format(new Date(expireOn)))
+                .append("\n")
+                .append("Remaining Limit: ").append(getRemainingLimit()).append("\n");
+        return strb.toString();
+    }
 
     private String updatedByMemberId;
 
@@ -95,7 +140,7 @@ public class CCard implements Parcelable {
     }
 
     public float getRemainingLimit() {
-        return remainingLimit;
+        return maxLimit - consumedLimit;
     }
 
     public void setRemainingLimit(float remainingLimit) {
@@ -268,17 +313,21 @@ public class CCard implements Parcelable {
         this.password = password;
     }
 
-    @Generated(hash = 1829029015)
+    @Generated(hash = 1636965699)
     public CCard(String number, String name, String bank, String cardholder, String userid,
-            String password, long updatedOn, int paymentDay, int billingDay, float maxLimit,
-            float consumedLimit, float remainingLimit, String updatedByMemberId) {
+                 String password, String cvv, long updatedOn, long expireOn, int paymentDay, int
+                         billingDay,
+                 float maxLimit, float consumedLimit, float remainingLimit, String
+                         updatedByMemberId) {
         this.number = number;
         this.name = name;
         this.bank = bank;
         this.cardholder = cardholder;
         this.userid = userid;
         this.password = password;
+        this.cvv = cvv;
         this.updatedOn = updatedOn;
+        this.expireOn = expireOn;
         this.paymentDay = paymentDay;
         this.billingDay = billingDay;
         this.maxLimit = maxLimit;
@@ -300,7 +349,9 @@ public class CCard implements Parcelable {
         dest.writeString(this.cardholder);
         dest.writeString(this.userid);
         dest.writeString(this.password);
+        dest.writeString(this.cvv);
         dest.writeLong(this.updatedOn);
+        dest.writeLong(this.expireOn);
         dest.writeInt(this.paymentDay);
         dest.writeInt(this.billingDay);
         dest.writeParcelable(this.updatedBy, flags);
@@ -324,7 +375,9 @@ public class CCard implements Parcelable {
         this.cardholder = in.readString();
         this.userid = in.readString();
         this.password = in.readString();
+        this.cvv = in.readString();
         this.updatedOn = in.readLong();
+        this.expireOn = in.readLong();
         this.paymentDay = in.readInt();
         this.billingDay = in.readInt();
         this.updatedBy = in.readParcelable(Member.class.getClassLoader());
@@ -332,7 +385,6 @@ public class CCard implements Parcelable {
         this.consumedLimit = in.readFloat();
         this.remainingLimit = in.readFloat();
         this.updatedByMemberId = in.readString();
-        long tmpLocalModifiedOn = in.readLong();
     }
 
     public static final Creator<CCard> CREATOR = new Creator<CCard>() {

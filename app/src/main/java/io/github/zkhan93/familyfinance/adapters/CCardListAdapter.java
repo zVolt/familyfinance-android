@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -11,11 +12,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.events.InsertEvent;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
@@ -39,7 +45,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
     public CCardListAdapter(App app, String familyId, CCardVH.ItemInteractionListener
             itemInteractionListener) {
         cCardDao = app.getDaoSession().getCCardDao();
-        this.ccards = ccards == null ? new ArrayList<CCard>() : ccards;
+        this.ccards = new ArrayList<>();
         this.itemInteractionListener = itemInteractionListener;
         this.familyId = familyId;
         ccardRef = FirebaseDatabase.getInstance().getReference("ccards").child(familyId);
@@ -65,6 +71,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
 
     @Override
     public void onLoadTaskComplete(List<CCard> data) {
+        Log.d(TAG, "loaded: " + data.toString());
         ccards.clear();
         ccards.addAll(data);
         notifyDataSetChanged();
@@ -72,19 +79,57 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         ccardRef.addChildEventListener(this);
     }
 
-    public void notifyItemChanged(CCard _ccard) {
+    public boolean addOrUpdate(CCard newCcard) {
         int position = 0;
         boolean found = false;
-        for (CCard ccard : ccards) {
-            if (ccard.getNumber().trim().equals(_ccard.getNumber().trim())) {
+        for (CCard oldCcard : ccards) {
+            if (oldCcard.getNumber().trim().equals(newCcard.getNumber().trim())) {
                 found = true;
-                ccard.update(); // fetch the item from database again
+                oldCcard.updateFrom(newCcard); // fetch the item from database again
+                oldCcard.update();
                 break;
             }
             position++;
         }
         if (found)
             notifyItemChanged(position);
+        else {
+            ccards.add(newCcard);
+            notifyItemInserted(ccards.size());
+        }
+        return found;
+    }
+
+    public void registerForEvent() {
+        EventBus.getDefault().register(this);
+    }
+
+    public void unregisterForEvent() {
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void deleteAccount(String accountNumber) {
+        ListIterator<CCard> itr = ccards.listIterator();
+        int position = 0;
+        while (itr.hasNext()) {
+            if (itr.next().getNumber().trim().equals(accountNumber.trim())) {
+                itr.remove();
+                notifyItemRemoved(position);
+                ccardRef.child(accountNumber).setValue(null);
+                break;
+            }
+            position++;
+        }
+    }
+
+    @Subscribe()
+    public void onCcardEvent(InsertEvent<CCard> insertEvent) {
+        if (insertEvent.getItems() == null)
+            return;
+        for (CCard cCard : insertEvent.getItems()) {
+            if (cCard != null)
+                addOrUpdate(cCard);
+        }
     }
 
     @Override
@@ -92,26 +137,54 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         if (ignoreChildEvent || !dataSnapshot.exists())
             return;
         CCard cCard = dataSnapshot.getValue(CCard.class);
+        if (cCard != null)
+            addOrUpdate(cCard);
     }
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+        if (!dataSnapshot.exists())
+            return;
+        CCard cCard = dataSnapshot.getValue(CCard.class);
+        if (cCard == null)
+            return;
+        addOrUpdate(cCard);
     }
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+        if (!dataSnapshot.exists())
+            return;
+        CCard cCard = dataSnapshot.getValue(CCard.class);
+        if (cCard == null)
+            return;
+        ListIterator<CCard> itr = ccards.listIterator();
+        CCard oldcCard;
+        int position = 0;
+        boolean found = false;
+        while (itr.hasNext()) {
+            oldcCard = itr.next();
+            if (oldcCard.getNumber().trim().equals(cCard.getNumber().trim())) {
+                oldcCard.delete();
+                itr.remove();
+                found = true;
+                break;
+            }
+            position++;
+        }
+        if (found) {
+            notifyItemRemoved(position);
+        }
     }
 
     @Override
     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+        //no shit givven
     }
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
-
+        Log.d(TAG, "operation cancelled" + databaseError.getMessage());
     }
 
     @Override
@@ -119,13 +192,14 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         if (!dataSnapshot.exists())
             return;
         CCard cCard;
-        List<CCard> cCards = new ArrayList<>();
+        List<CCard> ccards = new ArrayList<>();
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             cCard = ds.getValue(CCard.class);
             if (cCard != null)
                 ccards.add(cCard);
         }
-        new InsertTask<>(cCardDao, this, true).execute(cCards.toArray(new CCard[cCards.size()]));
+        Log.d(TAG, "fetched: " + ccards.toString());
+        new InsertTask<>(cCardDao, this, true).execute(ccards.toArray(new CCard[ccards.size()]));
     }
 
     @Override

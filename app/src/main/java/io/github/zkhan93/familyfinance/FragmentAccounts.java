@@ -178,7 +178,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     @Override
     public void share(Account account) {
-        //TODO: Fire a Intent with Account details as plain text
         Log.d(TAG, "share: " + account.toString());
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
@@ -202,7 +201,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
      * Events fired from DialogFragmentConfirm
      */
     @Subscribe()
-    public void deleteActiveAccount(DeleteConfirmedEvent<Account> event) {
+    public void deleteActiveAccountConfirmed(DeleteConfirmedEvent<Account> event) {
         if (accountToDelete != null) {
             ((App) getActivity().getApplication()).getDaoSession().getAccountDao().deleteByKey
                     (accountToDelete);

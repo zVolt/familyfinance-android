@@ -141,7 +141,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         while (itr.hasNext()) {
             oldAccount = itr.next();
             if (oldAccount.getAccountNumber().trim().equals(newAccount.getAccountNumber().trim())) {
-                oldAccount.updateFrom(newAccount);
+                oldAccount.updateFrom(newAccount); //copy value from new object to maintain dao connection
                 notifyItemChanged(position);
                 found = true;
                 break;
