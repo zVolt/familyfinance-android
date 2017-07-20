@@ -5,7 +5,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +32,8 @@ public class MemberVH extends RecyclerView.ViewHolder {
     ImageButton toggleSms;
     @BindView(R.id.remove)
     ImageButton remove;
+    @BindView(R.id.avatar)
+    ImageView avatar;
 
     private Member member;
     private ItemInteractionListener itemInteractionListener;
@@ -47,6 +53,9 @@ public class MemberVH extends RecyclerView.ViewHolder {
         toggleSms.setImageDrawable(ContextCompat.getDrawable(context, member.getSmsEnabled() ?
                 R.drawable
                         .ic_sms_teal_500_24dp : R.drawable.ic_sms_grey_500_24dp));
+        if (member.getProfilePic() != null && member.getProfilePic().trim().length() > 0)
+            Glide.with(context).load(member.getProfilePic()).apply(RequestOptions
+                    .circleCropTransform()).into(avatar);
     }
 
     @OnClick({R.id.remove, R.id.sms})
