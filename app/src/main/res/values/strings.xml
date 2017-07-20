@@ -39,7 +39,7 @@
     <string name="hint_ccard_holder_name">Card Holder\'s Name</string>
     <string name="hint_ccard_number">Card Number</string>
     <string name="hint_ccard_limit">Max Limit</string>
-    <string name="hint_ccard_consumed">Consumed Amount</string>
+    <string name="hint_ccard_consumed">Consumed</string>
 
     <string name="hint_name">Name</string>
     <string name="hint_userid">User Id</string>

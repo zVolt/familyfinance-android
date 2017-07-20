@@ -3,6 +3,8 @@ package io.github.zkhan93.familyfinance.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
@@ -27,7 +29,7 @@ public class CCard implements Parcelable {
     int paymentDay, billingDay;
     @ToOne(joinProperty = "updatedByMemberId")
     Member updatedBy;
-    float maxLimit, consumedLimit, remainingLimit;
+    float maxLimit, consumedLimit;
 
     public void updateFrom(CCard cCard) {
         number = cCard.getNumber();
@@ -61,6 +63,7 @@ public class CCard implements Parcelable {
         this.expireOn = expireOn;
     }
 
+    @Exclude
     public String getReadableContent() {
         StringBuilder strb = new StringBuilder();
         strb.append("Card Holder: ").append(cardholder).append("\n")
@@ -72,6 +75,7 @@ public class CCard implements Parcelable {
         return strb.toString();
     }
 
+    @Exclude
     private String updatedByMemberId;
 
     public String getName() {
@@ -139,12 +143,9 @@ public class CCard implements Parcelable {
         this.consumedLimit = consumedLimit;
     }
 
+    @Exclude
     public float getRemainingLimit() {
         return maxLimit - consumedLimit;
-    }
-
-    public void setRemainingLimit(float remainingLimit) {
-        this.remainingLimit = remainingLimit;
     }
 
     public String getFormattedNumber(char delimiter) {
@@ -174,7 +175,6 @@ public class CCard implements Parcelable {
                 ", updatedBy=" + updatedBy +
                 ", maxLimit=" + maxLimit +
                 ", consumedLimit=" + consumedLimit +
-                ", remainingLimit=" + remainingLimit +
                 ", updatedByMemberId='" + updatedByMemberId + '\'' +
                 '}';
     }
@@ -261,8 +261,7 @@ public class CCard implements Parcelable {
 
     @Keep
     public CCard(String name, String number, String bank, String cardholder, long updatedOn,
-                 int paymentDay, int billingDay, float maxLimit, float consumedLimit,
-                 float remainingLimit, String updatedByMemberId) {
+                 int paymentDay, int billingDay, float maxLimit, float consumedLimit, String updatedByMemberId) {
         this.number = number;
         this.name = name;
         this.bank = bank;
@@ -272,7 +271,6 @@ public class CCard implements Parcelable {
         this.billingDay = billingDay;
         this.maxLimit = maxLimit;
         this.consumedLimit = consumedLimit;
-        this.remainingLimit = remainingLimit;
         this.updatedByMemberId = updatedByMemberId;
     }
 
@@ -313,12 +311,10 @@ public class CCard implements Parcelable {
         this.password = password;
     }
 
-    @Generated(hash = 1636965699)
-    public CCard(String number, String name, String bank, String cardholder, String userid,
-                 String password, String cvv, long updatedOn, long expireOn, int paymentDay, int
-                         billingDay,
-                 float maxLimit, float consumedLimit, float remainingLimit, String
-                         updatedByMemberId) {
+    @Generated(hash = 1183908316)
+    public CCard(String number, String name, String bank, String cardholder, String userid, String password,
+            String cvv, long updatedOn, long expireOn, int paymentDay, int billingDay, float maxLimit,
+            float consumedLimit, String updatedByMemberId) {
         this.number = number;
         this.name = name;
         this.bank = bank;
@@ -332,7 +328,6 @@ public class CCard implements Parcelable {
         this.billingDay = billingDay;
         this.maxLimit = maxLimit;
         this.consumedLimit = consumedLimit;
-        this.remainingLimit = remainingLimit;
         this.updatedByMemberId = updatedByMemberId;
     }
 
@@ -357,7 +352,6 @@ public class CCard implements Parcelable {
         dest.writeParcelable(this.updatedBy, flags);
         dest.writeFloat(this.maxLimit);
         dest.writeFloat(this.consumedLimit);
-        dest.writeFloat(this.remainingLimit);
         dest.writeString(this.updatedByMemberId);
     }
 
@@ -383,7 +377,6 @@ public class CCard implements Parcelable {
         this.updatedBy = in.readParcelable(Member.class.getClassLoader());
         this.maxLimit = in.readFloat();
         this.consumedLimit = in.readFloat();
-        this.remainingLimit = in.readFloat();
         this.updatedByMemberId = in.readString();
     }
 

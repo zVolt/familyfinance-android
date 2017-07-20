@@ -117,9 +117,7 @@ public class Constants {
             float maxLimit = new Random().nextFloat() * 10000;
             cCard = new CCard("Card " + i, "000000" + i + "234234234", banks[i % banks.length],
                     getRandomMember(memberDao).getName(), cal.getTimeInMillis(), random.nextInt(30),
-                    random.nextInt(30), maxLimit,
-                    maxLimit *
-                            percentConsumed, maxLimit * (1 - percentConsumed), member.getId());
+                    random.nextInt(30), maxLimit, maxLimit * percentConsumed, member.getId());
             data.add(cCard);
         }
         return data;

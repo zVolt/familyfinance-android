@@ -2,21 +2,27 @@ package io.github.zkhan93.familyfinance;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +31,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
+
+import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
 
 /**
  * Created by zeeshan on 19/7/17.
@@ -35,7 +43,8 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
     public static final String TAG = DialogFragmentCcard.class.getSimpleName();
     public static final String ARG_FAMILY_ID = "familyID";
     public static final String ARG_CARD = "ccard";
-
+    @BindView(R.id.name)
+    TextInputEditText cardName;
     @BindView(R.id.card_holder)
     TextInputEditText cardHolder;
     @BindView(R.id.number)
@@ -50,14 +59,57 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
     TextInputEditText maxLimit;
     @BindView(R.id.consumed_cc_limit)
     TextInputEditText consumedLimit;
-
     @BindView(R.id.billing_day)
     NumberPicker billingDay;
     @BindView(R.id.payment_day)
     NumberPicker paymentDay;
+    @BindView(R.id.cvv)
+    EditText cvv;
+    @BindView(R.id.expires_on)
+    EditText expiresOn;
+
 
     private String familyId;
     private CCard cCard;
+    private TextWatcher expiresOnTextWatcher;
+
+    {
+        expiresOnTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String value = s.toString();
+                value = value.replace("/", "");
+                if (value.length() == 1) {
+                    int num = Integer.parseInt(value);
+                    if (num > 1)
+                        value = "1";
+                } else if (value.length() == 2) {
+                    int num = Integer.parseInt(value);
+                    if (num == 0)
+                        value = "1";
+                    else if (num > 12)
+                        value = "12";
+                }
+                if (value.length() > 2) {
+                    value = value.substring(0, 2) + "/" + value.substring(2);
+                }
+                expiresOn.removeTextChangedListener(this);
+                expiresOn.setText(value);
+                expiresOn.setSelection(value.length());
+                expiresOn.addTextChangedListener(this);
+            }
+        };
+    }
 
     public static DialogFragmentCcard newInstance(String familyId) {
         DialogFragmentCcard dialogFragmentAddAccount = new DialogFragmentCcard();
@@ -102,7 +154,9 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
         billingDay.setMaxValue(31);
         paymentDay.setMinValue(1);
         paymentDay.setMaxValue(31);
+        expiresOn.addTextChangedListener(expiresOnTextWatcher);
         if (cCard != null) {
+            cardName.setText(cCard.getName());
             bank.setText(cCard.getBank());
             number.setText(cCard.getNumber());
             cardHolder.setText(cCard.getCardholder());
@@ -110,10 +164,11 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
             consumedLimit.setText(String.valueOf(cCard.getConsumedLimit()));
             paymentDay.setValue(cCard.getPaymentDay());
             billingDay.setValue(cCard.getBillingDay());
-
+            expiresOn.setText(EXPIRE_ON.format(new Date(cCard.getExpireOn())));
+            cvv.setText(cCard.getCvv());
             userid.setText(cCard.getUserid());
             password.setText(cCard.getPassword());
-            builder.setPositiveButton(R.string.update,this);
+            builder.setPositiveButton(R.string.update, this);
         }
         builder.setView(rootView);
 
@@ -135,12 +190,19 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
                         ().getCurrentUser().getUid());
                 newCcard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
                 newCcard.setBank(bank.getText().toString());
+                newCcard.setName(cardName.getText().toString());
                 newCcard.setNumber(number.getText().toString());
                 newCcard.setCardholder(cardHolder.getText().toString());
                 newCcard.setMaxLimit(Float.parseFloat(maxLimit.getText().toString()));
                 newCcard.setConsumedLimit(Float.parseFloat(consumedLimit.getText().toString()));
                 newCcard.setPaymentDay(paymentDay.getValue());
                 newCcard.setBillingDay(billingDay.getValue());
+                newCcard.setCvv(cvv.getText().toString());
+                try {
+                    newCcard.setExpireOn(EXPIRE_ON.parse(expiresOn.getText().toString()).getTime());
+                } catch (ParseException ex) {
+                    newCcard.setExpireOn(-1);
+                }
                 newCcard.setUserid(userid.getText().toString());
                 newCcard.setPassword(password.getText().toString());
                 new InsertTask<>(((App) getActivity().getApplication())
