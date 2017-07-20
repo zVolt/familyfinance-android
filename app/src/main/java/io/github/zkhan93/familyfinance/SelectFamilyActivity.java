@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,17 +31,14 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.adapters.RequestListAdapter;
-import io.github.zkhan93.familyfinance.events.CheckRequestEvent;
-import io.github.zkhan93.familyfinance.events.DeleteRequestEvent;
-import io.github.zkhan93.familyfinance.events.FamilySetEvent;
+import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.Member;
+import io.github.zkhan93.familyfinance.models.Request;
 import io.github.zkhan93.familyfinance.viewholders.RequestVH;
 
 public class SelectFamilyActivity extends AppCompatActivity implements ValueEventListener,
@@ -56,8 +54,6 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     Button startNew;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.message)
-    TextView message;
     @BindView(R.id.requests)
     RecyclerView requestList;
 
@@ -74,17 +70,15 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_family);
         ButterKnife.bind(this);
-
         setSupportActionBar(toolbar);
-        message.setVisibility(View.GONE);
         toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
-        FirebaseUser fbUser = FirebaseAuth
-                .getInstance().getCurrentUser();
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser == null) {
             Log.d(TAG, "user not logged in ");
             Toast.makeText(getApplicationContext(), "You are not logged in", Toast
                     .LENGTH_SHORT).show();
             finish();
+            return;
         }
         me = ((App) getApplication()).getDaoSession().getMemberDao().load(fbUser.getUid());
         if (me == null)
@@ -93,18 +87,28 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         familyRef = FirebaseDatabase.getInstance().getReference("family");
         requestRef = FirebaseDatabase.getInstance().getReference("requests");
 
-        requestListAdapter = new RequestListAdapter((App) getApplication(), me);
+        requestListAdapter = new RequestListAdapter((App) getApplication(), me, this);
         requestList.setLayoutManager(new LinearLayoutManager(this));
         requestList.setAdapter(requestListAdapter);
         checkActiveFamily();
     }
 
+    private void showMessageOnSnackBar(String message) {
+        final Snackbar snackbar = Snackbar.make(toolbar, message, Snackbar.LENGTH_LONG);
+        snackbar.setAction("OK", new View
+                .OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+            }
+        }).show();
+    }
+
     @OnClick({R.id.start_new, R.id.join_family})
     public void onClick(Button button) {
-        message.setVisibility(View.GONE);
+        familyId = edtTxtFamilyId.getText().toString().trim();
         switch (button.getId()) {
             case R.id.join_family:
-                familyId = edtTxtFamilyId.getText().toString().trim();
                 progressDialog.setMessage("Please wait verifying family ...");
                 progressDialog.show();
                 familyRef.child(familyId)
@@ -112,7 +116,8 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                 Log.d(TAG, "joinFamily: " + familyId);
                 break;
             case R.id.start_new:
-                Log.d(TAG, "startNew family");
+                //todo start new from family
+                Log.d(TAG, "startNew family " + familyId);
                 break;
         }
     }
@@ -131,6 +136,8 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
 
     /**
      * called after user clicks on send request button in UI
+     * the function checks if the familyId provided in UI exists or not, if the family exists
+     * then send a request to add this user to the family
      *
      * @param dataSnapshot
      */
@@ -140,33 +147,35 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         if (dataSnapshot != null)
             moderatorId = dataSnapshot.child("moderator").child("id").getValue(String.class);
         if (moderatorId == null) {
-            message.setText("Invalid Family Id");
-            message.setTextColor(ContextCompat.getColor(this, R.color.md_red_500));
-            message.setVisibility(View.VISIBLE);
+            showMessageOnSnackBar("Invalid Family Id");
         } else {
+            if (moderatorId.equals(me.getId())) {
+                //I am the moderator of this family log me in directly
+                //passing a dummy request to pass the validation
+                switchFamily(new Request(familyId, true, false, -1, -1));
+                return;
+            }
+            //the family does exists then send a request the moderator is moderatorId
             long now = Calendar.getInstance().getTimeInMillis();
             Map<String, Object> updates = new HashMap<>();
 
             String partialNode = "requests/" + familyId + "/" + me.getId();
+            //add a request in request node for the moderator
             updates.put(partialNode + "/requestedOn", now);
-
             updates.put(partialNode + "/updatedOn", now);
             updates.put(partialNode + "/name", me.getName());
             updates.put(partialNode + "/email", me.getEmail());
             updates.put(partialNode + "/profilePic", me.getProfilePic());
 
             partialNode = "users/" + me.getId() + "/requests/" + familyId;
-            updates.put(partialNode + "/approved", false);
+            //add a request item in personal list unders users/Uid node
             updates.put(partialNode + "/familyId", familyId);
             updates.put(partialNode + "/requestedOn", now);
             updates.put(partialNode + "/updatedOn", now);
 
+
             FirebaseDatabase.getInstance().getReference().updateChildren(updates);
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putString
-                    ("requestFamilyId", familyId).apply();
-            message.setText("Request send to moderator of the family");
-            message.setTextColor(ContextCompat.getColor(this, R.color.md_green_500));
-            message.setVisibility(View.VISIBLE);
+            showMessageOnSnackBar("Request send to moderator of the family");
         }
         progressDialog.hide();
     }
@@ -176,13 +185,6 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         Log.d(TAG, "cancelled");
     }
 
-    @Override
-    public void deleteRequest(String familyId) {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("users/" + me.getId() + "/requests/" + familyId, null);
-        updates.put("requests/" + familyId + "/" + me.getId(), null);
-        FirebaseDatabase.getInstance().getReference().updateChildren(updates);
-    }
 
     /**
      * Check whether I am a moderator or an approved member of this familyId
@@ -202,7 +204,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                         if (!dataSnapshot.exists()) {
                             //invalid family Id present in preferences
                             //TODO: delete the activeFamilyId preference
-                            Log.d(TAG,"data does not exist");
+                            Log.d(TAG, "data does not exist");
                             return;
                         }
 
@@ -236,29 +238,45 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         Log.d(TAG, "request cancelled");
+                        progressDialog.hide();
                     }
                 });
     }
 
-    @Subscribe
-    public void deleteRequest(DeleteRequestEvent deleteRequestEvent) {
-        deleteRequest(deleteRequestEvent.getFamilyId());
+    @Override
+    public void deleteRequest(Request request) {
+        DialogFragmentConfirm<Request> dialogFragmentConfirm = new DialogFragmentConfirm<>();
+        Bundle args = new Bundle();
+        args.putString(DialogFragmentConfirm.ARG_TITLE, "Do you want to revoke request from " +
+                request.getFamilyId());
+        args.putParcelable(DialogFragmentConfirm.ARG_ITEM, request);
+        dialogFragmentConfirm.setArguments(args);
+        dialogFragmentConfirm.show(getSupportFragmentManager(), DialogFragmentConfirm.TAG);
     }
 
-    @Subscribe
-    public void setActiveFamily(FamilySetEvent familySetEvent) {
-        if (!familySetEvent.getRequest().getBlocked() && familySetEvent.getRequest().getApproved
-                ()) {
+    @Override
+    public void switchFamily(Request request) {
+        if (!request.getBlocked() && request.getApproved()) {
             PreferenceManager.getDefaultSharedPreferences(this).edit().putString
-                    ("activeFamilyId", familySetEvent.getRequest().getFamilyId()).apply();
+                    ("activeFamilyId", request.getFamilyId()).apply();
             checkActiveFamily();
         } else {
-            toast.setText(String.format("Cannot join %s right now!", familySetEvent.getRequest()
-                    .getFamilyId()));
+            toast.setText(String.format("Cannot join %s right now!", request.getFamilyId()));
             toast.show();
             Log.d(TAG, "cannot join");
         }
+    }
 
+    @Subscribe()
+    public void confirmRequestDelete(DeleteConfirmedEvent<Request> deleteConfirmedEvent) {
+        String familyId = deleteConfirmedEvent.getItem().getFamilyId();
+        ((App) getApplication()).getDaoSession().getRequestDao().deleteByKey(deleteConfirmedEvent
+                .getItem().getFamilyId());
+        requestListAdapter.removeRequest(deleteConfirmedEvent.getItem());
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("users/" + me.getId() + "/requests/" + familyId, null);
+        updates.put("requests/" + familyId + "/" + me.getId(), null);
+        FirebaseDatabase.getInstance().getReference().updateChildren(updates);
     }
 
 }

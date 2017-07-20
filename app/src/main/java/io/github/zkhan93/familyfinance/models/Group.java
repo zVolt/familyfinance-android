@@ -11,7 +11,7 @@ import org.greenrobot.greendao.annotation.Generated;
  * Created by zeeshan on 13/7/17.
  */
 @Entity
-public class Group implements Parcelable {
+public class Group extends BaseModel{
     String name;
 
     @Id

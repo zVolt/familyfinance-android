@@ -14,11 +14,13 @@ import org.greenrobot.greendao.annotation.ToOne;
 
 import java.util.Date;
 
+import io.github.zkhan93.familyfinance.events.BaseEvent;
+
 /**
  * Created by zeeshan on 7/7/17.
  */
 @Entity
-public class Account implements Parcelable {
+public class Account extends BaseModel {
     @Id
     String accountNumber;
     String accountHolder, bank, ifsc, userid, password;

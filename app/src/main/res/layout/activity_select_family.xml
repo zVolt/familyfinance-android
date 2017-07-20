@@ -27,84 +27,66 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="io.github.zkhan93.familyfinance.SelectFamilyActivity">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:context="io.github.zkhan93.familyfinance.SelectFamilyActivity">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/message"
-                style="@style/TextAppearance.AppCompat.Title"
+                style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="start"
                 android:padding="5dp"
-                android:visibility="gone"
+                android:text="Enter the unique family ID to join"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="this is something happed"
-                tools:textColor="@color/md_light_green_500"/>
+                app:layout_constraintTop_toTopOf="parent"/>
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/textInputLayout"
+            <EditText
+                android:id="@+id/family_id"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
+                android:hint="@string/hint_family_id"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/message">
+                app:layout_constraintTop_toBottomOf="@+id/message"/>
 
-                <EditText
-                    android:id="@+id/family_id"
-                    android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/linear1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/family_id">
+
+                <Button
+                    android:id="@+id/join_family"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="@string/hint_family_id"/>
-            </android.support.design.widget.TextInputLayout>
+                    android:layout_weight="1"
+                    android:text="@string/send_request"/>
 
-            <Button
-                android:id="@+id/join_family"
-                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/send_request"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout"/>
-
-            <TextView
-                android:id="@+id/text"
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/or"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/join_family"/>
-
-            <Button
-                android:id="@+id/start_new"
-                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/start_new_family"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text"/>
+                <Button
+                    android:id="@+id/start_new"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/start_new_family"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/requests_header"
@@ -114,10 +96,10 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:text="@string/requests"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/start_new"
-                android:text="@string/requests"/>
+                app:layout_constraintTop_toBottomOf="@+id/linear1"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/requests"

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,9 +19,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -168,7 +164,8 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         String title = "You want to delete account " + account.getAccountNumber();
         DialogFragmentConfirm<Account> dialogFragmentConfirm = new DialogFragmentConfirm<>();
         Bundle bundle = new Bundle();
-        bundle.putString(DialogFragmentConfirm.ARGS_TITLE, title);
+        bundle.putString(DialogFragmentConfirm.ARG_TITLE, title);
+        bundle.putParcelable(DialogFragmentConfirm.ARG_ITEM, account);
         dialogFragmentConfirm.setArguments(bundle);
         dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
                 DialogFragmentConfirm.TAG);
@@ -197,10 +194,10 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
      */
     @Subscribe()
     public void deleteActiveAccountConfirmed(DeleteConfirmedEvent<Account> event) {
-        if (accountToDelete != null) {
+        if (event.getItem() != null) {
             ((App) getActivity().getApplication()).getDaoSession().getAccountDao().deleteByKey
-                    (accountToDelete);
-            accountListAdapter.deleteAccount(accountToDelete);
+                    (event.getItem().getAccountNumber());
+            accountListAdapter.deleteAccount(event.getItem().getAccountNumber());
         }
 
     }

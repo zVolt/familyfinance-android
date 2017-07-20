@@ -15,7 +15,7 @@ import java.util.List;
  * Created by zeeshan on 7/7/17.
  */
 @Entity
-public class Member implements Parcelable {
+public class Member extends BaseModel{
     @Id
     String id;
     String name, email;

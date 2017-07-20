@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,15 +38,10 @@ public class LoginActivity extends AppCompatActivity {
     public static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 123;
 
-    @BindView(R.id.signin)
-    Button SignIn;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
-
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
             FirebaseUser user = auth.getCurrentUser();
@@ -58,23 +54,16 @@ public class LoginActivity extends AppCompatActivity {
             startMainActivity();
             finish();
         } else
-            Log.d(TAG, "not already logged in");
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @OnClick(R.id.signin)
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.signin:
-                startActivityForResult(
-                        // Get an instance of AuthUI based on the default app
-                        AuthUI.getInstance().createSignInIntentBuilder().build(), RC_SIGN_IN);
-                break;
-        }
+            startActivityForResult(
+                    // Get an instance of AuthUI based on the default app
+                    AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders
+                            (Arrays.asList(
+                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
+                            ))
+                            .setLogo(R.mipmap.ic_launcher)
+                            .setTosUrl("http://google.com")
+                            .setTheme(R.style.AppTheme_NoActionBar)
+                            .build(), RC_SIGN_IN);
     }
 
     private void startMainActivity() {
@@ -110,8 +99,13 @@ public class LoginActivity extends AppCompatActivity {
                             .getPhotoUrl().toString());
                     ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
                     Map<String, Object> updates = new HashMap<>();
-                    updates.put("users/" + user.getUid(), member);
-                    updates.put("users/" + user.getUid() + "/token", FirebaseInstanceId
+                    String prefix = "users/" + user.getUid() + "/";
+                    updates.put(prefix + "name", member.getName());
+                    updates.put(prefix + "id", member.getId());
+                    updates.put(prefix + "email", member.getEmail());
+                    updates.put(prefix + "profilePic", member.getProfilePic());
+                    updates.put(prefix + "smsEnabled", member.getSmsEnabled());
+                    updates.put(prefix + "token", FirebaseInstanceId
                             .getInstance().getToken());
                     FirebaseDatabase.getInstance().getReference().updateChildren(updates)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -128,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
                             });
                 } else {
                     // cannot get user's data
+                    Log.d(TAG, "no data");
                 }
                 return;
             } else {
@@ -136,6 +131,7 @@ public class LoginActivity extends AppCompatActivity {
                     // User pressed back button
 //                    showSnackbar(R.string.sign_in_cancelled);
                     Log.d(TAG, "User pressed back button");
+                    finish();
                     return;
                 }
 

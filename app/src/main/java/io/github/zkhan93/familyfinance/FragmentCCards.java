@@ -12,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.database.FirebaseDatabase;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -22,7 +20,6 @@ import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.CCard;
-import io.github.zkhan93.familyfinance.util.Constants;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
 
@@ -141,7 +138,8 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         String title = "You want to delete account " + cCard.getNumber();
         DialogFragmentConfirm<CCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
         Bundle bundle = new Bundle();
-        bundle.putString(DialogFragmentConfirm.ARGS_TITLE, title);
+        bundle.putString(DialogFragmentConfirm.ARG_TITLE, title);
+        bundle.putParcelable(DialogFragmentConfirm.ARG_ITEM, cCard);
         dialogFragmentConfirm.setArguments(bundle);
         dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
                 DialogFragmentConfirm.TAG);
@@ -170,10 +168,10 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
      */
     @Subscribe()
     public void deleteActiveCcardConfirmed(DeleteConfirmedEvent<CCard> event) {
-        if (cCardToDelete != null) {
+        if (event.getItem() != null) {
             ((App) getActivity().getApplication()).getDaoSession().getCCardDao().deleteByKey
-                    (cCardToDelete);
-            cCardListAdapter.deleteAccount(cCardToDelete);
+                    (event.getItem().getNumber());
+            cCardListAdapter.deleteCcard(event.getItem().getNumber());
         }
 
     }

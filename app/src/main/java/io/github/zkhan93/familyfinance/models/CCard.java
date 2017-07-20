@@ -20,7 +20,7 @@ import org.greenrobot.greendao.DaoException;
  * Created by zeeshan on 7/7/17.
  */
 @Entity
-public class CCard implements Parcelable {
+public class CCard extends BaseModel {
     public static final SimpleDateFormat EXPIRE_ON = new SimpleDateFormat("mm/yy");
     @Id
     String number;

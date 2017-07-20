@@ -2,23 +2,17 @@ package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.greenrobot.eventbus.EventBus;
-
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.events.DeleteRequestEvent;
-import io.github.zkhan93.familyfinance.events.FamilySetEvent;
 import io.github.zkhan93.familyfinance.models.Request;
 
 /**
@@ -39,7 +33,7 @@ public class RequestVH extends RecyclerView.ViewHolder implements View.OnClickLi
     ImageButton delete;
 
     private Request request;
-    private WeakReference<ItemInteractionListener> itemInteractionListenerWeakReference;
+    private ItemInteractionListener itemInteractionListener;
     private Toast toast;
 
     public RequestVH(View itemView) {
@@ -53,8 +47,7 @@ public class RequestVH extends RecyclerView.ViewHolder implements View.OnClickLi
 
     public RequestVH(View itemView, ItemInteractionListener itemInteractionListener) {
         this(itemView);
-        itemInteractionListenerWeakReference = new WeakReference<>
-                (itemInteractionListener);
+        this.itemInteractionListener = itemInteractionListener;
     }
 
     public void setRequest(Request request) {
@@ -65,29 +58,20 @@ public class RequestVH extends RecyclerView.ViewHolder implements View.OnClickLi
         timestamp.setText(DATE_FORMAT.format(new Date(request.getUpdatedOn())));
     }
 
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.delete:
-                if (itemInteractionListenerWeakReference == null)
-                    EventBus.getDefault().post(new DeleteRequestEvent(familyId.getText().toString()
-                            .trim()));
-                else {
-                    ItemInteractionListener itemInteractionListener =
-                            itemInteractionListenerWeakReference.get();
-                    if (itemInteractionListener == null)
-                        return;
-                    itemInteractionListener.deleteRequest(familyId.getText().toString().trim());
-                }
+                itemInteractionListener.deleteRequest(request);
                 break;
             default:
-                Log.d(TAG,"request clicked");
-
-                    EventBus.getDefault().post(new FamilySetEvent(request));
-
+                itemInteractionListener.switchFamily(request);
         }
     }
 
     public interface ItemInteractionListener {
-        void deleteRequest(String familyId);
+        void deleteRequest(Request request);
+
+        void switchFamily(Request request);
     }
 }

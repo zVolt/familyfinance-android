@@ -20,7 +20,7 @@ import org.greenrobot.greendao.DaoException;
  * Created by zeeshan on 7/7/17.
  */
 @Entity
-public class Otp implements Parcelable {
+public class Otp extends BaseModel{
     @Id
     String id;
     String number, content;

@@ -1,17 +1,16 @@
 package io.github.zkhan93.familyfinance.models;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 
 /**
  * Created by zeeshan on 16/7/17.
  */
 @Entity
-public class Request implements Parcelable {
+public class Request extends BaseModel{
     @Id
     String familyId;
     boolean approved;

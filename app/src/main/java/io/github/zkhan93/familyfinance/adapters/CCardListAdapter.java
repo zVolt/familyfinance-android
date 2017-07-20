@@ -71,7 +71,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
 
     @Override
     public void onLoadTaskComplete(List<CCard> data) {
-        Log.d(TAG, "loaded: " + data.toString());
+//        Log.d(TAG, "loaded: " + data.toString());
         ccards.clear();
         ccards.addAll(data);
         notifyDataSetChanged();
@@ -108,7 +108,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         EventBus.getDefault().unregister(this);
     }
 
-    public void deleteAccount(String accountNumber) {
+    public void deleteCcard(String accountNumber) {
         ListIterator<CCard> itr = ccards.listIterator();
         int position = 0;
         while (itr.hasNext()) {
@@ -198,7 +198,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
             if (cCard != null)
                 ccards.add(cCard);
         }
-        Log.d(TAG, "fetched: " + ccards.toString());
+//        Log.d(TAG, "fetched: " + ccards.toString());
         new InsertTask<>(cCardDao, this, true).execute(ccards.toArray(new CCard[ccards.size()]));
     }
 

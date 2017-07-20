@@ -10,15 +10,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.events.DeleteRequestEvent;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.Request;
 import io.github.zkhan93.familyfinance.models.RequestDao;
@@ -32,15 +29,18 @@ import io.github.zkhan93.familyfinance.viewholders.RequestVH;
 
 public class RequestListAdapter extends RecyclerView.Adapter<RequestVH> implements InsertTask
         .Listener<Request>, LoadFromDbTask.Listener<Request>,
-        ChildEventListener, ValueEventListener, RequestVH.ItemInteractionListener {
+        ChildEventListener, ValueEventListener {
     public static String TAG = RequestListAdapter.class.getSimpleName();
     private List<Request> requests;
     private Member me;
     private boolean ignoreChildAddedCalls;
     private RequestDao requestDao;
+    private RequestVH.ItemInteractionListener itemInteractionListener;
 
-    public RequestListAdapter(App app, Member me) {
+    public RequestListAdapter(App app, Member me, RequestVH.ItemInteractionListener
+            itemInteractionListener) {
         this.me = me;
+        this.itemInteractionListener = itemInteractionListener;
         ignoreChildAddedCalls = true;
         this.requests = new ArrayList<>();
         requestDao = app.getDaoSession().getRequestDao();
@@ -50,7 +50,7 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestVH> implemen
     @Override
     public RequestVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new RequestVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_requests, parent, false), this);
+                .listitem_requests, parent, false), itemInteractionListener);
     }
 
     @Override
@@ -95,17 +95,19 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestVH> implemen
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        if (!dataSnapshot.exists()) return;
         Request request = dataSnapshot.getValue(Request.class);
+        if (request == null) return;
         request.setFamilyId(dataSnapshot.getKey());
         addOrUpdate(request);
     }
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
+        if (!dataSnapshot.exists()) return;
         Request request = dataSnapshot.getValue(Request.class);
+        if (request == null) return;
         request.setFamilyId(dataSnapshot.getKey());
-        if (request == null)
-            return;
         ListIterator<Request> itr = requests.listIterator();
         Request req;
         int position = 0;
@@ -138,6 +140,7 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestVH> implemen
             Boolean value;
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                 request = ds.getValue(Request.class);
+                if (request == null) continue;
 
                 value = ds.child("approved").getValue(Boolean.class);
                 if (value == null) value = false;
@@ -176,23 +179,20 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestVH> implemen
                 ("requests").addChildEventListener(this);
     }
 
-    @Override
-    public void deleteRequest(String familyId) {
-        //delete from local database
-        requestDao.deleteByKey(familyId);
+
+    public void removeRequest(Request request) {
         //remove from current UI list
         ListIterator<Request> itr = requests.listIterator();
-        Request request;
+        Request _request;
         int position = 0;
         while (itr.hasNext()) {
-            request = itr.next();
-            if (request.getFamilyId().trim().equals(familyId.trim())) {
+            _request = itr.next();
+            if (_request.getFamilyId().trim().equals(request.getFamilyId().trim())) {
                 itr.remove();
                 notifyItemRemoved(position);
+                break;
             }
             position++;
         }
-        //trigger event so that the listener deletes it from firebase
-        EventBus.getDefault().post(new DeleteRequestEvent(familyId.trim()));
     }
 }

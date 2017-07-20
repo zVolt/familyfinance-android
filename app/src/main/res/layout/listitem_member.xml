@@ -8,6 +8,7 @@
               android:layout_marginStart="16dp"
               android:layout_marginTop="8dp"
               android:gravity="center"
+              android:minHeight="72dp"
               android:orientation="horizontal">
 
     <ImageView

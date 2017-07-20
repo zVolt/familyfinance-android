@@ -9,7 +9,7 @@ import io.github.zkhan93.familyfinance.models.Account;
  * Created by zeeshan on 13/7/17.
  */
 
-public class InsertEvent<T> {
+public class InsertEvent<T> extends BaseEvent {
     private List<T> items;
 
     public InsertEvent() {

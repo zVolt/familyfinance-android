@@ -1,8 +1,10 @@
 package io.github.zkhan93.familyfinance;
 
 import android.app.Application;
+import android.os.Build;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -23,9 +25,12 @@ public class App extends Application {
         super.onCreate();
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        if (BuildConfig.DEBUG)
+            FirebaseDatabase.getInstance().setLogLevel(Logger.Level.DEBUG);
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, ENCRYPTED ?
                 "ff-db-encrypted" : "ff-db");
-        Database db = ENCRYPTED ? helper.getEncryptedWritableDb("super-secret") : helper.getWritableDb();
+        Database db = ENCRYPTED ? helper.getEncryptedWritableDb("super-secret") : helper
+                .getWritableDb();
         daoSession = new DaoMaster(db).newSession();
         Constants.generateDummyData(this);
     }
