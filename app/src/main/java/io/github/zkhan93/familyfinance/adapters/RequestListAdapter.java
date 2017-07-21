@@ -50,7 +50,7 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestVH> implemen
     @Override
     public RequestVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new RequestVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_requests, parent, false), itemInteractionListener);
+                .listitem_family_request, parent, false), itemInteractionListener);
     }
 
     @Override

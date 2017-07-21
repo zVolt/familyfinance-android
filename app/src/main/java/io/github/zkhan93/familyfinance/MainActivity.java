@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements
                                 (), DialogFragmentCcard.TAG);
                         break;
                     case PAGE_POSITION.MEMBERS:
-
+                        startActivity(new Intent(this, AddMemberActivity.class));
                         break;
                     default:
 
