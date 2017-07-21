@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.greendao.query.DeleteQuery;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -38,14 +37,16 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.github.zkhan93.familyfinance.adapters.RequestListAdapter;
+import io.github.zkhan93.familyfinance.adapters.SendRequestListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.Request;
-import io.github.zkhan93.familyfinance.viewholders.RequestVH;
+import io.github.zkhan93.familyfinance.models.RequestDao;
+import io.github.zkhan93.familyfinance.tasks.DeleteTask;
+import io.github.zkhan93.familyfinance.viewholders.SendRequestVH;
 
 public class SelectFamilyActivity extends AppCompatActivity implements ValueEventListener,
-        RequestVH.ItemInteractionListener {
+        SendRequestVH.ItemInteractionListener {
 
     public static final String TAG = SelectFamilyActivity.class.getSimpleName();
 
@@ -68,7 +69,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     private DatabaseReference requestRef;
     private String familyId;
     private Member me;
-    private RequestListAdapter requestListAdapter;
+    private SendRequestListAdapter sendRequestListAdapter;
     private Toast toast;
 
     @Override
@@ -93,9 +94,9 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         familyRef = FirebaseDatabase.getInstance().getReference("family");
         requestRef = FirebaseDatabase.getInstance().getReference("requests");
 
-        requestListAdapter = new RequestListAdapter((App) getApplication(), me, this);
+        sendRequestListAdapter = new SendRequestListAdapter((App) getApplication(), me, this);
         requestList.setLayoutManager(new LinearLayoutManager(this));
-        requestList.setAdapter(requestListAdapter);
+        requestList.setAdapter(sendRequestListAdapter);
         checkActiveFamily();
     }
 
@@ -311,9 +312,14 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     @Subscribe()
     public void confirmRequestDelete(DeleteConfirmedEvent<Request> deleteConfirmedEvent) {
         String familyId = deleteConfirmedEvent.getItem().getFamilyId();
-        ((App) getApplication()).getDaoSession().getRequestDao().deleteByKey(deleteConfirmedEvent
-                .getItem().getFamilyId());
-        requestListAdapter.removeRequest(deleteConfirmedEvent.getItem());
+        //remove the item from firebase this will trigger the remove mechanism coded in adapter
+//        DeleteQuery<Request> deleteQuery =
+//                ((App) getApplication()).getDaoSession().getRequestDao().queryBuilder().where
+//                        (RequestDao
+//                        .Properties.UserId.eq(me.getId()), RequestDao.Properties.FamilyId.eq
+//                                (familyId)).buildDelete();
+//        new DeleteTask<>(deleteQuery).execute();
+//        sendRequestListAdapter.removeRequest(deleteConfirmedEvent.getItem());
         Map<String, Object> updates = new HashMap<>();
         updates.put("users/" + me.getId() + "/requests/" + familyId, null);
         updates.put("requests/" + familyId + "/" + me.getId(), null);

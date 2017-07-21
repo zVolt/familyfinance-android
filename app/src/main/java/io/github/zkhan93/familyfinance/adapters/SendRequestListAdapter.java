@@ -10,6 +10,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.greenrobot.greendao.query.Query;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -21,40 +23,44 @@ import io.github.zkhan93.familyfinance.models.Request;
 import io.github.zkhan93.familyfinance.models.RequestDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
-import io.github.zkhan93.familyfinance.viewholders.RequestVH;
+import io.github.zkhan93.familyfinance.viewholders.SendRequestVH;
 
 /**
  * Created by zeeshan on 16/7/17.
  */
 
-public class RequestListAdapter extends RecyclerView.Adapter<RequestVH> implements InsertTask
-        .Listener<Request>, LoadFromDbTask.Listener<Request>,
+public class SendRequestListAdapter extends RecyclerView.Adapter<SendRequestVH> implements
+        InsertTask
+                .Listener<Request>, LoadFromDbTask.Listener<Request>,
         ChildEventListener, ValueEventListener {
-    public static String TAG = RequestListAdapter.class.getSimpleName();
+    public static String TAG = SendRequestListAdapter.class.getSimpleName();
     private List<Request> requests;
     private Member me;
     private boolean ignoreChildAddedCalls;
     private RequestDao requestDao;
-    private RequestVH.ItemInteractionListener itemInteractionListener;
 
-    public RequestListAdapter(App app, Member me, RequestVH.ItemInteractionListener
+    private SendRequestVH.ItemInteractionListener itemInteractionListener;
+
+    public SendRequestListAdapter(App app, Member me, SendRequestVH.ItemInteractionListener
             itemInteractionListener) {
         this.me = me;
         this.itemInteractionListener = itemInteractionListener;
         ignoreChildAddedCalls = true;
         this.requests = new ArrayList<>();
         requestDao = app.getDaoSession().getRequestDao();
-        new LoadFromDbTask<>(requestDao, this).execute();
+        Query<Request> query = requestDao.queryBuilder().where(RequestDao.Properties
+                .UserId.eq(me.getId())).build();
+        new LoadFromDbTask<>(query, this).execute();
     }
 
     @Override
-    public RequestVH onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new RequestVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_family_request, parent, false), itemInteractionListener);
+    public SendRequestVH onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new SendRequestVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+                .listitem_send_request, parent, false), itemInteractionListener);
     }
 
     @Override
-    public void onBindViewHolder(RequestVH holder, int position) {
+    public void onBindViewHolder(SendRequestVH holder, int position) {
         holder.setRequest(requests.get(position));
     }
 

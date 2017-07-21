@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
+import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -20,14 +22,21 @@ public class LoadFromDbTask<D extends AbstractDao<T, ?>, T>
 
     private WeakReference<D> cCardDaoWeakReference;
     private WeakReference<Listener<T>> callbacksWeakReference;
+    private Query<T> query;
 
     public LoadFromDbTask(D dao, Listener<T> listener) {
         callbacksWeakReference = new WeakReference<>(listener);
         cCardDaoWeakReference = new WeakReference<>(dao);
     }
 
+    public LoadFromDbTask(Query<T> query, Listener<T> listener) {
+        callbacksWeakReference = new WeakReference<>(listener);
+        this.query = query;
+    }
+
     @Override
     protected List<T> doInBackground(Void... params) {
+        if (query != null) return query.forCurrentThread().list();
         D dao = cCardDaoWeakReference.get();
         List<T> data = new ArrayList<>();
         if (dao == null)

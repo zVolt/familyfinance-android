@@ -19,9 +19,9 @@ import io.github.zkhan93.familyfinance.models.Request;
  * Created by zeeshan on 16/7/17.
  */
 
-public class RequestVH extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class SendRequestVH extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    public static String TAG = RequestVH.class.getSimpleName();
+    public static String TAG = SendRequestVH.class.getSimpleName();
     public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM YY");
     @BindView(R.id.status)
     TextView status;
@@ -36,7 +36,7 @@ public class RequestVH extends RecyclerView.ViewHolder implements View.OnClickLi
     private ItemInteractionListener itemInteractionListener;
     private Toast toast;
 
-    public RequestVH(View itemView) {
+    public SendRequestVH(View itemView) {
         super(itemView);
         Context context = itemView.getContext();
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
@@ -45,7 +45,7 @@ public class RequestVH extends RecyclerView.ViewHolder implements View.OnClickLi
         delete.setOnClickListener(this);
     }
 
-    public RequestVH(View itemView, ItemInteractionListener itemInteractionListener) {
+    public SendRequestVH(View itemView, ItemInteractionListener itemInteractionListener) {
         this(itemView);
         this.itemInteractionListener = itemInteractionListener;
     }

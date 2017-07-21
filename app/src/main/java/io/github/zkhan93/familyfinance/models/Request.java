@@ -5,19 +5,22 @@ import android.os.Parcel;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Index;
 
 /**
  * Created by zeeshan on 16/7/17.
  */
 @Entity
-public class Request extends BaseModel{
-    @Id
-    String familyId;
+public class Request extends BaseModel {
+    @Id(autoincrement = true)
+    long id;
+    @Index
+    String familyId, userId;
     boolean approved;
     boolean blocked;
     long requestedOn;
     long updatedOn;
-    String id,email,name,profilePic;
+    String email, name, profilePic;
 
     @Override
     public String toString() {
@@ -27,7 +30,7 @@ public class Request extends BaseModel{
                 ", blocked=" + blocked +
                 ", requestedOn=" + requestedOn +
                 ", updatedOn=" + updatedOn +
-                ", id='" + id + '\'' +
+                ", userId='" + userId + '\'' +
                 ", email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", profilePic='" + profilePic + '\'' +
@@ -46,16 +49,17 @@ public class Request extends BaseModel{
     public Request() {
     }
 
-    @Generated(hash = 2080902378)
-    public Request(String familyId, boolean approved, boolean blocked,
-            long requestedOn, long updatedOn, String id, String email, String name,
-            String profilePic) {
+    @Generated(hash = 1367759548)
+    public Request(long id, String familyId, String userId, boolean approved,
+            boolean blocked, long requestedOn, long updatedOn, String email,
+            String name, String profilePic) {
+        this.id = id;
         this.familyId = familyId;
+        this.userId = userId;
         this.approved = approved;
         this.blocked = blocked;
         this.requestedOn = requestedOn;
         this.updatedOn = updatedOn;
-        this.id = id;
         this.email = email;
         this.name = name;
         this.profilePic = profilePic;
@@ -93,32 +97,6 @@ public class Request extends BaseModel{
         this.updatedOn = updatedOn;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.familyId);
-        dest.writeByte(this.approved ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.blocked ? (byte) 1 : (byte) 0);
-        dest.writeLong(this.requestedOn);
-        dest.writeLong(this.updatedOn);
-        dest.writeString(this.id);
-        dest.writeString(this.email);
-        dest.writeString(this.name);
-        dest.writeString(this.profilePic);
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getEmail() {
         return this.email;
     }
@@ -143,13 +121,47 @@ public class Request extends BaseModel{
         this.profilePic = profilePic;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.familyId);
+        dest.writeByte(this.approved ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.blocked ? (byte) 1 : (byte) 0);
+        dest.writeLong(this.requestedOn);
+        dest.writeLong(this.updatedOn);
+        dest.writeString(this.userId);
+        dest.writeString(this.email);
+        dest.writeString(this.name);
+        dest.writeString(this.profilePic);
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     protected Request(Parcel in) {
         this.familyId = in.readString();
         this.approved = in.readByte() != 0;
         this.blocked = in.readByte() != 0;
         this.requestedOn = in.readLong();
         this.updatedOn = in.readLong();
-        this.id = in.readString();
+        this.userId = in.readString();
         this.email = in.readString();
         this.name = in.readString();
         this.profilePic = in.readString();
