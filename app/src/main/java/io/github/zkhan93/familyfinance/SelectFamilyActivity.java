@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -58,6 +61,9 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     RecyclerView requestList;
 
     private ProgressDialog progressDialog;
+    /**
+     * /family
+     */
     private DatabaseReference familyRef;
     private DatabaseReference requestRef;
     private String familyId;
@@ -117,6 +123,40 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                 break;
             case R.id.start_new:
                 //todo start new from family
+                if (familyId.length() <= 5) {
+                    showMessageOnSnackBar("At least 5 characters are required");
+                    return;
+                }
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("family/" + familyId + "/moderator", me);
+                updates.put("requests/" + familyId + "/" + me.getId() + "/approved", true);
+                updates.put("requests/" + familyId + "/" + me.getId() + "/name", me.getName());
+                updates.put("requests/" + familyId + "/" + me.getId() + "/email", me.getEmail());
+                updates.put("requests/" + familyId + "/" + me.getId() + "/profilePic", me
+                        .getProfilePic());
+                updates.put("requests/" + familyId + "/" + me.getId() + "/requestedOn", Calendar
+                        .getInstance().getTimeInMillis());
+                updates.put("requests/" + familyId + "/" + me.getId() + "/updatedOn", Calendar
+                        .getInstance().getTimeInMillis());
+
+                updates.put("users/" + me.getId() + "/requests/" + familyId + "/approved", true);
+                updates.put("users/" + me.getId() + "/requests/" + familyId + "/familyId",
+                        familyId);
+                updates.put("users/" + me.getId() + "/requests/" + familyId + "/requestedOn",
+                        Calendar.getInstance().getTimeInMillis());
+                updates.put("users/" + me.getId() + "/requests/" + familyId + "/updatedOn", Calendar
+                        .getInstance().getTimeInMillis());
+                FirebaseDatabase.getInstance().getReference().updateChildren(updates)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful())
+                                    showMessageOnSnackBar("Family created, tab the family to join");
+                                else
+                                    showMessageOnSnackBar("Family Id already taken try a another ");
+                            }
+                        });
                 Log.d(TAG, "startNew family " + familyId);
                 break;
         }
@@ -149,13 +189,8 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         if (moderatorId == null) {
             showMessageOnSnackBar("Invalid Family Id");
         } else {
-            if (moderatorId.equals(me.getId())) {
-                //I am the moderator of this family log me in directly
-                //passing a dummy request to pass the validation
-                switchFamily(new Request(familyId, true, false, -1, -1));
-                return;
-            }
-            //the family does exists then send a request the moderator is moderatorId
+            //the family does exists. Send a request to moderatorId
+            boolean isModeratorOfFamily = moderatorId.equals(me.getId());
             long now = Calendar.getInstance().getTimeInMillis();
             Map<String, Object> updates = new HashMap<>();
 
@@ -166,16 +201,22 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
             updates.put(partialNode + "/name", me.getName());
             updates.put(partialNode + "/email", me.getEmail());
             updates.put(partialNode + "/profilePic", me.getProfilePic());
+            //auto approve if I am the moderator
+            if (isModeratorOfFamily) updates.put(partialNode + "/approved", true);
 
             partialNode = "users/" + me.getId() + "/requests/" + familyId;
+
             //add a request item in personal list unders users/Uid node
             updates.put(partialNode + "/familyId", familyId);
             updates.put(partialNode + "/requestedOn", now);
             updates.put(partialNode + "/updatedOn", now);
-
+            //auto approve if I am the moderator
+            if (isModeratorOfFamily) updates.put(partialNode + "/approved", true);
 
             FirebaseDatabase.getInstance().getReference().updateChildren(updates);
-            showMessageOnSnackBar("Request send to moderator of the family");
+
+            showMessageOnSnackBar(isModeratorOfFamily ? "Request approved, tap the family to " +
+                    "join" : "Request send to moderator of the family");
         }
         progressDialog.hide();
     }
