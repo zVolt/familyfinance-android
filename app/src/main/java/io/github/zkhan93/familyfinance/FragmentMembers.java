@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -38,12 +37,10 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
     public static final String TAG = FragmentMembers.class.getSimpleName();
     public static final int PERMISSION_REQUEST_CODE = 42;
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_FAMILY_ID = "familyId";
 
 
-//    private String mParam1;
-//    private String mParam2;
+    private String familyId;
 
     @BindView(R.id.list)
     RecyclerView membersList;
@@ -63,10 +60,10 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
      * @return A new instance of fragment FragmentMembers.
      */
 
-    public static FragmentMembers newInstance() {
+    public static FragmentMembers newInstance(String familyId) {
         FragmentMembers fragment = new FragmentMembers();
         Bundle args = new Bundle();
-
+        args.putString(ARG_FAMILY_ID, familyId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,7 +72,8 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            Bundle args = getArguments();
+            familyId = args.getString(ARG_FAMILY_ID, null);
         }
     }
 
@@ -85,7 +83,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_members, container, false);
         ButterKnife.bind(this, rootView);
-        memberListAdapter = new MemberListAdapter((App) getActivity().getApplication(), this);
+        memberListAdapter = new MemberListAdapter((App) getActivity().getApplication(),familyId, this);
         membersList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         membersList.setAdapter(memberListAdapter);
@@ -132,12 +130,12 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
                     //todo show a dialog and then on positive show request permission
                     Log.d(TAG, "lol we need it :D");
                     requestPermissions(new String[]{
-                            Manifest.permission.RECEIVE_SMS,Manifest.permission.READ_PHONE_STATE
+                            Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_PHONE_STATE
                     }, PERMISSION_REQUEST_CODE);
 
                 } else {
                     requestPermissions(new String[]{
-                            Manifest.permission.RECEIVE_SMS,Manifest.permission.READ_PHONE_STATE
+                            Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_PHONE_STATE
                     }, PERMISSION_REQUEST_CODE);
                 }
             }
@@ -145,7 +143,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
             member.setSmsEnabled(false);
             ((App) getActivity().getApplication()).getDaoSession().getMemberDao().update
                     (member);
-            memberListAdapter.notifyItemChanged(member);
+            memberListAdapter.addOrUpdate(member);
         }
     }
 
@@ -163,7 +161,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
                     enableSmsFor.setSmsEnabled(true);
                     ((App) getActivity().getApplication()).getDaoSession().getMemberDao().update
                             (enableSmsFor);
-                    memberListAdapter.notifyItemChanged(enableSmsFor);
+                    memberListAdapter.addOrUpdate(enableSmsFor);
                 } else {
                     //todo: show that permission rejected hence cannot share sms
                     Log.d(TAG, "rejected");

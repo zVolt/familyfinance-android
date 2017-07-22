@@ -234,7 +234,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     public void checkActiveFamily() {
         familyId = PreferenceManager.getDefaultSharedPreferences(this).getString
                 ("activeFamilyId", null);
-        Log.d(TAG, "switching to: " + familyId);
+        Log.d(TAG, "switching to: " + familyId + "/" + me.getId());
         //if no active family is set then fail silently and let the user choose the family
         if (familyId == null)
             return;
@@ -242,7 +242,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-
+                        if (dataSnapshot == null) return;
                         if (!dataSnapshot.exists()) {
                             //invalid family Id present in preferences
                             //TODO: delete the activeFamilyId preference
@@ -250,7 +250,8 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                             return;
                         }
 
-                        if (dataSnapshot.hasChild("blocked")) {
+                        Boolean blocked = dataSnapshot.child("blocked").getValue(Boolean.class);
+                        if (blocked != null && blocked) {
                             //You just got blocked :P Lol bad
                             //remove this blocked from firebase to unblock yourself
                             //Todo: remove activeFamilyId from preferences and show them requests
@@ -279,7 +280,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.d(TAG, "request cancelled");
+                        Log.d(TAG, "request cancelled" + databaseError.getMessage());
                         progressDialog.hide();
                     }
                 });

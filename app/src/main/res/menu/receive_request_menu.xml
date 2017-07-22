@@ -5,12 +5,20 @@
         android:id="@+id/action_approve"
         android:icon="@drawable/ic_more_horiz_grey_500_18dp"
         android:title="Approve"
-        app:showAsAction="never"
-        />
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_revoke"
+        android:icon="@drawable/ic_more_horiz_grey_500_18dp"
+        android:title="Revoke"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/action_block"
         android:icon="@drawable/ic_more_horiz_grey_500_18dp"
         android:title="Block"
-        app:showAsAction="never"
-        />
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_unblock"
+        android:icon="@drawable/ic_more_horiz_grey_500_18dp"
+        android:title="Unblock"
+        app:showAsAction="never"/>
 </menu>

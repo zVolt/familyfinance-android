@@ -24,6 +24,13 @@ public class LoadFromDbTask<D extends AbstractDao<T, ?>, T>
     private WeakReference<Listener<T>> callbacksWeakReference;
     private Query<T> query;
 
+    /**
+     *
+     * @param dao
+     * @param listener
+     * @deprecated use {@link #LoadFromDbTask(Query, Listener)} instead.
+     */
+    @Deprecated
     public LoadFromDbTask(D dao, Listener<T> listener) {
         callbacksWeakReference = new WeakReference<>(listener);
         cCardDaoWeakReference = new WeakReference<>(dao);

@@ -169,9 +169,9 @@ public class SendRequestListAdapter extends RecyclerView.Adapter<SendRequestVH> 
 
     @Override
     public void onInsertTaskComplete(List<Request> items) {
-        ignoreChildAddedCalls = false;
         for (Request request : items)
             addOrUpdate(request);
+        ignoreChildAddedCalls = false;
     }
 
     @Override

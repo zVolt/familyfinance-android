@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -15,6 +16,7 @@ import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
@@ -31,23 +33,48 @@ import io.github.zkhan93.familyfinance.viewholders.ReceiveRequestVH;
 public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveRequestVH> implements
         LoadFromDbTask.Listener<Request>, ChildEventListener, ValueEventListener, InsertTask
         .Listener<Request> {
+    public static final String TAG = ReceiveRequestListAdapter.class.getSimpleName();
 
     private List<Request> requests;
     private ReceiveRequestVH.ItemInteractionListener itemInteractionListener;
-    private String familyId;
+    private String familyId, familyModeratorId;
     private DatabaseReference reqRef;
     private boolean ignoreChildEvents;
     private RequestDao requestDao;
 
-    public ReceiveRequestListAdapter(App app, String familyId) {
+    public ReceiveRequestListAdapter(App app, String familyId, ReceiveRequestVH
+            .ItemInteractionListener itemInteractionListener) {
         this.familyId = familyId;
+        this.itemInteractionListener = itemInteractionListener;
         requests = new ArrayList<>();
         requestDao = app.getDaoSession().getRequestDao();
         reqRef = FirebaseDatabase.getInstance().getReference().child("requests").child(familyId);
-        Query<Request> query = requestDao.queryBuilder().where
-                (RequestDao.Properties.FamilyId.eq(familyId)).build();
-        new LoadFromDbTask<>(query, this).execute();
+        FirebaseDatabase.getInstance().getReference().child("family").child(familyId).child
+                ("moderator").child
+                ("id").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    familyModeratorId = dataSnapshot.getValue(String.class);
+                    startDataLoad();
+                } else {
+                    //no such family exist
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void startDataLoad() {
+        Query<Request> query = requestDao.queryBuilder().where
+                (RequestDao.Properties.FamilyId.eq(familyId), RequestDao.Properties.UserId.notEq
+                        (familyModeratorId)).build();
+        new LoadFromDbTask<>(query, this).execute();
     }
 
     @Override
@@ -76,7 +103,7 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
         reqRef.addChildEventListener(this);
     }
 
-    private boolean addOrUpdate(Request newRequest) {
+    public boolean addOrUpdate(Request newRequest) {
         if (newRequest == null) return false;
         int position = 0;
         boolean found = false;
@@ -107,6 +134,9 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
         if (dataSnapshot == null) return;
         Request newRequest = dataSnapshot.getValue(Request.class);
         if (newRequest == null) return;
+        newRequest.setUserId(dataSnapshot.getKey());
+        newRequest.setFamilyId(familyId);
+        if (newRequest.getUserId().equals(familyModeratorId)) return;
         addOrUpdate(newRequest);
     }
 
@@ -115,6 +145,9 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
         if (dataSnapshot == null) return;
         Request newRequest = dataSnapshot.getValue(Request.class);
         if (newRequest == null) return;
+        newRequest.setUserId(dataSnapshot.getKey());
+        newRequest.setFamilyId(familyId);
+        if (newRequest.getUserId().equals(familyModeratorId)) return;
         addOrUpdate(newRequest);
     }
 
@@ -135,22 +168,33 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
+        Log.d(TAG, "datachanged" + dataSnapshot);
         if (dataSnapshot == null)
             return;
         Request request;
         List<Request> requests = new ArrayList<>();
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             request = ds.getValue(Request.class);
-            if (request != null)
+            if (request != null) {
                 requests.add(request);
+                request.setUserId(ds.getKey());
+                request.setFamilyId(familyId);
+            }
         }
-        new InsertTask<>(requestDao, this, true).execute();
+        new InsertTask<>(requestDao, this, true).execute(requests.toArray(new Request[requests
+                .size()]));
     }
 
     @Override
     public void onInsertTaskComplete(List<Request> items) {
         if (items == null || items.size() == 0)
             return;
+        ListIterator<Request> itr = items.listIterator();
+        while (itr.hasNext()) {
+            if (itr.next().getUserId().equals(familyModeratorId)) {
+                itr.remove();
+            }
+        }
         requests.clear();
         requests.addAll(items);
         notifyDataSetChanged();

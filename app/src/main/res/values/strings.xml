@@ -21,6 +21,7 @@
     <string name="title_new_account">Add Account</string>
     <string name="title_new_card">Add Card</string>
     <string name="title_activity_select_family">Family</string>
+    <string name="title_activity_add_member">Add Member</string>
 
     <!--Menu Titles-->
     <string name="action_copy">Copy to clipboard</string>
@@ -133,6 +134,6 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
-    <string name="title_activity_add_member">AddMemberActivity</string>
+
 
 </resources>

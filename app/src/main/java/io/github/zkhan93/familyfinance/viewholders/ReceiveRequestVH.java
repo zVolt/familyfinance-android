@@ -52,7 +52,7 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
         ButterKnife.bind(this, itemView);
         this.itemInteractionListener = itemInteractionListener;
         popupMenu = new PopupMenu(itemView.getContext(), showOptions);
-        popupMenu.inflate(R.menu.ccard_item_menu);
+        popupMenu.inflate(R.menu.receive_request_menu);
         popupMenu.setOnMenuItemClickListener(this);
     }
 
@@ -89,6 +89,12 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
             case R.id.action_block:
                 itemInteractionListener.block(request);
                 return true;
+            case R.id.action_revoke:
+                itemInteractionListener.revoke(request);
+                return true;
+            case R.id.action_unblock:
+                itemInteractionListener.unblock(request);
+                return true;
             default:
                 return false;
         }
@@ -98,5 +104,9 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
         void approve(Request request);
 
         void block(Request request);
+
+        void revoke(Request request);
+
+        void unblock(Request request);
     }
 }

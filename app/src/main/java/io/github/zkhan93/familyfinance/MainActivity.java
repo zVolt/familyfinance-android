@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements
                     fragment = FragmentOtps.newInstance(familyId);
                     break;
                 case 4:
-                    fragment = FragmentMembers.newInstance();
+                    fragment = FragmentMembers.newInstance(familyId);
                     break;
                 default: //0 or other
                     fragment = FragmentSummary.newInstance();
