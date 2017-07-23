@@ -3,76 +3,95 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
     android:orientation="vertical"
+    android:padding="16dp"
     tools:context="io.github.zkhan93.familyfinance.FragmentMembers">
 
     <TextView
         style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Summary"/>
-
-    <TextView
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Total Balance"/>
+        android:text="Total Balance"/>
 
     <TextView
         android:id="@+id/grand_total"
-        style="@style/TextAppearance.AppCompat.Display1"
+        style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_red_light"
-        tools:text=" -300$"/>
+        android:textColor="@color/md_green_400"
+        tools:text="$300"/>
 
     <TextView
+        android:id="@+id/account_title"
         style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        tools:text="Accounts"/>
-
-    <TextView
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Total balance in 4 accounts"/>
+        android:text="@string/title_accounts"
+        tools:text="4 Accounts"/>
 
     <TextView
         android:id="@+id/account_total"
-        style="@style/TextAppearance.AppCompat.Display1"
+        style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="500$"/>
 
     <TextView
+        android:id="@+id/card_title"
         style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        tools:text="Credit Cards"/>
+        android:text="@string/title_ccards"
+        tools:text="6 Cards"
+        />
 
-    <LinearLayout
+
+    <TextView
+        style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_marginTop="4dp"
+        android:text="Consumed Limit"/>
 
-        <TextView
-            android:id="@+id/consumed_cc_limit"
-            style="@style/TextAppearance.AppCompat.Display1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            tools:text="800$"/>
+    <TextView
+        android:id="@+id/consumed_cc_limit"
+        style="@style/TextAppearance.AppCompat.Headline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$800"/>
 
-        <TextView
-            android:id="@+id/remaining_cc_limit"
-            style="@style/TextAppearance.AppCompat.Headline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="400$"/>
-    </LinearLayout>
+    <TextView
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Available Limit"/>
+
+    <TextView
+        android:id="@+id/remaining_cc_limit"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="400$"/>
+
+    <TextView
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Upcoming payments"/>
+
+    <include
+        android:id="@+id/next_payment1"
+        layout="@layout/listitem_next_payment"/>
+
+    <include
+        android:id="@+id/next_payment2"
+        layout="@layout/listitem_next_payment"/>
+
+    <include
+        android:id="@+id/next_payment3"
+        layout="@layout/listitem_next_payment"/>
 </LinearLayout>

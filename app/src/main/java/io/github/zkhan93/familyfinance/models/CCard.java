@@ -11,6 +11,7 @@ import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -142,6 +143,16 @@ public class CCard extends BaseModel {
 
     public void setConsumedLimit(float consumedLimit) {
         this.consumedLimit = consumedLimit;
+    }
+
+    @Exclude
+    public Date getPaymentDate() {
+        Calendar today = Calendar.getInstance();
+        Calendar paymentDate = Calendar.getInstance();
+        paymentDate.set(Calendar.DAY_OF_MONTH, getPaymentDay());
+        if (today.get(Calendar.DAY_OF_MONTH) > getPaymentDay())
+            paymentDate.add(Calendar.MONTH, 1);
+        return paymentDate.getTime();
     }
 
     @Exclude
@@ -399,6 +410,13 @@ public class CCard extends BaseModel {
         @Override
         public int compare(CCard o1, CCard o2) {
             return Long.compare(o2.getUpdatedOn(), o1.getUpdatedOn());
+        }
+    };
+
+    public static final Comparator<CCard> BY_PAYMENT_DATE = new Comparator<CCard>() {
+        @Override
+        public int compare(CCard o1, CCard o2) {
+            return Long.compare(o1.getPaymentDate().getTime(), o2.getPaymentDate().getTime());
         }
     };
 }

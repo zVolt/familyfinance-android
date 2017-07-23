@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements
                     fragment = FragmentMembers.newInstance(familyId, familyModeratorId);
                     break;
                 default: //0 or other
-                    fragment = FragmentSummary.newInstance();
+                    fragment = FragmentSummary.newInstance(familyId);
                     break;
             }
             return fragment;
