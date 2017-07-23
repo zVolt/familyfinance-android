@@ -28,10 +28,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.greendao.query.DeleteQuery;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -39,10 +40,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.adapters.SendRequestListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
+import io.github.zkhan93.familyfinance.models.Account;
+import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.models.DaoSession;
 import io.github.zkhan93.familyfinance.models.Member;
+import io.github.zkhan93.familyfinance.models.MemberDao;
+import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.models.Request;
 import io.github.zkhan93.familyfinance.models.RequestDao;
-import io.github.zkhan93.familyfinance.tasks.DeleteTask;
+import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.viewholders.SendRequestVH;
 
 public class SelectFamilyActivity extends AppCompatActivity implements ValueEventListener,
@@ -71,6 +77,117 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     private Member me;
     private SendRequestListAdapter sendRequestListAdapter;
     private Toast toast;
+    private ValueEventListener requestListener, familyMembersListListener;
+    private int callbackCounter;
+    private MemberDao memberDao;
+    private int taskStatus;
+
+    {
+        requestListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                callbackCounter--;
+                if (dataSnapshot == null || !dataSnapshot.exists()) {
+                    Log.d(TAG, "data does not exist");
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext()
+                    ).edit().remove("activeFamilyId").apply();
+                    if (callbackCounter == 0) {
+                        showMessageOnSnackBar(String.format("%s does not exist, select " +
+                                "another family", familyId));
+                        progressDialog.hide();
+                    }
+                    return;
+                }
+                Boolean blocked = dataSnapshot.child("blocked").getValue(Boolean.class);
+                if (blocked != null && blocked) {
+                    //You just got blocked :P LOL bad
+                    Log.d(TAG, "you are blocked");
+                    if (callbackCounter == 0) {
+                        showMessageOnSnackBar(String.format("You are blocked from %s, Contact" +
+                                " Moderator of the family", familyId));
+                    }
+                } else if (dataSnapshot.hasChild("approved")) {
+                    Boolean approved = dataSnapshot.child("approved").getValue(Boolean
+                            .class);
+                    if (approved == null)
+                        approved = false;
+                    if (approved) {
+                        //yeee you are approved start MainActivity
+                        taskStatus = taskStatus | 1;
+                        if (taskStatus == 3) {
+                            progressDialog.hide();
+                            startActivity(new Intent(SelectFamilyActivity.this, MainActivity
+                                    .class));
+                            finish();
+                            return;
+                        }
+                    } else {
+                        //yet not approved do nothing
+                        Log.d(TAG, "not approved yet");
+                        if (callbackCounter == 0)
+                            showMessageOnSnackBar(String.format("your request to join %s is " +
+                                    "not yet approved", familyId));
+                    }
+                } else {
+                    //no such request
+                    Log.d(TAG, "no such request");
+                }
+                if (callbackCounter == 0) progressDialog.hide();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "moderator request cancelled: " + databaseError.getMessage());
+                callbackCounter--;
+                if (callbackCounter == 0) {
+                    progressDialog.hide();
+                    showMessageOnSnackBar("An error occurred while contacting moderator, try " +
+                            "again !");
+                }
+            }
+        };
+
+        familyMembersListListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "members loaded");
+                callbackCounter--;
+                if (dataSnapshot == null) return;
+                Member member;
+                List<Member> members = new ArrayList<>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds == null) continue;
+                    member = ds.getValue(Member.class);
+                    if (member == null) continue;
+                    member.setId(ds.getKey());
+                    members.add(member);
+                }
+                new InsertTask<>(memberDao, null).execute(members.toArray(new Member[members.size
+                        ()]));
+                taskStatus = taskStatus | 2;
+                if (callbackCounter == 0)
+                    progressDialog.hide();
+                if (taskStatus == 3) {
+                    progressDialog.hide();
+                    startActivity(new Intent(SelectFamilyActivity.this, MainActivity
+                            .class));
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "members request cancelled: " + databaseError.getMessage());
+                callbackCounter--;
+                if (callbackCounter == 0) {
+                    progressDialog.hide();
+                    showMessageOnSnackBar("An error occurred while fetching members of family, " +
+                            "try " +
+                            "again!");
+                }
+            }
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +196,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
+        memberDao = ((App) getApplication()).getDaoSession().getMemberDao();
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser == null) {
             Log.d(TAG, "user not logged in ");
@@ -88,17 +206,30 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
             return;
         }
         me = ((App) getApplication()).getDaoSession().getMemberDao().load(fbUser.getUid());
-        if (me == null)
+        if (me == null) {
             Log.d(TAG, "member not found in local db");
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                Log.d(TAG, "user not logged in");
+                startActivity(new Intent(this, LoginActivity.class));
+                finish();
+                return;
+            }
+            me = new Member(user.getUid(), user.getDisplayName(), user.getEmail(), false, user
+                    .getPhotoUrl().toString());
+            memberDao.insertOrReplace(me);
+        }
         progressDialog = new ProgressDialog(this);
+        progressDialog.setIndeterminate(true);
         familyRef = FirebaseDatabase.getInstance().getReference("family");
         requestRef = FirebaseDatabase.getInstance().getReference("requests");
 
         sendRequestListAdapter = new SendRequestListAdapter((App) getApplication(), me, this);
         requestList.setLayoutManager(new LinearLayoutManager(this));
         requestList.setAdapter(sendRequestListAdapter);
-        checkActiveFamily();
+
     }
+
 
     private void showMessageOnSnackBar(String message) {
         final Snackbar snackbar = Snackbar.make(toolbar, message, Snackbar.LENGTH_LONG);
@@ -147,6 +278,10 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                         Calendar.getInstance().getTimeInMillis());
                 updates.put("users/" + me.getId() + "/requests/" + familyId + "/updatedOn", Calendar
                         .getInstance().getTimeInMillis());
+
+                updates.put("members/" + familyId + "/" + me.getId(), me); // add myself to list
+                // of members
+
                 FirebaseDatabase.getInstance().getReference().updateChildren(updates)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
 
@@ -167,12 +302,19 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        checkActiveFamily();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        progressDialog.hide();
+        super.onDestroy();
     }
 
     /**
@@ -212,7 +354,11 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
             updates.put(partialNode + "/requestedOn", now);
             updates.put(partialNode + "/updatedOn", now);
             //auto approve if I am the moderator
-            if (isModeratorOfFamily) updates.put(partialNode + "/approved", true);
+            if (isModeratorOfFamily) {
+                updates.put(partialNode + "/approved", true);
+                //add myself to the members list
+                updates.put("members/" + familyId + "/" + me.getId(), me);
+            }
 
             FirebaseDatabase.getInstance().getReference().updateChildren(updates);
 
@@ -235,55 +381,28 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         familyId = PreferenceManager.getDefaultSharedPreferences(this).getString
                 ("activeFamilyId", null);
         Log.d(TAG, "switching to: " + familyId + "/" + me.getId());
-        //if no active family is set then fail silently and let the user choose the family
-        if (familyId == null)
+        progressDialog.setMessage(String.format("Checking %s details", familyId));
+        progressDialog.show();
+        if (familyId == null) {
+            //if no active family is set then fail silently and let the user choose the family
+            progressDialog.hide();
             return;
+        }
+        DaoSession daoSession = ((App) getApplication()).getDaoSession();
+//        DeleteQuery<Member> query = daoSession.getMemberDao().queryBuilder().buildDelete();
+//        new DeleteTask<>(query, null);
+        daoSession.getMemberDao().queryBuilder().where(MemberDao.Properties.Id.notEq(me
+                .getId())).buildDelete().executeDeleteWithoutDetachingEntities();
+        daoSession.getRequestDao().queryBuilder().where(RequestDao.Properties.UserId.notEq(me
+                .getId())).buildDelete().executeDeleteWithoutDetachingEntities();
+        daoSession.deleteAll(CCard.class);
+        daoSession.deleteAll(Otp.class);
+        daoSession.deleteAll(Account.class);
+        callbackCounter = 2;
+        FirebaseDatabase.getInstance().getReference("members").child(familyId)
+                .addListenerForSingleValueEvent(familyMembersListListener);
         requestRef.child(familyId).child(me.getId())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot == null) return;
-                        if (!dataSnapshot.exists()) {
-                            //invalid family Id present in preferences
-                            //TODO: delete the activeFamilyId preference
-                            Log.d(TAG, "data does not exist");
-                            return;
-                        }
-
-                        Boolean blocked = dataSnapshot.child("blocked").getValue(Boolean.class);
-                        if (blocked != null && blocked) {
-                            //You just got blocked :P Lol bad
-                            //remove this blocked from firebase to unblock yourself
-                            //Todo: remove activeFamilyId from preferences and show them requests
-                            // list, also they are blocked from the family
-                            Log.d(TAG, "you are blocked");
-
-                        } else if (dataSnapshot.hasChild("approved")) {
-                            Boolean approved = dataSnapshot.child("approved").getValue(Boolean
-                                    .class);
-                            if (approved == null)
-                                approved = false;
-                            if (approved) {
-                                //yeee you are approved start MainActivity
-                                startActivity(new Intent(SelectFamilyActivity.this, MainActivity
-                                        .class));
-                                finish();
-                            } else {
-                                //yet not approved do nothing
-                                Log.d(TAG, "not approved yet");
-                            }
-                        } else {
-                            //no such request
-                            Log.d(TAG, "no such request");
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d(TAG, "request cancelled" + databaseError.getMessage());
-                        progressDialog.hide();
-                    }
-                });
+                .addListenerForSingleValueEvent(requestListener);
     }
 
     @Override
@@ -326,5 +445,4 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         updates.put("requests/" + familyId + "/" + me.getId(), null);
         FirebaseDatabase.getInstance().getReference().updateChildren(updates);
     }
-
 }

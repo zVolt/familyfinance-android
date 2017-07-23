@@ -182,6 +182,7 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
+        String amount;
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 //TODO: validate values
@@ -193,8 +194,12 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
                 newCcard.setName(cardName.getText().toString());
                 newCcard.setNumber(number.getText().toString());
                 newCcard.setCardholder(cardHolder.getText().toString());
-                newCcard.setMaxLimit(Float.parseFloat(maxLimit.getText().toString()));
-                newCcard.setConsumedLimit(Float.parseFloat(consumedLimit.getText().toString()));
+                amount = maxLimit.getText().toString().trim();
+                if (amount.length() == 0) amount = "0";
+                newCcard.setMaxLimit(Float.parseFloat(amount));
+                amount = consumedLimit.getText().toString().trim();
+                if (amount.length() == 0) amount = "0";
+                newCcard.setConsumedLimit(Float.parseFloat(amount));
                 newCcard.setPaymentDay(paymentDay.getValue());
                 newCcard.setBillingDay(billingDay.getValue());
                 newCcard.setCvv(cvv.getText().toString());
@@ -221,9 +226,8 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
         if (items == null || items.size() == 0)
             return;
         CCard newCcard = items.get(0);
-        if (!newCcard.getNumber().trim().equals(cCard.getNumber().trim())) {
+        if (cCard != null && !newCcard.getNumber().trim().equals(cCard.getNumber().trim())) {
             //cards id changed delete previous from firebase , different node
-            //
             Map<String, Object> updates = new HashMap<>();
             updates.put(newCcard.getNumber(), newCcard);
             updates.put(cCard.getNumber(), null);//delete old card

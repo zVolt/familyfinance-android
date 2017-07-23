@@ -16,8 +16,10 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -58,9 +60,9 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ignoreChildEvents = true;
         this.familyId = familyId;
         accountsRef = FirebaseDatabase.getInstance().getReference("accounts").child(familyId);
-
-        new LoadFromDbTask<>(app.getDaoSession().getAccountDao(), this).execute();
-
+        Query<Account> query = accountDao.queryBuilder().orderDesc(AccountDao.Properties
+                .UpdatedOn).build();
+        new LoadFromDbTask<>(query, this).execute();
         this.itemInteractionListener = itemInteractionListener;
     }
 
@@ -141,16 +143,26 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         while (itr.hasNext()) {
             oldAccount = itr.next();
             if (oldAccount.getAccountNumber().trim().equals(newAccount.getAccountNumber().trim())) {
-                oldAccount.updateFrom(newAccount); //copy value from new object to maintain dao connection
+                oldAccount.updateFrom(newAccount); //copy value from new object to maintain dao
+                // connection
+                accountDao.insertOrReplace(oldAccount);
+                oldAccount = accountDao.load(oldAccount.getAccountNumber());
+                itr.set(oldAccount);
                 notifyItemChanged(position);
                 found = true;
                 break;
             }
             position++;
         }
-        if (!found) {
-            accounts.add(newAccount);
-            notifyItemInserted(accounts.size());
+        if (found) {
+            oldAccount = accounts.remove(position);
+            accounts.add(0, oldAccount);
+            notifyItemMoved(position, 0);
+        } else {
+            accountDao.insertOrReplace(newAccount);
+            newAccount = accountDao.load(newAccount.getAccountNumber());
+            accounts.add(0, newAccount);
+            notifyItemInserted(0);
         }
         return found;
     }
@@ -205,6 +217,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (ignoreChildEvents)
             return;
         Account newAccount = dataSnapshot.getValue(Account.class);
+        if (newAccount == null) return;
         Account oldAccount;
         int position = 0;
         ListIterator<Account> itr = accounts.listIterator();
@@ -250,6 +263,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onInsertTaskComplete(List<Account> items) {
         accounts.clear();
         accounts.addAll(items);
+        Collections.sort(accounts, Account.BY_UPDATED_ON);
         notifyDataSetChanged();
         ignoreChildEvents = false;
     }
@@ -258,6 +272,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onLoadTaskComplete(List<Account> data) {
         if (data != null) {
             accounts.addAll(data);
+            Collections.sort(accounts, Account.BY_UPDATED_ON);
             notifyDataSetChanged();
         }
 

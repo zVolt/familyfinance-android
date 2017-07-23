@@ -128,6 +128,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
         if (dataSnapshot == null) return;
         Member newMember = dataSnapshot.getValue(Member.class);
         if (newMember == null) return;
+        newMember.setId(dataSnapshot.getKey());
         addOrUpdate(newMember);
     }
 
@@ -136,6 +137,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
         if (dataSnapshot == null) return;
         Member newMember = dataSnapshot.getValue(Member.class);
         if (newMember == null) return;
+        newMember.setId(dataSnapshot.getKey());
         addOrUpdate(newMember);
     }
 
@@ -144,6 +146,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
         if (dataSnapshot == null) return;
         Member member = dataSnapshot.getValue(Member.class);
         if (member == null) return;
+        member.setId(dataSnapshot.getKey());
         removeMember(member);
     }
 
@@ -166,6 +169,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
             if (ds == null) continue;
             member = ds.getValue(Member.class);
             if (member == null) continue;
+            member.setId(ds.getKey());
             members.add(member);
         }
         new InsertTask<>(memberDao, this, true).execute(members.toArray(new Member[members.size()

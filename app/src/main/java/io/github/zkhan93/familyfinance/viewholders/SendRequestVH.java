@@ -22,7 +22,7 @@ import io.github.zkhan93.familyfinance.models.Request;
 public class SendRequestVH extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public static String TAG = SendRequestVH.class.getSimpleName();
-    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM YY");
+    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM yy hh:mm a");
     @BindView(R.id.status)
     TextView status;
     @BindView(R.id.family_id)
@@ -34,12 +34,10 @@ public class SendRequestVH extends RecyclerView.ViewHolder implements View.OnCli
 
     private Request request;
     private ItemInteractionListener itemInteractionListener;
-    private Toast toast;
 
     public SendRequestVH(View itemView) {
         super(itemView);
         Context context = itemView.getContext();
-        toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
         ButterKnife.bind(this, itemView);
         itemView.setOnClickListener(this);
         delete.setOnClickListener(this);

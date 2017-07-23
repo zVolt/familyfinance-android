@@ -1,16 +1,18 @@
 package io.github.zkhan93.familyfinance;
 
+import android.*;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,10 +24,20 @@ import android.view.View;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.github.zkhan93.familyfinance.models.Member;
+
+import static android.support.v4.content.ContextCompat.checkSelfPermission;
+import static io.github.zkhan93.familyfinance.FragmentMembers.PERMISSION_REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity implements
         FragmentMembers.OnFragmentInteractionListener, FragmentOtps
@@ -59,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private ViewPager.OnPageChangeListener pageChangeListener;
     private int activePage;
+    private String familyModeratorId;
+    private Member me;
 
     {
         activePage = PAGE_POSITION.SUMMARY;
@@ -87,7 +101,10 @@ public class MainActivity extends AppCompatActivity implements
                         hideFab();
                         break;
                     case PAGE_POSITION.MEMBERS:
-                        showFab();
+                        if (familyModeratorId != null && me != null && me.getId() != null &&
+                                familyModeratorId.equals(me.getId()))
+                            showFab();
+                        else hideFab();
                         break;
                 }
             }
@@ -122,9 +139,55 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
         familyId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                 .getString("activeFamilyId", null);
-        if (familyId == null) {
+        FirebaseDatabase.getInstance().getReference("family").child(familyId).child("moderator")
+                .child("id").addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot == null) return;
+                familyModeratorId = dataSnapshot.getValue(String.class);
+                if (familyModeratorId == null) return;
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
+                        .putString("familyModeratorId", familyModeratorId).apply();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (familyId == null || user == null) {
             startActivity(new Intent(this, SelectFamilyActivity.class));
             finish();
+        }
+        me = ((App) getApplication()).getDaoSession().getMemberDao().load(user.getUid());
+        if (me == null) {
+            me = new Member(user.getUid(), user.getDisplayName(), user.getEmail(), false, user
+                    .getPhotoUrl().toString());
+            ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(me);
+        }
+        int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest
+                .permission.RECEIVE_SMS) & ContextCompat.checkSelfPermission(this, android.Manifest
+                .permission.READ_PHONE_STATE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest
+                    .permission.RECEIVE_SMS)) {
+                //explain the need of this permission
+                //todo show a dialog and then on positive show request permission
+                Log.d(TAG, "lol we need it :D");
+                ActivityCompat.requestPermissions(this, new String[]{
+                        android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission
+                        .READ_PHONE_STATE
+                }, PERMISSION_REQUEST_CODE);
+
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{
+                        android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission
+                        .READ_PHONE_STATE
+                }, PERMISSION_REQUEST_CODE);
+            }
         }
     }
 
@@ -235,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements
                     fragment = FragmentOtps.newInstance(familyId);
                     break;
                 case 4:
-                    fragment = FragmentMembers.newInstance(familyId);
+                    fragment = FragmentMembers.newInstance(familyId, familyModeratorId);
                     break;
                 default: //0 or other
                     fragment = FragmentSummary.newInstance();

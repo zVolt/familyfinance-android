@@ -119,15 +119,17 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 //TODO: validate values
-                Account account = new Account(accountHolder.getText().toString(), bank.getText()
-                        .toString
-                                (), ifsc.getText().toString(), number.getText().toString(), Float
-                        .parseFloat(balance.getText().toString()), Calendar.getInstance()
-                        .getTimeInMillis(), null);
-                account.setUpdatedByMemberId(FirebaseAuth.getInstance
-                        ().getCurrentUser().getUid());
+                String amount;
+                Account account = new Account();
+                account.setAccountHolder(accountHolder.getText().toString());
+                account.setBank(bank.getText().toString());
+                account.setIfsc(ifsc.getText().toString());
+                account.setAccountNumber(number.getText().toString());
+                amount = balance.getText().toString().trim();
+                if (amount.length() == 0) amount = "0";
+                account.setBalance(Float.parseFloat(amount));
+                account.setUpdatedByMemberId(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 account.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
-
                 new InsertTask<>(((App) getActivity().getApplication())
                         .getDaoSession()
                         .getAccountDao(), this).execute(account);

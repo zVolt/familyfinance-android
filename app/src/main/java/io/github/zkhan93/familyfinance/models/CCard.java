@@ -11,6 +11,7 @@ import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 
 import org.greenrobot.greendao.annotation.Generated;
@@ -261,7 +262,8 @@ public class CCard extends BaseModel {
 
     @Keep
     public CCard(String name, String number, String bank, String cardholder, long updatedOn,
-                 int paymentDay, int billingDay, float maxLimit, float consumedLimit, String updatedByMemberId) {
+                 int paymentDay, int billingDay, float maxLimit, float consumedLimit, String
+                         updatedByMemberId) {
         this.number = number;
         this.name = name;
         this.bank = bank;
@@ -312,9 +314,11 @@ public class CCard extends BaseModel {
     }
 
     @Generated(hash = 1183908316)
-    public CCard(String number, String name, String bank, String cardholder, String userid, String password,
-            String cvv, long updatedOn, long expireOn, int paymentDay, int billingDay, float maxLimit,
-            float consumedLimit, String updatedByMemberId) {
+    public CCard(String number, String name, String bank, String cardholder, String userid,
+                 String password,
+                 String cvv, long updatedOn, long expireOn, int paymentDay, int billingDay, float
+                         maxLimit,
+                 float consumedLimit, String updatedByMemberId) {
         this.number = number;
         this.name = name;
         this.bank = bank;
@@ -389,6 +393,12 @@ public class CCard extends BaseModel {
         @Override
         public CCard[] newArray(int size) {
             return new CCard[size];
+        }
+    };
+    public static final Comparator<CCard> BY_UPDATED_ON = new Comparator<CCard>() {
+        @Override
+        public int compare(CCard o1, CCard o2) {
+            return Long.compare(o2.getUpdatedOn(), o1.getUpdatedOn());
         }
     };
 }

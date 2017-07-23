@@ -12,6 +12,7 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import io.github.zkhan93.familyfinance.events.BaseEvent;
@@ -30,9 +31,6 @@ public class Account extends BaseModel {
     @ToOne(joinProperty = "updatedByMemberId")
     @Exclude
     Member updatedBy;
-
-    @Exclude
-    Date localModifiedOn;
 
     private String updatedByMemberId;
 
@@ -257,13 +255,6 @@ public class Account extends BaseModel {
         this.password = password;
     }
 
-    public Date getLocalModifiedOn() {
-        return this.localModifiedOn;
-    }
-
-    public void setLocalModifiedOn(Date localModifiedOn) {
-        this.localModifiedOn = localModifiedOn;
-    }
 
     @Keep
     public String getReadableContent() {
@@ -275,11 +266,10 @@ public class Account extends BaseModel {
         return strb.toString();
     }
 
-    @Generated(hash = 1618306691)
+    @Generated(hash = 1857341911)
     public Account(String accountNumber, String accountHolder, String bank, String ifsc, String
             userid,
-                   String password, float balance, long updatedOn, Date localModifiedOn,
-                   String updatedByMemberId) {
+                   String password, float balance, long updatedOn, String updatedByMemberId) {
         this.accountNumber = accountNumber;
         this.accountHolder = accountHolder;
         this.bank = bank;
@@ -288,7 +278,6 @@ public class Account extends BaseModel {
         this.password = password;
         this.balance = balance;
         this.updatedOn = updatedOn;
-        this.localModifiedOn = localModifiedOn;
         this.updatedByMemberId = updatedByMemberId;
     }
 
@@ -308,10 +297,8 @@ public class Account extends BaseModel {
         dest.writeFloat(this.balance);
         dest.writeLong(this.updatedOn);
         dest.writeParcelable(this.updatedBy, flags);
-        dest.writeLong(this.localModifiedOn != null ? this.localModifiedOn.getTime() : -1);
         dest.writeString(this.updatedByMemberId);
     }
-
 
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1812283172)
@@ -330,8 +317,6 @@ public class Account extends BaseModel {
         this.balance = in.readFloat();
         this.updatedOn = in.readLong();
         this.updatedBy = in.readParcelable(Member.class.getClassLoader());
-        long tmpLocalModifiedOn = in.readLong();
-        this.localModifiedOn = tmpLocalModifiedOn == -1 ? null : new Date(tmpLocalModifiedOn);
         this.updatedByMemberId = in.readString();
     }
 
@@ -344,6 +329,12 @@ public class Account extends BaseModel {
         @Override
         public Account[] newArray(int size) {
             return new Account[size];
+        }
+    };
+    public static final Comparator<Account> BY_UPDATED_ON = new Comparator<Account>() {
+        @Override
+        public int compare(Account o1, Account o2) {
+            return Long.compare(o2.getUpdatedOn(), o1.getUpdatedOn());
         }
     };
 }

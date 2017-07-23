@@ -2,6 +2,8 @@ package io.github.zkhan93.familyfinance.models;
 
 import android.os.Parcel;
 
+import com.google.firebase.database.Exclude;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
@@ -12,6 +14,7 @@ import org.greenrobot.greendao.annotation.Index;
  */
 @Entity
 public class Request extends BaseModel {
+    @Exclude
     @Id(autoincrement = true)
     long id;
     @Index
@@ -147,10 +150,12 @@ public class Request extends BaseModel {
         this.userId = userId;
     }
 
+    @Exclude
     public long getId() {
         return this.id;
     }
 
+    @Exclude
     public void setId(long id) {
         this.id = id;
     }

@@ -55,8 +55,10 @@ public class SendRequestListAdapter extends RecyclerView.Adapter<SendRequestVH> 
 
     @Override
     public SendRequestVH onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new SendRequestVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+        SendRequestVH holder = new SendRequestVH(LayoutInflater.from(parent.getContext()).inflate
+                (R.layout
                 .listitem_send_request, parent, false), itemInteractionListener);
+        return holder;
     }
 
     @Override

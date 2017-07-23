@@ -38,9 +38,11 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
     public static final int PERMISSION_REQUEST_CODE = 42;
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_FAMILY_ID = "familyId";
+    private static final String ARG_FAMILY_MODERATOR_ID = "familyModeratorId";
 
 
     private String familyId;
+    private String familyModeratorId;
 
     @BindView(R.id.list)
     RecyclerView membersList;
@@ -60,10 +62,11 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
      * @return A new instance of fragment FragmentMembers.
      */
 
-    public static FragmentMembers newInstance(String familyId) {
+    public static FragmentMembers newInstance(String familyId, String familyModeratorId) {
         FragmentMembers fragment = new FragmentMembers();
         Bundle args = new Bundle();
         args.putString(ARG_FAMILY_ID, familyId);
+        args.putString(ARG_FAMILY_MODERATOR_ID, familyModeratorId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,6 +77,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         if (getArguments() != null) {
             Bundle args = getArguments();
             familyId = args.getString(ARG_FAMILY_ID, null);
+            familyModeratorId = args.getString(ARG_FAMILY_MODERATOR_ID, null);
         }
     }
 
@@ -83,7 +87,8 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_members, container, false);
         ButterKnife.bind(this, rootView);
-        memberListAdapter = new MemberListAdapter((App) getActivity().getApplication(),familyId, this);
+        memberListAdapter = new MemberListAdapter((App) getActivity().getApplication(), familyId,
+                this);
         membersList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         membersList.setAdapter(memberListAdapter);

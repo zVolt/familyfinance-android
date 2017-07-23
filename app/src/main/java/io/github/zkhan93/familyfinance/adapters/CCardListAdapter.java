@@ -14,8 +14,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -24,6 +26,7 @@ import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.events.InsertEvent;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.CCardDao;
+import io.github.zkhan93.familyfinance.models.OtpDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
@@ -50,7 +53,9 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         this.familyId = familyId;
         ccardRef = FirebaseDatabase.getInstance().getReference("ccards").child(familyId);
         ignoreChildEvent = true;
-        new LoadFromDbTask<>(app.getDaoSession().getCCardDao(), this).execute();
+        Query<CCard> query = cCardDao.queryBuilder().orderDesc(CCardDao.Properties.UpdatedOn)
+                .build();
+        new LoadFromDbTask<>(query, this).execute();
     }
 
     @Override
@@ -74,6 +79,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
 //        Log.d(TAG, "loaded: " + data.toString());
         ccards.clear();
         ccards.addAll(data);
+        Collections.sort(ccards, CCard.BY_UPDATED_ON);
         notifyDataSetChanged();
         ccardRef.addListenerForSingleValueEvent(this);
         ccardRef.addChildEventListener(this);
@@ -82,20 +88,31 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
     public boolean addOrUpdate(CCard newCcard) {
         int position = 0;
         boolean found = false;
-        for (CCard oldCcard : ccards) {
+        ListIterator<CCard> itr = ccards.listIterator();
+        CCard oldCcard;
+        while (itr.hasNext()) {
+            oldCcard = itr.next();
             if (oldCcard.getNumber().trim().equals(newCcard.getNumber().trim())) {
                 found = true;
                 oldCcard.updateFrom(newCcard); // fetch the item from database again
-                oldCcard.update();
+                cCardDao.insertOrReplace(oldCcard);
+                oldCcard = cCardDao.load(oldCcard.getNumber());
+                itr.set(oldCcard);
+                notifyItemChanged(position);
                 break;
             }
             position++;
         }
-        if (found)
-            notifyItemChanged(position);
-        else {
-            ccards.add(newCcard);
-            notifyItemInserted(ccards.size());
+        if (found) {
+            oldCcard = ccards.remove(position);
+            ccards.add(0, oldCcard);
+            notifyItemMoved(position, 0);
+        }
+        if (!found) {
+            cCardDao.insertOrReplace(newCcard);
+            newCcard = cCardDao.load(newCcard.getNumber());
+            ccards.add(0, newCcard);
+            notifyItemInserted(0);
         }
         return found;
     }
@@ -206,6 +223,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
     public void onInsertTaskComplete(List<CCard> items) {
         ccards.clear();
         ccards.addAll(items);
+        Collections.sort(ccards, CCard.BY_UPDATED_ON);
         notifyDataSetChanged();
         ignoreChildEvent = false;
     }

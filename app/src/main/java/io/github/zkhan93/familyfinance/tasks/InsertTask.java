@@ -12,6 +12,7 @@ import java.util.List;
 
 import io.github.zkhan93.familyfinance.events.InsertEvent;
 import io.github.zkhan93.familyfinance.models.Account;
+import io.github.zkhan93.familyfinance.models.MemberDao;
 import io.github.zkhan93.familyfinance.models.Otp;
 
 /**
@@ -46,8 +47,9 @@ public class InsertTask<D extends AbstractDao, T> extends AsyncTask<T, Void, Lis
         D dao = daoWeakReference.get();
         if (dao == null)
             return null;
-        if (clean)
+        if (clean) {
             dao.deleteAll();
+        }
         List<T> insertedItems = new ArrayList<>();
         for (T item : params) {
             if (item != null) {
@@ -55,9 +57,6 @@ public class InsertTask<D extends AbstractDao, T> extends AsyncTask<T, Void, Lis
                 insertedItems.add(item);
             }
         }
-//        if (insertedItems.size() > 0 && insertedItems.get(0) instanceof Otp) {
-//            insertedItems.sort(Otp.BY_TIMESTAMP);
-//        }
         return insertedItems;
     }
 

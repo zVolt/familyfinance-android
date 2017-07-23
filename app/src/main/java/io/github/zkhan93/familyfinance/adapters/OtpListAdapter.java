@@ -124,8 +124,10 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
         if (ignoreChildEvents || !dataSnapshot.exists())
             return;
         Otp otp = dataSnapshot.getValue(Otp.class);
-        if (otp != null)
+        if (otp != null) {
+            otp.setFromMemberId(dataSnapshot.child("from").child("id").getValue(String.class));
             insertOrUpdate(otp);
+        }
     }
 
     @Override
@@ -133,8 +135,10 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
         if (!dataSnapshot.exists())
             return;
         Otp otp = dataSnapshot.getValue(Otp.class);
-        if (otp != null)
+        if (otp != null) {
+            otp.setFromMemberId(dataSnapshot.child("from").child("id").getValue(String.class));
             insertOrUpdate(otp);
+        }
     }
 
     @Override
@@ -176,8 +180,10 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
         List<Otp> otps = new ArrayList<>();
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             otp = ds.getValue(Otp.class);
-            if (otp != null)
+            if (otp != null) {
+                otp.setFromMemberId(ds.child("from").child("id").getValue(String.class));
                 otps.add(otp);
+            }
         }
         new InsertTask<>(otpDao, this, true).execute(otps.toArray(new Otp[otps.size()]));
     }
@@ -190,6 +196,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
     @Override
     public void onInsertTaskComplete(List<Otp> items) {
         //initial data load callback
+        Log.d(TAG, items.toString());
         otps.clear();
         otps.addAll(items);
         Collections.sort(otps, Otp.BY_TIMESTAMP);

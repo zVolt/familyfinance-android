@@ -24,10 +24,10 @@ public class Otp extends BaseModel{
     @Id
     String id;
     String number, content;
+    @Exclude
     @ToOne(joinProperty = "fromMemberId")
     Member from;
     long timestamp;
-    @Exclude
     private String fromMemberId;
 
     @Keep

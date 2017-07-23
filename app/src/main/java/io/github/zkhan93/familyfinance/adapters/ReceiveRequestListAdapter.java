@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.greenrobot.greendao.query.DeleteQuery;
 import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Request;
 import io.github.zkhan93.familyfinance.models.RequestDao;
+import io.github.zkhan93.familyfinance.tasks.DeleteTask;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.ReceiveRequestVH;
@@ -97,6 +99,7 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
     public void onLoadTaskComplete(List<Request> data) {
         requests.clear();
         requests.addAll(data);
+        Log.d(TAG, "data:" + data.toString());
         notifyDataSetChanged();
         ignoreChildEvents = true;
         reqRef.addListenerForSingleValueEvent(this);
@@ -153,7 +156,29 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
+        if (dataSnapshot == null) return;
+        Request newRequest = dataSnapshot.getValue(Request.class);
+        if (newRequest == null) return;
+        newRequest.setUserId(dataSnapshot.getKey());
+        newRequest.setFamilyId(familyId);
 
+        ListIterator<Request> itr = requests.listIterator();
+        Request request;
+        int position = 0;
+        while (itr.hasNext()) {
+            request = itr.next();
+            if (request.getFamilyId().equals(newRequest.getFamilyId()) && request.getUserId()
+                    .equals(newRequest.getUserId())) {
+                itr.remove();
+                DeleteQuery<Request> query = requestDao.queryBuilder().where(RequestDao.Properties
+                        .FamilyId.eq(newRequest.getFamilyId()), RequestDao
+                        .Properties.UserId.eq(newRequest.getUserId())).buildDelete();
+                new DeleteTask<>(query, null);
+                notifyItemRemoved(position);
+                break;
+            }
+            position++;
+        }
     }
 
     @Override
