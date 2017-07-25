@@ -1,97 +1,106 @@
-<LinearLayout
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="io.github.zkhan93.familyfinance.FragmentMembers">
 
-    <TextView
-        style="@style/TextAppearance.AppCompat.Caption"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Total Balance"/>
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/grand_total"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/md_green_400"
-        tools:text="$300"/>
+        <TextView
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Total Balance"/>
 
-    <TextView
-        android:id="@+id/account_title"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/title_accounts"
-        tools:text="4 Accounts"/>
+        <TextView
+            android:id="@+id/grand_total"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/md_green_400"
+            tools:text="$300"/>
 
-    <TextView
-        android:id="@+id/account_total"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="500$"/>
+        <TextView
+            android:id="@+id/account_title"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/title_accounts"
+            tools:text="4 Accounts"/>
 
-    <TextView
-        android:id="@+id/card_title"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/title_ccards"
-        tools:text="6 Cards"
-        />
+        <TextView
+            android:id="@+id/account_total"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="500$"/>
+
+        <TextView
+            android:id="@+id/card_title"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/title_ccards"
+            tools:text="6 Cards"
+            />
 
 
-    <TextView
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Consumed Limit"/>
+        <TextView
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Consumed Limit"/>
 
-    <TextView
-        android:id="@+id/consumed_cc_limit"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="$800"/>
+        <TextView
+            android:id="@+id/consumed_cc_limit"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="$800"/>
 
-    <TextView
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Available Limit"/>
+        <TextView
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Available Limit"/>
 
-    <TextView
-        android:id="@+id/remaining_cc_limit"
-        style="@style/TextAppearance.AppCompat.Subhead"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="400$"/>
+        <TextView
+            android:id="@+id/remaining_cc_limit"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="400$"/>
 
-    <TextView
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Upcoming payments"/>
+        <TextView
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Upcoming payments"/>
 
-    <include
-        android:id="@+id/next_payment1"
-        layout="@layout/listitem_next_payment"/>
+        <include
+            android:id="@+id/next_payment1"
+            layout="@layout/listitem_next_payment"/>
 
-    <include
-        android:id="@+id/next_payment2"
-        layout="@layout/listitem_next_payment"/>
+        <include
+            android:id="@+id/next_payment2"
+            layout="@layout/listitem_next_payment"/>
 
-    <include
-        android:id="@+id/next_payment3"
-        layout="@layout/listitem_next_payment"/>
-</LinearLayout>
+        <include
+            android:id="@+id/next_payment3"
+            layout="@layout/listitem_next_payment"/>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>
+
