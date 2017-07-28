@@ -36,7 +36,7 @@
     <string name="hint_account_holder_name">Account holder\'s name</string>
     <string name="hint_account_number">Account Number</string>
 
-    <string name="hint_ccard_name">Card Name</string>
+    <string name="hint_ccard_name">Card Alias (Optional)</string>
     <string name="hint_ccard_holder_name">Card Holder\'s Name</string>
     <string name="hint_ccard_number">Card Number</string>
     <string name="hint_ccard_limit">Max Limit</string>

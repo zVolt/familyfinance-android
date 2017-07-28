@@ -16,7 +16,10 @@ import android.widget.TextView;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,6 +34,9 @@ import io.github.zkhan93.familyfinance.util.Constants;
  */
 
 public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener {
+
+    public static final String TAG = CCardVH.class.getSimpleName();
+
     @BindView(R.id.name)
     TextView name;
     @BindView(R.id.number)
@@ -53,8 +59,9 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     ImageButton menu;
     @BindView(R.id.max_limit)
     TextView maxLimit;
+    @BindView(R.id.expires_on)
+    TextView expiresOn;
 
-    private Resources resources;
     private Context context;
     private PopupMenu popup;
     private ItemInteractionListener itemInteractionListener;
@@ -63,7 +70,6 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     public CCardVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);
         this.itemInteractionListener = itemInteractionListener;
-        resources = itemView.getResources();
         context = itemView.getContext();
         ButterKnife.bind(this, itemView);
         limit.setIndeterminate(false);
@@ -76,7 +82,10 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
 
     public void setCCard(CCard cCard) {
         this.cCard = cCard;
-        name.setText(cCard.getName());
+        if (cCard.getName() == null || cCard.getName().trim().length() == 0)
+            name.setVisibility(View.GONE);
+        else
+            name.setText(cCard.getName());
         NumberFormat cardNumberFormat = new DecimalFormat("");
         number.setText(cCard.getFormattedNumber(' '));
 
@@ -129,6 +138,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
 
         updatedBy.setText(cCard.getUpdatedBy().getName());
         updatedOn.setText(Constants.DATE_FORMAT.format(cCard.getUpdatedOn()));
+
+        expiresOn.setText(CCard.EXPIRE_ON.format(new Date(cCard.getExpireOn())));
     }
 
     @OnClick(R.id.menu)

@@ -18,7 +18,7 @@
 
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/cardholder"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             android:textIsSelectable="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="SBI Air India"/>
+            tools:text="Zeeshan Khan"/>
 
 
         <TextView
@@ -41,7 +41,7 @@
             android:layout_marginTop="4dp"
             android:textIsSelectable="true"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardholder"
+            app:layout_constraintTop_toBottomOf="@+id/name"
             tools:text="1234 4556 6778 6778"/>
 
         <TextView
@@ -57,18 +57,18 @@
             tools:text="23 July - 10 Aug"/>
 
         <TextView
-            android:id="@+id/cardholder"
+            android:id="@+id/name"
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
             android:layout_marginTop="4dp"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
             android:textIsSelectable="true"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            tools:text="Zeeshan Khan"/>
+            app:layout_constraintTop_toBottomOf="@+id/cardholder"
+            tools:text="SBI Air India"/>
 
         <TextView
             android:id="@+id/bank"
@@ -82,9 +82,9 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textIsSelectable="true"
-            app:layout_constraintBottom_toBottomOf="@+id/name"
+            app:layout_constraintBottom_toBottomOf="@+id/cardholder"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toRightOf="@+id/name"
+            app:layout_constraintLeft_toRightOf="@+id/cardholder"
             app:layout_constraintRight_toLeftOf="@+id/menu"
             tools:text="SBI bank iof indiaaaaaa aaaaa"/>
 
@@ -162,6 +162,21 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
+        <TextView
+            android:id="@+id/expires_on"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/date"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintLeft_toRightOf="@+id/date"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/date"
+            tools:text="12/19"/>
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
