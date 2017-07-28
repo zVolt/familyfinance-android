@@ -67,7 +67,8 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
     EditText cvv;
     @BindView(R.id.expires_on)
     EditText expiresOn;
-
+    @BindView(R.id.phone_number)
+    TextInputEditText phoneNumber;
 
     private String familyId;
     private CCard cCard;
@@ -168,6 +169,7 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
             cvv.setText(cCard.getCvv());
             userid.setText(cCard.getUserid());
             password.setText(cCard.getPassword());
+            phoneNumber.setText(cCard.getPhoneNumber());
             builder.setPositiveButton(R.string.update, this);
         }
         builder.setView(rootView);
@@ -178,6 +180,8 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString(ARG_FAMILY_ID,familyId);
+        //todo: save the card edited content
     }
 
     @Override
@@ -203,6 +207,7 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
                 newCcard.setPaymentDay(paymentDay.getValue());
                 newCcard.setBillingDay(billingDay.getValue());
                 newCcard.setCvv(cvv.getText().toString());
+                newCcard.setPhoneNumber(phoneNumber.getText().toString());
                 try {
                     newCcard.setExpireOn(EXPIRE_ON.parse(expiresOn.getText().toString()).getTime());
                 } catch (ParseException ex) {

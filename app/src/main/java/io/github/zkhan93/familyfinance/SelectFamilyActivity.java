@@ -94,7 +94,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                     if (callbackCounter == 0) {
                         showMessageOnSnackBar(String.format("%s does not exist, select " +
                                 "another family", familyId));
-                        progressDialog.hide();
+                        if (progressDialog != null) progressDialog.hide();
                     }
                     return;
                 }
@@ -115,7 +115,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                         //yeee you are approved start MainActivity
                         taskStatus = taskStatus | 1;
                         if (taskStatus == 3) {
-                            progressDialog.hide();
+                            if (progressDialog != null) progressDialog.dismiss();
                             startActivity(new Intent(SelectFamilyActivity.this, MainActivity
                                     .class));
                             finish();
@@ -132,7 +132,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                     //no such request
                     Log.d(TAG, "no such request");
                 }
-                if (callbackCounter == 0) progressDialog.hide();
+                if (callbackCounter == 0) if (progressDialog != null) progressDialog.hide();
             }
 
             @Override
@@ -140,7 +140,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                 Log.d(TAG, "moderator request cancelled: " + databaseError.getMessage());
                 callbackCounter--;
                 if (callbackCounter == 0) {
-                    progressDialog.hide();
+                    if (progressDialog != null) progressDialog.hide();
                     showMessageOnSnackBar("An error occurred while contacting moderator, try " +
                             "again !");
                 }
@@ -166,9 +166,9 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                         ()]));
                 taskStatus = taskStatus | 2;
                 if (callbackCounter == 0)
-                    progressDialog.hide();
+                    if (progressDialog != null) progressDialog.hide();
                 if (taskStatus == 3) {
-                    progressDialog.hide();
+                    if (progressDialog != null) progressDialog.dismiss();
                     startActivity(new Intent(SelectFamilyActivity.this, MainActivity
                             .class));
                     finish();
@@ -180,7 +180,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                 Log.d(TAG, "members request cancelled: " + databaseError.getMessage());
                 callbackCounter--;
                 if (callbackCounter == 0) {
-                    progressDialog.hide();
+                    if (progressDialog != null) progressDialog.hide();
                     showMessageOnSnackBar("An error occurred while fetching members of family, " +
                             "try " +
                             "again!");
@@ -219,8 +219,6 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                     .getPhotoUrl().toString());
             memberDao.insertOrReplace(me);
         }
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setIndeterminate(true);
         familyRef = FirebaseDatabase.getInstance().getReference("family");
         requestRef = FirebaseDatabase.getInstance().getReference("requests");
 
@@ -247,8 +245,9 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         familyId = edtTxtFamilyId.getText().toString().trim();
         switch (button.getId()) {
             case R.id.join_family:
-                progressDialog.setMessage("Please wait verifying family ...");
-                progressDialog.show();
+                progressDialog = ProgressDialog.show(this, null, "Please wait verifying " +
+                        "family ...", true, false);
+
                 familyRef.child(familyId)
                         .addListenerForSingleValueEvent(this);
                 Log.d(TAG, "joinFamily: " + familyId);
@@ -302,7 +301,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        checkActiveFamily();
+        checkActiveFamily(false);
     }
 
     @Override
@@ -313,7 +312,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
 
     @Override
     protected void onDestroy() {
-        progressDialog.hide();
+        if (progressDialog != null) progressDialog.hide();
         super.onDestroy();
     }
 
@@ -365,7 +364,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
             showMessageOnSnackBar(isModeratorOfFamily ? "Request approved, tap the family to " +
                     "join" : "Request send to moderator of the family");
         }
-        progressDialog.hide();
+        if (progressDialog != null) progressDialog.hide();
     }
 
     @Override
@@ -377,15 +376,18 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     /**
      * Check whether I am a moderator or an approved member of this familyId
      */
-    public void checkActiveFamily() {
+    public void checkActiveFamily(boolean showProgressBar) {
         familyId = PreferenceManager.getDefaultSharedPreferences(this).getString
                 ("activeFamilyId", null);
         Log.d(TAG, "switching to: " + familyId + "/" + me.getId());
-        progressDialog.setMessage(String.format("Checking %s details", familyId));
-        progressDialog.show();
+        if (showProgressBar) {
+
+            progressDialog = ProgressDialog.show(this, null, String.format("Checking %s " +
+                        "details", familyId), true, false);
+        }
         if (familyId == null) {
             //if no active family is set then fail silently and let the user choose the family
-            progressDialog.hide();
+            if (progressDialog != null) progressDialog.hide();
             return;
         }
         DaoSession daoSession = ((App) getApplication()).getDaoSession();
@@ -421,7 +423,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         if (!request.getBlocked() && request.getApproved()) {
             PreferenceManager.getDefaultSharedPreferences(this).edit().putString
                     ("activeFamilyId", request.getFamilyId()).apply();
-            checkActiveFamily();
+            checkActiveFamily(true);
         } else {
             toast.setText(String.format("Cannot join %s right now!", request.getFamilyId()));
             toast.show();

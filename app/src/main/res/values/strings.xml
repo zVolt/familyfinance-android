@@ -29,6 +29,7 @@
     <string name="action_update">Update</string>
     <string name="action_share">Share</string>
     <string name="action_delete">Delete</string>
+    <string name="action_add_addoncard">Add Addon Card</string>
     <string name="action_remove">Remove</string>
     <string name="action_switch_family">Switch Family</string>
     <!--hints -->
@@ -49,6 +50,7 @@
     <string name="hint_ifsc">Branch IFSC Code</string>
     <string name="hint_balance">Balance</string>
     <string name="hint_family_id">Family Id</string>
+    <string name="hint_phone_number">Phone Number</string>
 
     <!--Main Activity specific-->
     <string name="section_format">%d Section</string>

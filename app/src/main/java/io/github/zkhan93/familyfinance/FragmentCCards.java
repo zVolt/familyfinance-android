@@ -19,7 +19,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
+import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.viewholders.AddonCardVH;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
 
@@ -31,7 +33,8 @@ import io.github.zkhan93.familyfinance.viewholders.CCardVH;
  * Use the {@link FragmentCCards#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionListener {
+public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionListener,
+        AddonCardVH.ItemInteractionListener {
 
     public static final String TAG = FragmentCCards.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,7 +43,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     //private String mParam1;
     private String familyId;
-    private String cCardToDelete;
+    private String cCardToDelete, addonCardToDelete;
     private OnFragmentInteractionListener mListener;
     private CCardListAdapter cCardListAdapter;
 
@@ -81,7 +84,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         View rootView = inflater.inflate(R.layout.fragment_ccards, container, false);
         ButterKnife.bind(this, rootView);
         cCardListAdapter = new CCardListAdapter((App) getActivity().getApplication(), familyId,
-                FragmentCCards.this);
+                FragmentCCards.this, this);
         ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);
         return rootView;
@@ -160,20 +163,58 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     public void edit(CCard cCard) {
         Log.d(TAG, "edit: " + cCard.toString());
         DialogFragmentCcard.newInstance(familyId, cCard).show(getFragmentManager(),
-                DialogFragmentAddAccount.TAG);
+                DialogFragmentCcard.TAG);
+    }
+
+    @Override
+    public void addAddonCard(CCard cCard) {
+        Log.d(TAG, "addAddonCard: " + cCard.toString());
+        DialogFragmentAddonCard.newInstance(familyId, cCard.getNumber()).show(getFragmentManager(),
+                DialogFragmentAddonCard.TAG);
+    }
+
+    @Override
+    public void delete(AddonCard addonCard) {
+        Log.d(TAG, "delete addon" + addonCard.toString());
+        addonCardToDelete = addonCard.getNumber();
+        String title = "You want to delete Addon Card " + addonCard.getNumber();
+        DialogFragmentConfirm<AddonCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
+        Bundle bundle = new Bundle();
+        bundle.putString(DialogFragmentConfirm.ARG_TITLE, title);
+        bundle.putParcelable(DialogFragmentConfirm.ARG_ITEM, addonCard);
+        dialogFragmentConfirm.setArguments(bundle);
+        dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
+                DialogFragmentConfirm.TAG);
+    }
+
+    @Override
+    public void edit(AddonCard addonCard) {
+        Log.d(TAG, "edit addon" + addonCard.toString());
+    }
+
+    @Override
+    public void share(AddonCard addonCard) {
+        Log.d(TAG, "share addon" + addonCard.toString());
     }
 
     /**
      * Events fired from DialogFragmentConfirm
      */
     @Subscribe()
-    public void deleteActiveCcardConfirmed(DeleteConfirmedEvent<CCard> event) {
-        if (event.getItem() != null) {
+    public void deleteActiveCcardConfirmed(DeleteConfirmedEvent event) {
+        if (event == null || event.getItem() == null) return;
+        if (event.getItem() instanceof CCard) {
+            CCard cCard = (CCard) event.getItem();
             ((App) getActivity().getApplication()).getDaoSession().getCCardDao().deleteByKey
-                    (event.getItem().getNumber());
-            cCardListAdapter.deleteCcard(event.getItem().getNumber());
+                    (cCard.getNumber());
+            cCardListAdapter.deleteCcard(cCard.getNumber());
         }
-
+        else if(event.getItem() instanceof AddonCard){
+            AddonCard addonCard = (AddonCard) event.getItem();
+            ((App) getActivity().getApplication()).getDaoSession().getAddonCardDao().deleteByKey
+                    (addonCard.getNumber());
+            cCardListAdapter.deleteCcard(addonCard.getNumber(),true);
+        }
     }
 
     /**

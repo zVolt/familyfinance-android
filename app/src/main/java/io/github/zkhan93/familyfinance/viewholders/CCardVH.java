@@ -5,8 +5,11 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
+import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -26,6 +30,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.BuildConfig;
 import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.adapters.AddonCardListAdapter;
+import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.util.Constants;
 
@@ -61,13 +67,19 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     TextView maxLimit;
     @BindView(R.id.expires_on)
     TextView expiresOn;
+    @BindView(R.id.addon_cards)
+    RecyclerView addonCards;
+    @BindView(R.id.addons_title)
+    TextView addonTitle;
+
 
     private Context context;
     private PopupMenu popup;
     private ItemInteractionListener itemInteractionListener;
     private CCard cCard;
+    private AddonCardListAdapter addonCardListAdapter;
 
-    public CCardVH(View itemView, ItemInteractionListener itemInteractionListener) {
+    public CCardVH(View itemView, ItemInteractionListener itemInteractionListener,AddonCardVH.ItemInteractionListener addonCardInteractionListener) {
         super(itemView);
         this.itemInteractionListener = itemInteractionListener;
         context = itemView.getContext();
@@ -78,6 +90,11 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
         inflater.inflate(R.menu.ccard_item_menu, popup.getMenu());
+
+        addonCardListAdapter = new AddonCardListAdapter(addonCardInteractionListener);
+        addonCards.setAdapter(addonCardListAdapter);
+        addonCards.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager
+                .HORIZONTAL, true));
     }
 
     public void setCCard(CCard cCard) {
@@ -136,8 +153,20 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit() - cCard
                 .getConsumedLimit()));
 
-        updatedBy.setText(cCard.getUpdatedBy().getName());
-        updatedOn.setText(Constants.DATE_FORMAT.format(cCard.getUpdatedOn()));
+
+        if (cCard.getAddonCards() != null && cCard.getAddonCards().size() > 0) {
+            updatedBy.setText(cCard.getUpdatedBy().getName());
+            addonCardListAdapter.setItems(cCard.getAddonCards());
+            addonCards.setVisibility(View.VISIBLE);
+            addonTitle.setVisibility(View.VISIBLE);
+            addonTitle.setText(String.format("%d Addon Cards", cCard.getAddonCards().size()));
+        } else {
+            updatedBy.setText(cCard.getUpdatedBy().getName());
+            addonCards.setVisibility(View.GONE);
+            addonTitle.setVisibility(View.GONE);
+        }
+        updatedOn.setText(DateUtils.getRelativeTimeSpanString(cCard.getUpdatedOn()));
+        //Constants.DATE_FORMAT.format(cCard.getUpdatedOn())
 
         expiresOn.setText(CCard.EXPIRE_ON.format(new Date(cCard.getExpireOn())));
     }
@@ -162,6 +191,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
             case R.id.action_share:
                 itemInteractionListener.share(cCard);
                 return true;
+            case R.id.action_add_addoncard:
+                itemInteractionListener.addAddonCard(cCard);
             default:
                 return false;
         }
@@ -175,6 +206,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         void share(CCard cCard);
 
         void edit(CCard cCard);
+
+        void addAddonCard(CCard cCard);
 
     }
 }

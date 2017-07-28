@@ -24,11 +24,15 @@ import java.util.ListIterator;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.events.InsertEvent;
+import io.github.zkhan93.familyfinance.models.AddonCard;
+import io.github.zkhan93.familyfinance.models.AddonCardDao;
+import io.github.zkhan93.familyfinance.models.BaseModel;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.models.OtpDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
+import io.github.zkhan93.familyfinance.viewholders.AddonCardVH;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
 /**
@@ -36,20 +40,25 @@ import io.github.zkhan93.familyfinance.viewholders.CCardVH;
  */
 
 public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements LoadFromDbTask
-        .Listener<CCard>, InsertTask.Listener<CCard>, ChildEventListener, ValueEventListener {
+        .Listener<CCard>, InsertTask.Listener<BaseModel>, ChildEventListener, ValueEventListener {
     public static final String TAG = CCardListAdapter.class.getSimpleName();
     private ArrayList<CCard> ccards;
     private CCardVH.ItemInteractionListener itemInteractionListener;
+    private AddonCardVH.ItemInteractionListener addonCardInteractionListener;
     private String familyId;
     private DatabaseReference ccardRef;
     private CCardDao cCardDao;
+    private AddonCardDao addonCardDao;
     private boolean ignoreChildEvent;
 
     public CCardListAdapter(App app, String familyId, CCardVH.ItemInteractionListener
-            itemInteractionListener) {
+            itemInteractionListener, AddonCardVH.ItemInteractionListener
+                                    addonCardInteractionListener) {
         cCardDao = app.getDaoSession().getCCardDao();
+        addonCardDao = app.getDaoSession().getAddonCardDao();
         this.ccards = new ArrayList<>();
         this.itemInteractionListener = itemInteractionListener;
+        this.addonCardInteractionListener = addonCardInteractionListener;
         this.familyId = familyId;
         ccardRef = FirebaseDatabase.getInstance().getReference("ccards").child(familyId);
         ignoreChildEvent = true;
@@ -61,7 +70,8 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
     @Override
     public CCardVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CCardVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_ccard, parent, false), itemInteractionListener);
+                .listitem_ccard, parent, false), itemInteractionListener,
+                addonCardInteractionListener);
     }
 
     @Override
@@ -83,6 +93,43 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         notifyDataSetChanged();
         ccardRef.addListenerForSingleValueEvent(this);
         ccardRef.addChildEventListener(this);
+    }
+
+    public boolean addOrUpdate(CCard newCcard, List<AddonCard> addonCards) {
+        int position = 0;
+        boolean found = false;
+        ListIterator<CCard> itr = ccards.listIterator();
+        CCard oldCcard;
+        while (itr.hasNext()) {
+            oldCcard = itr.next();
+            if (oldCcard.getNumber().trim().equals(newCcard.getNumber().trim())) {
+                found = true;
+                oldCcard.updateFrom(newCcard); // fetch the item from database again
+                cCardDao.insertOrReplace(oldCcard);
+                addonCardDao.queryBuilder().where(AddonCardDao.Properties.MainCardNumber.eq
+                        (oldCcard.getNumber())).buildDelete()
+                        .executeDeleteWithoutDetachingEntities();
+                addonCardDao.insertOrReplaceInTx(addonCards);
+                oldCcard = cCardDao.load(oldCcard.getNumber());
+                itr.set(oldCcard);
+                notifyItemChanged(position);
+                break;
+            }
+            position++;
+        }
+        if (found) {
+            oldCcard = ccards.remove(position);
+            ccards.add(0, oldCcard);
+            notifyItemMoved(position, 0);
+        }
+        if (!found) {
+            addonCardDao.insertOrReplaceInTx(addonCards);
+            cCardDao.insertOrReplace(newCcard);
+            newCcard = cCardDao.load(newCcard.getNumber());
+            ccards.add(0, newCcard);
+            notifyItemInserted(0);
+        }
+        return found;
     }
 
     public boolean addOrUpdate(CCard newCcard) {
@@ -125,15 +172,40 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         EventBus.getDefault().unregister(this);
     }
 
-    public void deleteCcard(String accountNumber) {
+    public void deleteCcard(String cardNumber) {
         ListIterator<CCard> itr = ccards.listIterator();
         int position = 0;
         while (itr.hasNext()) {
-            if (itr.next().getNumber().trim().equals(accountNumber.trim())) {
+            if (itr.next().getNumber().trim().equals(cardNumber.trim())) {
                 itr.remove();
                 notifyItemRemoved(position);
-                ccardRef.child(accountNumber).setValue(null);
+                ccardRef.child(cardNumber).setValue(null);
                 break;
+            }
+            position++;
+        }
+    }
+
+    public void deleteCcard(String cardNumber, boolean isAddon) {
+        if (!isAddon) {
+            deleteCcard(cardNumber);
+            return;
+        }
+        ListIterator<AddonCard> itr;
+        AddonCard addonCard;
+        int position = 0;
+        for (CCard cCard : ccards) {
+            if (cCard.getAddonCards() == null || cCard.getAddonCards().size() == 0) continue;
+            itr = cCard.getAddonCards().listIterator();
+            while (itr.hasNext()) {
+                addonCard = itr.next();
+                if (addonCard.getNumber().trim().equals(cardNumber.trim())) {
+                    itr.remove();
+                    notifyItemChanged(position);
+                    ccardRef.child(cCard.getNumber()).child("addonCards").child(addonCard
+                            .getNumber()).setValue(null);
+                    return;
+                }
             }
             position++;
         }
@@ -154,8 +226,15 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         if (ignoreChildEvent || !dataSnapshot.exists())
             return;
         CCard cCard = dataSnapshot.getValue(CCard.class);
-        if (cCard != null)
-            addOrUpdate(cCard);
+        if (cCard == null) return;
+        List<AddonCard> addonCards = new ArrayList<>();
+        AddonCard addonCard;
+        for (DataSnapshot ads : dataSnapshot.child("addonCards").getChildren()) {
+            addonCard = ads.getValue(AddonCard.class);
+            if (addonCard != null)
+                addonCards.add(addonCard);
+        }
+        addOrUpdate(cCard, addonCards);
     }
 
     @Override
@@ -165,7 +244,14 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         CCard cCard = dataSnapshot.getValue(CCard.class);
         if (cCard == null)
             return;
-        addOrUpdate(cCard);
+        List<AddonCard> addonCards = new ArrayList<>();
+        AddonCard addonCard;
+        for (DataSnapshot ads : dataSnapshot.child("addonCards").getChildren()) {
+            addonCard = ads.getValue(AddonCard.class);
+            if (addonCard != null)
+                addonCards.add(addonCard);
+        }
+        addOrUpdate(cCard, addonCards);
     }
 
     @Override
@@ -209,22 +295,36 @@ public class CCardListAdapter extends RecyclerView.Adapter<CCardVH> implements L
         if (!dataSnapshot.exists())
             return;
         CCard cCard;
+        AddonCard addonCard;
         List<CCard> ccards = new ArrayList<>();
+        List<AddonCard> addonCards = new ArrayList<>();
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             cCard = ds.getValue(CCard.class);
-            if (cCard != null)
-                ccards.add(cCard);
+            if (cCard == null) continue;
+            ccards.add(cCard);
+            for (DataSnapshot ads : ds.child("addonCards").getChildren()) {
+                addonCard = ads.getValue(AddonCard.class);
+                if (addonCard == null) continue;
+                addonCard.setMainCardNumber(cCard.getNumber());
+                addonCards.add(addonCard);
+            }
         }
 //        Log.d(TAG, "fetched: " + ccards.toString());
+        new InsertTask<>(addonCardDao, this, true).execute(addonCards.toArray(new
+                AddonCard[addonCards.size()]));
         new InsertTask<>(cCardDao, this, true).execute(ccards.toArray(new CCard[ccards.size()]));
     }
 
     @Override
-    public void onInsertTaskComplete(List<CCard> items) {
-        ccards.clear();
-        ccards.addAll(items);
-        Collections.sort(ccards, CCard.BY_UPDATED_ON);
-        notifyDataSetChanged();
-        ignoreChildEvent = false;
+    public void onInsertTaskComplete(List items) {
+        if (items == null || items.size() == 0)
+            return;
+        if (items.get(0) instanceof CCard) {
+            ccards.clear();
+            ccards.addAll(items);
+            Collections.sort(ccards, CCard.BY_UPDATED_ON);
+            notifyDataSetChanged();
+            ignoreChildEvent = false;
+        }
     }
 }

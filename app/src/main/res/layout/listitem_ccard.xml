@@ -22,9 +22,6 @@
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
             android:maxLength="15"
             android:textIsSelectable="true"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -37,7 +34,6 @@
             style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
             android:layout_marginTop="4dp"
             android:textIsSelectable="true"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -49,7 +45,6 @@
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
             android:layout_marginTop="4dp"
             android:textIsSelectable="true"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -61,7 +56,6 @@
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="1"
@@ -75,8 +69,10 @@
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:scrollHorizontally="true"
@@ -93,7 +89,6 @@
             style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
             android:layout_marginTop="4dp"
             android:gravity="center_horizontal"
             android:textIsSelectable="true"
@@ -106,8 +101,6 @@
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
             android:layout_marginTop="8dp"
             android:indeterminate="false"
             android:max="100"
@@ -124,7 +117,6 @@
             style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="0dp"
             android:layout_marginTop="4dp"
             android:gravity="center_horizontal"
             android:textIsSelectable="true"
@@ -142,7 +134,8 @@
             android:layout_marginTop="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/date"
+            app:layout_constraintTop_toBottomOf="@+id/addon_cards"
+            app:layout_constraintVertical_bias="0.0"
             tools:text="Bushra Rehman"/>
 
         <TextView
@@ -167,10 +160,7 @@
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginEnd="0dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="0dp"
             app:layout_constraintBottom_toBottomOf="@+id/date"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintLeft_toRightOf="@+id/date"
@@ -178,5 +168,25 @@
             app:layout_constraintTop_toTopOf="@+id/date"
             tools:text="12/19"/>
 
+        <TextView
+            android:id="@+id/addons_title"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date"
+            android:text="Addons Cards"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/addon_cards"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addons_title"
+            tools:listitem="@layout/listitem_addon_card"/>
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

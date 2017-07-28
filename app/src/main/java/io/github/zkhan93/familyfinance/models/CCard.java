@@ -8,12 +8,15 @@ import com.google.firebase.database.Exclude;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
+import org.greenrobot.greendao.annotation.OrderBy;
+import org.greenrobot.greendao.annotation.ToMany;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
@@ -26,12 +29,17 @@ public class CCard extends BaseModel {
     public static final SimpleDateFormat EXPIRE_ON = new SimpleDateFormat("mm/yy");
     @Id
     String number;
-    String name, bank, cardholder, userid, password, cvv;
+    String name, bank, cardholder, userid, password, cvv, phoneNumber;
     long updatedOn, expireOn;
     int paymentDay, billingDay;
     @ToOne(joinProperty = "updatedByMemberId")
     Member updatedBy;
     float maxLimit, consumedLimit;
+
+    @ToMany(referencedJoinProperty = "mainCardNumber")
+    @OrderBy("updatedOn DESC")
+    @Exclude
+    List<AddonCard> addonCards;
 
     public void updateFrom(CCard cCard) {
         number = cCard.getNumber();
@@ -47,6 +55,7 @@ public class CCard extends BaseModel {
         consumedLimit = cCard.getConsumedLimit();
         cvv = cCard.getCvv();
         expireOn = cCard.getExpireOn();
+        addonCards = cCard.addonCards;
     }
 
     public String getCvv() {
@@ -186,6 +195,7 @@ public class CCard extends BaseModel {
                 ", billingDay=" + billingDay +
                 ", updatedBy=" + updatedBy +
                 ", maxLimit=" + maxLimit +
+                ", phoneNumber=" + phoneNumber +
                 ", consumedLimit=" + consumedLimit +
                 ", updatedByMemberId='" + updatedByMemberId + '\'' +
                 '}';
@@ -202,7 +212,8 @@ public class CCard extends BaseModel {
     /**
      * To-one relationship, resolved on first access.
      */
-    @Generated(hash = 142537439)
+    @Exclude
+    @Keep
     public Member getUpdatedBy() {
         String __key = this.updatedByMemberId;
         if (updatedBy__resolvedKey == null || updatedBy__resolvedKey != __key) {
@@ -223,7 +234,8 @@ public class CCard extends BaseModel {
     /**
      * called by internal mechanisms, do not call yourself.
      */
-    @Generated(hash = 2009088111)
+    @Exclude
+    @Keep
     public void setUpdatedBy(Member updatedBy) {
         synchronized (this) {
             this.updatedBy = updatedBy;
@@ -324,12 +336,11 @@ public class CCard extends BaseModel {
         this.password = password;
     }
 
-    @Generated(hash = 1183908316)
+    @Generated(hash = 1861521360)
     public CCard(String number, String name, String bank, String cardholder, String userid,
-                 String password,
-                 String cvv, long updatedOn, long expireOn, int paymentDay, int billingDay, float
-                         maxLimit,
-                 float consumedLimit, String updatedByMemberId) {
+                 String password, String cvv, String phoneNumber, long updatedOn, long expireOn,
+                 int paymentDay, int billingDay, float maxLimit, float consumedLimit,
+                 String updatedByMemberId) {
         this.number = number;
         this.name = name;
         this.bank = bank;
@@ -337,6 +348,7 @@ public class CCard extends BaseModel {
         this.userid = userid;
         this.password = password;
         this.cvv = cvv;
+        this.phoneNumber = phoneNumber;
         this.updatedOn = updatedOn;
         this.expireOn = expireOn;
         this.paymentDay = paymentDay;
@@ -344,6 +356,28 @@ public class CCard extends BaseModel {
         this.maxLimit = maxLimit;
         this.consumedLimit = consumedLimit;
         this.updatedByMemberId = updatedByMemberId;
+    }
+
+    public static final Comparator<CCard> BY_UPDATED_ON = new Comparator<CCard>() {
+        @Override
+        public int compare(CCard o1, CCard o2) {
+            return Long.compare(o2.getUpdatedOn(), o1.getUpdatedOn());
+        }
+    };
+
+    public static final Comparator<CCard> BY_PAYMENT_DATE = new Comparator<CCard>() {
+        @Override
+        public int compare(CCard o1, CCard o2) {
+            return Long.compare(o1.getPaymentDate().getTime(), o2.getPaymentDate().getTime());
+        }
+    };
+
+    public String getPhoneNumber() {
+        return this.phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override
@@ -360,6 +394,7 @@ public class CCard extends BaseModel {
         dest.writeString(this.userid);
         dest.writeString(this.password);
         dest.writeString(this.cvv);
+        dest.writeString(this.phoneNumber);
         dest.writeLong(this.updatedOn);
         dest.writeLong(this.expireOn);
         dest.writeInt(this.paymentDay);
@@ -367,7 +402,39 @@ public class CCard extends BaseModel {
         dest.writeParcelable(this.updatedBy, flags);
         dest.writeFloat(this.maxLimit);
         dest.writeFloat(this.consumedLimit);
+        dest.writeTypedList(this.addonCards);
         dest.writeString(this.updatedByMemberId);
+    }
+
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Keep
+    @Exclude
+    public List<AddonCard> getAddonCards() {
+        if (addonCards == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            AddonCardDao targetDao = daoSession.getAddonCardDao();
+            List<AddonCard> addonCardsNew = targetDao._queryCCard_AddonCards(number);
+            synchronized (this) {
+                if (addonCards == null) {
+                    addonCards = addonCardsNew;
+                }
+            }
+        }
+        return addonCards;
+    }
+
+    /**
+     * Resets a to-many relationship, making the next get call to query for a fresh result.
+     */
+    @Generated(hash = 124690502)
+    public synchronized void resetAddonCards() {
+        addonCards = null;
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -385,6 +452,7 @@ public class CCard extends BaseModel {
         this.userid = in.readString();
         this.password = in.readString();
         this.cvv = in.readString();
+        this.phoneNumber = in.readString();
         this.updatedOn = in.readLong();
         this.expireOn = in.readLong();
         this.paymentDay = in.readInt();
@@ -392,6 +460,7 @@ public class CCard extends BaseModel {
         this.updatedBy = in.readParcelable(Member.class.getClassLoader());
         this.maxLimit = in.readFloat();
         this.consumedLimit = in.readFloat();
+        this.addonCards = in.createTypedArrayList(AddonCard.CREATOR);
         this.updatedByMemberId = in.readString();
     }
 
@@ -404,19 +473,6 @@ public class CCard extends BaseModel {
         @Override
         public CCard[] newArray(int size) {
             return new CCard[size];
-        }
-    };
-    public static final Comparator<CCard> BY_UPDATED_ON = new Comparator<CCard>() {
-        @Override
-        public int compare(CCard o1, CCard o2) {
-            return Long.compare(o2.getUpdatedOn(), o1.getUpdatedOn());
-        }
-    };
-
-    public static final Comparator<CCard> BY_PAYMENT_DATE = new Comparator<CCard>() {
-        @Override
-        public int compare(CCard o1, CCard o2) {
-            return Long.compare(o1.getPaymentDate().getTime(), o2.getPaymentDate().getTime());
         }
     };
 }
