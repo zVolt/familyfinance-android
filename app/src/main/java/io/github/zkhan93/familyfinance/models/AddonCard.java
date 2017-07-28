@@ -12,8 +12,9 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
+import java.util.Date;
+
 /**
- *
  * Created by zeeshan on 28/7/17.
  */
 @Entity
@@ -32,6 +33,17 @@ public class AddonCard extends BaseModel implements Parcelable {
     private String updatedByMemberId;
 
     public AddonCard() {
+    }
+
+    @Exclude
+    public String getReadableContent() {
+        StringBuilder strb = new StringBuilder();
+        strb.append("Card Holder: ").append(name).append("\n")
+                .append("Number: ").append(number).append("\n")
+                .append("CVV: ").append(cvv).append("\n")
+                .append("Expire On (MM/YY): ").append(CCard.EXPIRE_ON.format(new Date(expiresOn)))
+                .append("\n");
+        return strb.toString();
     }
 
     @Override
@@ -105,7 +117,9 @@ public class AddonCard extends BaseModel implements Parcelable {
         this.updatedByMemberId = updatedByMemberId;
     }
 
-    /** To-one relationship, resolved on first access. */
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Exclude
     @Keep
     public Member getUpdatedBy() {
@@ -125,7 +139,9 @@ public class AddonCard extends BaseModel implements Parcelable {
         return updatedBy;
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Exclude
     @Keep
     public void setUpdatedBy(Member updatedBy) {
@@ -174,7 +190,7 @@ public class AddonCard extends BaseModel implements Parcelable {
 
     @Generated(hash = 1678265474)
     public AddonCard(String number, String phoneNumber, String name, String mainCardNumber,
-            long expiresOn, int cvv, long updatedOn, String updatedByMemberId) {
+                     long expiresOn, int cvv, long updatedOn, String updatedByMemberId) {
         this.number = number;
         this.phoneNumber = phoneNumber;
         this.name = name;
@@ -185,10 +201,14 @@ public class AddonCard extends BaseModel implements Parcelable {
         this.updatedByMemberId = updatedByMemberId;
     }
 
-    /** Used to resolve relations */
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 1343022914)
     private transient AddonCardDao myDao;
     @Generated(hash = 1066823846)

@@ -190,11 +190,20 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     @Override
     public void edit(AddonCard addonCard) {
         Log.d(TAG, "edit addon" + addonCard.toString());
+        DialogFragmentAddonCard.newInstance(familyId, addonCard.getMainCardNumber(), addonCard)
+                .show(getFragmentManager(),
+                DialogFragmentAddonCard.TAG);
     }
 
     @Override
     public void share(AddonCard addonCard) {
         Log.d(TAG, "share addon" + addonCard.toString());
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, addonCard.getReadableContent());
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string
+                .action_share)));
     }
 
     /**
@@ -208,12 +217,11 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
             ((App) getActivity().getApplication()).getDaoSession().getCCardDao().deleteByKey
                     (cCard.getNumber());
             cCardListAdapter.deleteCcard(cCard.getNumber());
-        }
-        else if(event.getItem() instanceof AddonCard){
+        } else if (event.getItem() instanceof AddonCard) {
             AddonCard addonCard = (AddonCard) event.getItem();
             ((App) getActivity().getApplication()).getDaoSession().getAddonCardDao().deleteByKey
                     (addonCard.getNumber());
-            cCardListAdapter.deleteCcard(addonCard.getNumber(),true);
+            cCardListAdapter.deleteCcard(addonCard.getNumber(), true);
         }
     }
 

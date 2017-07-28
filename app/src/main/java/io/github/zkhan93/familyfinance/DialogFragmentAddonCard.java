@@ -147,7 +147,7 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
             name.setText(addonCard.getName());
             number.setText(addonCard.getNumber());
             expiresOn.setText(CCard.EXPIRE_ON.format(new Date(addonCard.getExpiresOn())));
-            cvv.setText(addonCard.getCvv());
+            cvv.setText(String.valueOf(addonCard.getCvv()));
             phoneNumber.setText(addonCard.getPhoneNumber());
             builder.setPositiveButton(R.string.update, this);
         }
