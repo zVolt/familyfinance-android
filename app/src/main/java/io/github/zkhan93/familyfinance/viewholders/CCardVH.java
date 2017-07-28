@@ -79,7 +79,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     private CCard cCard;
     private AddonCardListAdapter addonCardListAdapter;
 
-    public CCardVH(View itemView, ItemInteractionListener itemInteractionListener,AddonCardVH.ItemInteractionListener addonCardInteractionListener) {
+    public CCardVH(View itemView, ItemInteractionListener itemInteractionListener, AddonCardVH
+            .ItemInteractionListener addonCardInteractionListener) {
         super(itemView);
         this.itemInteractionListener = itemInteractionListener;
         context = itemView.getContext();
@@ -96,6 +97,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         addonCards.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager
                 .HORIZONTAL, true));
     }
+
 
     public void setCCard(CCard cCard) {
         this.cCard = cCard;
@@ -171,9 +173,17 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         expiresOn.setText(CCard.EXPIRE_ON.format(new Date(cCard.getExpireOn())));
     }
 
-    @OnClick(R.id.menu)
-    void onClick(View button) {
-        popup.show();
+    @OnClick({R.id.menu, R.id.addons_title})
+    void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.menu:
+                popup.show();
+                break;
+            case R.id.addons_title:
+                addonCards.setVisibility(addonCards.getVisibility() == View.VISIBLE ? View.GONE :
+                        View.VISIBLE);
+                break;
+        }
     }
 
     @Override
