@@ -159,12 +159,10 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         if (cCard.getAddonCards() != null && cCard.getAddonCards().size() > 0) {
             updatedBy.setText(cCard.getUpdatedBy().getName());
             addonCardListAdapter.setItems(cCard.getAddonCards());
-            addonCards.setVisibility(View.VISIBLE);
             addonTitle.setVisibility(View.VISIBLE);
             addonTitle.setText(String.format("%d Addon Cards", cCard.getAddonCards().size()));
         } else {
             updatedBy.setText(cCard.getUpdatedBy().getName());
-            addonCards.setVisibility(View.GONE);
             addonTitle.setVisibility(View.GONE);
         }
         updatedOn.setText(DateUtils.getRelativeTimeSpanString(cCard.getUpdatedOn()));
