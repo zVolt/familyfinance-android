@@ -15,12 +15,27 @@ import java.util.List;
  * Created by zeeshan on 7/7/17.
  */
 @Entity
-public class Member extends BaseModel{
+public class Member extends BaseModel {
     @Id
     String id;
     String name, email;
+    long wasPresentOn;
     boolean smsEnabled;
     String profilePic;
+
+    public Member() {
+    }
+
+    @Generated(hash = 271757801)
+    public Member(String id, String name, String email, long wasPresentOn, boolean smsEnabled,
+            String profilePic) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.wasPresentOn = wasPresentOn;
+        this.smsEnabled = smsEnabled;
+        this.profilePic = profilePic;
+    }
 
     public String getName() {
         return name;
@@ -50,24 +65,9 @@ public class Member extends BaseModel{
         this.smsEnabled = smsEnabled;
     }
 
-    @Override
-    public String toString() {
-        return "Member{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", smsEnabled=" + smsEnabled +
-                ", profilePic='" + profilePic + '\'' +
-                '}';
-    }
-
-    public Member() {
-    }
-
     public boolean getSmsEnabled() {
         return this.smsEnabled;
     }
-
 
     public String getProfilePic() {
         return this.profilePic;
@@ -77,13 +77,12 @@ public class Member extends BaseModel{
         this.profilePic = profilePic;
     }
 
-    @Generated(hash = 217423531)
-    public Member(String id, String name, String email, boolean smsEnabled, String profilePic) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.smsEnabled = smsEnabled;
-        this.profilePic = profilePic;
+    public long getWasPresentOn() {
+        return wasPresentOn;
+    }
+
+    public void setWasPresentOn(long wasPresentOn) {
+        this.wasPresentOn = wasPresentOn;
     }
 
     @Override
@@ -96,6 +95,7 @@ public class Member extends BaseModel{
         dest.writeString(this.id);
         dest.writeString(this.name);
         dest.writeString(this.email);
+        dest.writeLong(this.wasPresentOn);
         dest.writeByte(this.smsEnabled ? (byte) 1 : (byte) 0);
         dest.writeString(this.profilePic);
     }
@@ -104,6 +104,7 @@ public class Member extends BaseModel{
         this.id = in.readString();
         this.name = in.readString();
         this.email = in.readString();
+        this.wasPresentOn = in.readLong();
         this.smsEnabled = in.readByte() != 0;
         this.profilePic = in.readString();
     }

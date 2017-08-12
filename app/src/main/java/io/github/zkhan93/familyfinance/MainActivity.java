@@ -31,6 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -163,7 +165,8 @@ public class MainActivity extends AppCompatActivity implements
         }
         me = ((App) getApplication()).getDaoSession().getMemberDao().load(user.getUid());
         if (me == null) {
-            me = new Member(user.getUid(), user.getDisplayName(), user.getEmail(), false, user
+            me = new Member(user.getUid(), user.getDisplayName(), user.getEmail(), Calendar
+                    .getInstance().getTimeInMillis(), false, user
                     .getPhotoUrl().toString());
             ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(me);
         }

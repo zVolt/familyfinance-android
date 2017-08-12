@@ -1,8 +1,11 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -10,6 +13,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +32,8 @@ public class MemberVH extends RecyclerView.ViewHolder {
     TextView name;
     @BindView(R.id.email)
     TextView email;
+    @BindView(R.id.timestamp)
+    TextView timestamp;
 
     @BindView(R.id.sms)
     ImageButton toggleSms;
@@ -34,6 +41,8 @@ public class MemberVH extends RecyclerView.ViewHolder {
     ImageButton remove;
     @BindView(R.id.avatar)
     ImageView avatar;
+    @BindView(R.id.state)
+    ImageView state;
 
     private Member member;
     private ItemInteractionListener itemInteractionListener;
@@ -56,6 +65,15 @@ public class MemberVH extends RecyclerView.ViewHolder {
         if (member.getProfilePic() != null && member.getProfilePic().trim().length() > 0)
             Glide.with(context).load(member.getProfilePic()).apply(RequestOptions
                     .circleCropTransform()).into(avatar);
+        timestamp.setText(DateUtils.getRelativeTimeSpanString(member.getWasPresentOn()));
+
+        //if member presence is latest to 2 minutes show him green else red
+        int color = -1;
+        if (member.getWasPresentOn() >= Calendar.getInstance().getTimeInMillis() - (2 * 60 * 60))
+            color = R.color.md_green_500;
+        else
+            color = R.color.md_deep_orange_500;
+        DrawableCompat.setTint(state.getDrawable(), ContextCompat.getColor(context, color));
     }
 
     @OnClick({R.id.remove, R.id.sms})

@@ -215,7 +215,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                 finish();
                 return;
             }
-            me = new Member(user.getUid(), user.getDisplayName(), user.getEmail(), false, user
+            me = new Member(user.getUid(), user.getDisplayName(), user.getEmail(),Calendar.getInstance().getTimeInMillis(), false, user
                     .getPhotoUrl().toString());
             memberDao.insertOrReplace(me);
         }

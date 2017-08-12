@@ -15,10 +15,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
 import io.github.zkhan93.familyfinance.models.Member;
+import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
@@ -99,6 +103,17 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         if (mListener != null) {
             //call the interface methods
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Util.isInternetConnected(getActivity().getApplicationContext())) {
+            Log.d(TAG, "seeking presence");
+            FirebaseDatabase.getInstance().getReference("family").child(familyId).child
+                    ("checkPresence").setValue(ServerValue.TIMESTAMP);
+        } else
+            Log.d(TAG, "seeking presence condiftion failed");
     }
 
     @Override

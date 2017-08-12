@@ -84,12 +84,16 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
         for (Member oldMember : members) {
             if (oldMember.getId().trim().equals(newMember.getId().trim())) {
                 found = true;
+                oldMember.setWasPresentOn(newMember.getWasPresentOn());
+                //TODO: update other fields
+                memberDao.insertOrReplace(newMember);
                 break;
             }
             position++;
         }
-        if (found)
+        if (found) {
             notifyItemChanged(position);
+        }
         else {
             members.add(newMember);
             notifyItemInserted(members.size());
