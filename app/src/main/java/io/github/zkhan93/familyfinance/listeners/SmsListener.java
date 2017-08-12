@@ -8,14 +8,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.appcompat.BuildConfig;
 import android.telephony.SmsMessage;
-import android.telephony.SubscriptionManager;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,7 +18,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -89,7 +83,7 @@ public class SmsListener extends BroadcastReceiver {
                     smsFrom = msgs[i].getOriginatingAddress();
                     smsBody = msgs[i].getMessageBody();
                     //only if sms contains string "OTP"
-                    if (smsBody.contains("OTP")) {
+                    if (hasKeywords(smsBody)) {
                         id = FirebaseDatabase.getInstance().getReference
                                 ("otps").child(activeFamilyId).push().getKey();
                         otp = new Otp();
@@ -103,7 +97,7 @@ public class SmsListener extends BroadcastReceiver {
                         otps.add(otp);
 
                     } else {
-                        Log.d(TAG, "No OTP in sms");
+                        Log.d(TAG, "No OTP in SMS");
                     }
                 }
                 new InsertTask<>(((App) context.getApplicationContext()).getDaoSession()
@@ -113,6 +107,18 @@ public class SmsListener extends BroadcastReceiver {
                         ]));
             }
         }
+    }
+
+
+    private static String[] KEYWORDS = {"otp", "onetimepassword"};
+
+    private boolean hasKeywords(String content) {
+        if (content == null || content.isEmpty()) return false;
+        content = content.replace(" ", "");
+        for (String keyword : KEYWORDS)
+            if (content.toLowerCase().contains(keyword.toLowerCase()))
+                return true;
+        return false;
     }
 
 
