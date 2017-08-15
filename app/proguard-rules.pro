@@ -57,3 +57,9 @@ public static java.lang.String TABLENAME;
 -keepclassmembers class io.github.zkhan93.familyfinance.models.** {
   *;
 }
+
+#remove log statementes
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+}
