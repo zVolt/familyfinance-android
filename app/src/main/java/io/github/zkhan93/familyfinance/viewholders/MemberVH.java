@@ -67,13 +67,14 @@ public class MemberVH extends RecyclerView.ViewHolder {
                     .circleCropTransform()).into(avatar);
         timestamp.setText(DateUtils.getRelativeTimeSpanString(member.getWasPresentOn()));
 
-        //if member presence is latest to 2 minutes show him green else red
-        int color = -1;
-        if (member.getWasPresentOn() >= Calendar.getInstance().getTimeInMillis() - (2 * 60 * 60))
-            color = R.color.md_green_500;
+        //if member presence is latest to 2 minutes show him green else orange
+        if (member.getWasPresentOn() >= Calendar.getInstance().getTimeInMillis() - (2 * 60 * 60)) {
+            state.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_green));
+            timestamp.setText(context.getString(R.string.online));
+        }
         else
-            color = R.color.md_deep_orange_500;
-        DrawableCompat.setTint(state.getDrawable(), ContextCompat.getColor(context, color));
+            state.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.circle_orange));
+
     }
 
     @OnClick({R.id.remove, R.id.sms})

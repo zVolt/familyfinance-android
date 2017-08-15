@@ -62,6 +62,7 @@
     <string name="create">Create</string>
     <string name="update">Update</string>
     <string name="join">Join</string>
+    <string name="online">Online</string>
     <string name="send_request">Send Request</string>
     <string name="requests">Your Request</string>
     <string name="or">OR</string>

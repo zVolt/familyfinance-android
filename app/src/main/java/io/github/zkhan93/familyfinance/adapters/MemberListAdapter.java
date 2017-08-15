@@ -14,6 +14,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -21,7 +22,6 @@ import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.MemberDao;
-import io.github.zkhan93.familyfinance.models.RequestDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.MemberVH;
@@ -72,6 +72,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
     public void onLoadTaskComplete(List<Member> data) {
         members.clear();
         members.addAll(data);
+        Collections.sort(members, Member.BY_LAST_ONLINE);
         notifyDataSetChanged();
         membersRef.addListenerForSingleValueEvent(this);
         membersRef.addChildEventListener(this);
@@ -93,8 +94,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
         }
         if (found) {
             notifyItemChanged(position);
-        }
-        else {
+        } else {
             members.add(newMember);
             notifyItemInserted(members.size());
         }
@@ -123,6 +123,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
             if (member == null) continue;
             members.add(member);
         }
+        Collections.sort(members, Member.BY_LAST_ONLINE);
         notifyDataSetChanged();
         ignoreChildEvents = false;
     }

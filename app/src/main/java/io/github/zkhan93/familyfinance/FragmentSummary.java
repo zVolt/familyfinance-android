@@ -4,18 +4,24 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import org.greenrobot.greendao.query.Query;
 
 import java.text.NumberFormat;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -64,9 +70,123 @@ public class FragmentSummary extends Fragment {
     private OnFragmentInteractionListener mListener;
     private DaoSession daoSession;
     private float amountTotal, amountConsumedCC, amountRemainingCC, amountAccount;
+    private List<CCard> cCards;
+    private List<Account> accounts;
+    private ChildEventListener ccardChildEventListener, accountChildEventListener;
 
     public FragmentSummary() {
         // Required empty public constructor
+        accounts = new ArrayList<>();
+        cCards = new ArrayList<>();
+        ccardChildEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                CCard cCard = dataSnapshot.getValue(CCard.class);
+                if (cCard == null) return;
+                cCard.setNumber(dataSnapshot.getKey());
+                cCards.add(cCard);
+                recalculate();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                CCard oldCard;
+                CCard cCard = dataSnapshot.getValue(CCard.class);
+                if (cCard == null) return;
+                cCard.setNumber(dataSnapshot.getKey());
+                ListIterator<CCard> itr = cCards.listIterator();
+                while (itr.hasNext()) {
+                    oldCard = itr.next();
+                    if (oldCard.getNumber().equals(cCard.getNumber())) {
+                        itr.set(cCard);
+                        break;
+                    }
+                }
+                recalculate();
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                CCard cCard = dataSnapshot.getValue(CCard.class);
+                if (cCard == null) return;
+                cCard.setNumber(dataSnapshot.getKey());
+                CCard oldCard;
+                ListIterator<CCard> itr = cCards.listIterator();
+                while (itr.hasNext()) {
+                    oldCard = itr.next();
+                    if (oldCard.getNumber().equals(cCard.getNumber())) {
+                        itr.remove();
+                        break;
+                    }
+                }
+                recalculate();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        accountChildEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Account account = dataSnapshot.getValue(Account.class);
+                if (account == null) return;
+                account.setAccountNumber(dataSnapshot.getKey());
+                accounts.add(account);
+                recalculate();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Account oldAccount;
+                Account account = dataSnapshot.getValue(Account.class);
+                if (account == null) return;
+                account.setAccountNumber(dataSnapshot.getKey());
+                ListIterator<Account> itr = accounts.listIterator();
+                while (itr.hasNext()) {
+                    oldAccount = itr.next();
+                    if (oldAccount.getAccountNumber().equals(account.getAccountNumber())) {
+                        itr.set(account);
+                        break;
+                    }
+                }
+                recalculate();
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Account oldAccount;
+                Account account = dataSnapshot.getValue(Account.class);
+                if (account == null) return;
+                account.setAccountNumber(dataSnapshot.getKey());
+                ListIterator<Account> itr = accounts.listIterator();
+                while (itr.hasNext()) {
+                    oldAccount = itr.next();
+                    if (oldAccount.getAccountNumber().equals(account.getAccountNumber())) {
+                        itr.remove();
+                        break;
+                    }
+                }
+                recalculate();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
     }
 
     /**
@@ -98,9 +218,7 @@ public class FragmentSummary extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_summary, container, false);
         ButterKnife.bind(this, rootView);
         daoSession = ((App) getActivity().getApplication()).getDaoSession();
-        if (savedInstanceState == null)
-            refreshData();
-        else {
+        if (savedInstanceState != null) {
             amountTotal = savedInstanceState.getFloat("amountTotal", amountTotal);
             amountAccount = savedInstanceState.getFloat("amountAccount", amountAccount);
             amountConsumedCC = savedInstanceState.getFloat("amountConsumedCC", amountConsumedCC);
@@ -119,74 +237,86 @@ public class FragmentSummary extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        refreshData();
+    public void onStart() {
+        super.onStart();
+        registerChildListeners();
     }
 
-    private void refreshData() {
-        Query<CCard> cardQuery = daoSession.getCCardDao().queryBuilder().build();
-        new LoadFromDbTask<>(cardQuery, new LoadFromDbTask.Listener<CCard>() {
-            @Override
-            public void onLoadTaskComplete(List<CCard> data) {
-                int cardCount = data.size();
-                cardTitle.setText(String.format(Locale.ENGLISH, "%d Cards", cardCount));
-                amountRemainingCC = 0;
-                amountConsumedCC = 0;
-                for (CCard cCard : data) {
-                    amountConsumedCC += cCard.getConsumedLimit();
-                    amountRemainingCC += cCard.getRemainingLimit();
-                }
-                consumedCCTotal.setText(NumberFormat.getCurrencyInstance().format
-                        (amountConsumedCC));
-                remainingCCTotal.setText(NumberFormat.getCurrencyInstance().format
-                        (amountRemainingCC));
-                amountTotal = amountAccount - amountConsumedCC;
-                grandTotal.setText(NumberFormat.getCurrencyInstance().format(amountTotal));
-                grandTotal.setTextColor(ContextCompat.getColor(getActivity(), amountTotal >= 0 ?
-                        R.color.md_green_400 : R.color.md_red_400));
-                Collections.sort(data, CCard.BY_PAYMENT_DATE);
-                View[] views = new View[]{
-                        nextPayment1,
-                        nextPayment2, nextPayment3
-                };
-                TextView txtView;
-                CCard cCard;
-                String str;
-                for (int i = 0; i < views.length && i < data.size(); i++) {
-                    cCard = data.get(i);
-                    txtView = ButterKnife.findById(views[i], R.id.amount);
-                    txtView.setText(NumberFormat.getCurrencyInstance().format(cCard
-                            .getConsumedLimit()));
-                    txtView = ButterKnife.findById(views[i], R.id.card_name);
-                    
-                    str = String.format("%s - %s", cCard.getCardholder(), cCard.getBank());
-                    txtView.setText(str);
-                    txtView = ButterKnife.findById(views[i], R.id.date);
-                    txtView.setText(Constants.PAYMENT_DATE.format(cCard.getPaymentDate()));
-                }
+    @Override
+    public void onStop() {
+        super.onStop();
+        unregisterChildListeners();
+    }
 
-            }
-        }).execute();
-        Query<Account> accountQuery = daoSession.getAccountDao().queryBuilder().build();
-        new LoadFromDbTask<>(accountQuery, new LoadFromDbTask.Listener<Account>() {
-            @Override
-            public void onLoadTaskComplete(List<Account> data) {
-                int accountCount = data.size();
-                amountAccount = 0;
-                for (Account account : data) {
-                    amountAccount += account.getBalance();
-                }
-                accountTitle.setText(String.format(Locale.ENGLISH, "%d Accounts", accountCount));
-                accountTotal.setText(NumberFormat.getCurrencyInstance().format
-                        (amountAccount));
-                amountTotal = amountAccount - amountConsumedCC;
-                grandTotal.setText(NumberFormat.getCurrencyInstance().format
-                        (amountTotal));
-                grandTotal.setTextColor(ContextCompat.getColor(getActivity(), amountTotal >= 0 ?
-                        R.color.md_green_400 : R.color.md_red_400));
-            }
-        }).execute();
+    private void unregisterChildListeners() {
+        FirebaseDatabase.getInstance().getReference("ccards").child(familyId)
+                .removeEventListener(ccardChildEventListener);
+        FirebaseDatabase.getInstance().getReference("accounts").child(familyId)
+                .removeEventListener(accountChildEventListener);
+        cCards.clear();
+        accounts.clear();
+    }
+
+    private void registerChildListeners() {
+        FirebaseDatabase.getInstance().getReference("ccards").child(familyId)
+                .addChildEventListener(ccardChildEventListener);
+        FirebaseDatabase.getInstance().getReference("accounts").child(familyId)
+                .addChildEventListener(accountChildEventListener);
+    }
+
+    private void recalculate() {
+        //for cards
+        int cardCount = cCards.size();
+        cardTitle.setText(String.format(Locale.ENGLISH, "%d Cards", cardCount));
+        amountRemainingCC = 0;
+        amountConsumedCC = 0;
+        for (CCard cCard : cCards) {
+            amountConsumedCC += cCard.getConsumedLimit();
+            amountRemainingCC += cCard.getRemainingLimit();
+        }
+        consumedCCTotal.setText(NumberFormat.getCurrencyInstance().format
+                (amountConsumedCC));
+        remainingCCTotal.setText(NumberFormat.getCurrencyInstance().format
+                (amountRemainingCC));
+        amountTotal = amountAccount - amountConsumedCC;
+        grandTotal.setText(NumberFormat.getCurrencyInstance().format(amountTotal));
+        grandTotal.setTextColor(ContextCompat.getColor(getActivity(), amountTotal >= 0 ?
+                R.color.md_green_400 : R.color.md_red_400));
+        Collections.sort(cCards, CCard.BY_PAYMENT_DATE);
+        View[] views = new View[]{
+                nextPayment1,
+                nextPayment2, nextPayment3
+        };
+        TextView txtView;
+        CCard cCard;
+        String str;
+        for (int i = 0; i < views.length && i < cCards.size(); i++) {
+            cCard = cCards.get(i);
+            txtView = ButterKnife.findById(views[i], R.id.amount);
+            txtView.setText(NumberFormat.getCurrencyInstance().format(cCard
+                    .getConsumedLimit()));
+            txtView = ButterKnife.findById(views[i], R.id.card_name);
+
+            str = String.format("%s - %s", cCard.getCardholder(), cCard.getBank());
+            txtView.setText(str);
+            txtView = ButterKnife.findById(views[i], R.id.date);
+            txtView.setText(Constants.PAYMENT_DATE.format(cCard.getPaymentDate()));
+        }
+        //for accounts
+        int accountCount = accounts.size();
+        amountAccount = 0;
+        for (Account account : accounts) {
+            amountAccount += account.getBalance();
+        }
+        accountTitle.setText(String.format(Locale.ENGLISH, "%d Accounts", accountCount));
+        accountTotal.setText(NumberFormat.getCurrencyInstance().format
+                (amountAccount));
+        amountTotal = amountAccount - amountConsumedCC;
+        grandTotal.setText(NumberFormat.getCurrencyInstance().format
+                (amountTotal));
+        grandTotal.setTextColor(ContextCompat.getColor(getActivity(), amountTotal >= 0 ?
+                R.color.md_green_400 : R.color.md_red_400));
+
     }
 
     @Override

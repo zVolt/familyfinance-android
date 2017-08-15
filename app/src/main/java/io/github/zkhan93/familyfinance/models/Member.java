@@ -9,6 +9,7 @@ import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.ToMany;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class Member extends BaseModel {
 
     @Generated(hash = 271757801)
     public Member(String id, String name, String email, long wasPresentOn, boolean smsEnabled,
-            String profilePic) {
+                  String profilePic) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -118,6 +119,12 @@ public class Member extends BaseModel {
         @Override
         public Member[] newArray(int size) {
             return new Member[size];
+        }
+    };
+    public static final Comparator<Member> BY_LAST_ONLINE = new Comparator<Member>() {
+        @Override
+        public int compare(Member o1, Member o2) {
+            return Long.compare(o2.getWasPresentOn(), o1.getWasPresentOn());
         }
     };
 }

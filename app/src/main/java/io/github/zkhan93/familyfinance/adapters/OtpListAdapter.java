@@ -10,6 +10,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -38,7 +39,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
     public static final String TAG = OtpListAdapter.class.getSimpleName();
     private ArrayList<Otp> otps;
     private String familyId;
-    private DatabaseReference otpRef;
+    private Query otpRef;
     private OtpDao otpDao;
     private boolean ignoreChildEvents;
 
@@ -48,7 +49,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
         if (familyId == null)
             return;
         otpDao = app.getDaoSession().getOtpDao();
-        otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId);
+        otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId).orderByChild("timestamp").limitToLast(10);
         new LoadFromDbTask<>(app.getDaoSession().getOtpDao(), this).execute();
     }
 
