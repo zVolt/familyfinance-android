@@ -1,5 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
+import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -7,7 +8,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.Date;
 
@@ -17,6 +22,7 @@ import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.models.Member;
 
 /**
  * Created by zeeshan on 28/7/17.
@@ -38,7 +44,7 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
     @BindView(R.id.cvv)
     TextView cvv;
     @BindView(R.id.updated_by)
-    TextView updatedBy;
+    ImageView updatedBy;
     @BindView(R.id.updated_on)
     TextView updatedOn;
     @BindView(R.id.menu)
@@ -47,9 +53,11 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
     private PopupMenu popup;
     private AddonCard addonCard;
     private ItemInteractionListener itemInteractionListener;
+    private Context context;
 
     public AddonCardVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);
+        context = itemView.getContext();
         ButterKnife.bind(this, itemView);
         this.itemInteractionListener = itemInteractionListener;
         popup = new PopupMenu(itemView.getContext(), menu);
@@ -89,7 +97,13 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
         mobNumber.setText(addonCard.getPhoneNumber());
         expiresOn.setText(CCard.EXPIRE_ON.format(new Date(addonCard.getExpiresOn())));
         cvv.setText(String.valueOf(addonCard.getCvv()));
-        updatedBy.setText(addonCard.getUpdatedBy().getName());
+        Member _updatedBy = addonCard.getUpdatedBy();
+
+        if (_updatedBy != null && _updatedBy.getProfilePic() != null && !_updatedBy.getProfilePic
+                ().isEmpty())
+            Glide.with(context).load(_updatedBy.getProfilePic()).apply(RequestOptions
+                    .circleCropTransform()).into(updatedBy);
+
         updatedOn.setText(DateUtils.getRelativeTimeSpanString(addonCard.getUpdatedOn()));
     }
 

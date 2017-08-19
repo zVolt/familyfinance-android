@@ -125,17 +125,18 @@
             tools:text="100$"/>
 
 
-        <TextView
+        <ImageView
             android:id="@+id/updated_by"
             style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginBottom="0dp"
             android:layout_marginTop="4dp"
+            android:layout_marginRight="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/addon_cards"
-            app:layout_constraintVertical_bias="0.0"
+            tools:src="@color/md_orange_500"
             tools:text="Bushra Rehman"/>
 
         <TextView
@@ -143,8 +144,10 @@
             style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/updated_by"
             tools:text="27, July 12:45 AM"/>
 
         <ImageButton

@@ -3,6 +3,7 @@ package io.github.zkhan93.familyfinance.viewholders;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,8 +15,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -33,6 +38,7 @@ import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.adapters.AddonCardListAdapter;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Constants;
 
 /**
@@ -58,7 +64,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     @BindView(R.id.remaining_limit)
     TextView remainingLimit;
     @BindView(R.id.updated_by)
-    TextView updatedBy;
+    ImageView updatedBy;
     @BindView(R.id.updated_on)
     TextView updatedOn;
     @BindView(R.id.menu)
@@ -140,7 +146,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         limit.setMax((int) cCard.getMaxLimit());
         limit.setProgress((int) cCard.getConsumedLimit());
         //set progress color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.25f)
                 limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R
                         .color.md_red_500)));
@@ -150,19 +156,36 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
             else
                 limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R
                         .color.md_green_500)));
-
+        } else {
+            int color;
+            if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.25f)
+                color = ContextCompat.getColor(context, R
+                        .color.md_red_500);
+            else if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.5f)
+                color = ContextCompat.getColor(context, R
+                        .color.md_orange_500);
+            else
+                color = ContextCompat.getColor(context, R
+                        .color.md_green_500);
+            limit.getProgressDrawable().setColorFilter(color, android.graphics.PorterDuff.Mode
+                    .SRC_IN);
+        }
         maxLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit()));
         remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit() - cCard
                 .getConsumedLimit()));
 
+        Member _updatedBy = cCard.getUpdatedBy();
+
+        if (_updatedBy != null && _updatedBy.getProfilePic() != null && !_updatedBy.getProfilePic
+                ().isEmpty())
+            Glide.with(context).load(_updatedBy.getProfilePic()).apply(RequestOptions
+                    .circleCropTransform()).into(updatedBy);
 
         if (cCard.getAddonCards() != null && cCard.getAddonCards().size() > 0) {
-            updatedBy.setText(cCard.getUpdatedBy().getName());
             addonCardListAdapter.setItems(cCard.getAddonCards());
             addonTitle.setVisibility(View.VISIBLE);
             addonTitle.setText(String.format("%d Addon Cards", cCard.getAddonCards().size()));
         } else {
-            updatedBy.setText(cCard.getUpdatedBy().getName());
             addonTitle.setVisibility(View.GONE);
         }
         updatedOn.setText(DateUtils.getRelativeTimeSpanString(cCard.getUpdatedOn()));

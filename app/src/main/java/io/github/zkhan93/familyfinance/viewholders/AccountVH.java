@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,6 +13,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.text.NumberFormat;
 import java.util.Date;
@@ -42,7 +46,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
     @BindView(R.id.balance)
     TextView balance;
     @BindView(R.id.updated_by)
-    TextView updatedBy;
+    ImageView updatedBy;
     @BindView(R.id.updated_on)
     TextView updatedOn;
     @BindView(R.id.menu)
@@ -75,10 +79,15 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         balance.setText(NumberFormat.getCurrencyInstance().format(account.getBalance()));
 
         Member _updatedBy = account.getUpdatedBy();
-        updatedBy.setText(_updatedBy == null ? "Nobody" : _updatedBy.getName());
+
+        if (_updatedBy != null && _updatedBy.getProfilePic() != null && !_updatedBy.getProfilePic
+                ().isEmpty())
+            Glide.with(context).load(_updatedBy.getProfilePic()).apply(RequestOptions
+                    .circleCropTransform()).into(updatedBy);
 
         Date _updatedOn = account.getUpdatedOn() == -1 ? null : new Date(account.getUpdatedOn());
-        updatedOn.setText(_updatedOn == null ? "Never" : Constants.DATE_FORMAT.format(_updatedOn));
+        updatedOn.setText(_updatedOn == null ? "Never" : DateUtils.getRelativeTimeSpanString
+                (_updatedOn.getTime()));
     }
 
     @OnClick(R.id.menu)

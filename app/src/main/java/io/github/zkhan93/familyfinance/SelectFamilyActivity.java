@@ -381,7 +381,6 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                 ("activeFamilyId", null);
         Log.d(TAG, "switching to: " + familyId + "/" + me.getId());
         if (showProgressBar) {
-
             progressDialog = ProgressDialog.show(this, null, String.format("Checking %s " +
                         "details", familyId), true, false);
         }
