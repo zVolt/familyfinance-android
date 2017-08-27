@@ -7,6 +7,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.util.Constants;
 
@@ -30,7 +31,11 @@ public class OtpVH extends RecyclerView.ViewHolder {
     }
 
     public void setOtp(Otp otp) {
-        name.setText(otp.getFrom().getName());
+        Member from = otp.getFrom();
+        if (from != null && from.getName() != null)
+            name.setText(from.getName());
+        else
+            name.setText("Unknown");
         number.setText(otp.getNumber());
         content.setText(otp.getContent());
         timestamp.setText(Constants.DATE_FORMAT.format(otp.getTimestamp()));

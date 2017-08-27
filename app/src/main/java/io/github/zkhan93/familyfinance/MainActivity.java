@@ -2,6 +2,7 @@ package io.github.zkhan93.familyfinance;
 
 import android.*;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public String familyId;
-
+    public int PIN_CHECK_REQUEST_CODE = 435;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -137,6 +138,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (needsPinVerification())
+            startActivityForResult(new Intent(PinActivity.ACTIONS.CHECK_PIN, null, this, PinActivity
+                    .class), PIN_CHECK_REQUEST_CODE);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         familyId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
@@ -192,6 +201,22 @@ public class MainActivity extends AppCompatActivity implements
                 }, PERMISSION_REQUEST_CODE);
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putLong("lastActive", Calendar
+                .getInstance().getTimeInMillis()).apply();
+    }
+
+    private boolean needsPinVerification() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Long lastActive = sharedPreferences.getLong("lastActive", -1);
+        boolean pinEnabled = sharedPreferences.getBoolean("enable_pin", false);
+        return pinEnabled &&
+                (lastActive == -1 || lastActive < Calendar.getInstance().getTimeInMillis() - 10 *
+                        1000);//10 sec
     }
 
     @Override
@@ -343,5 +368,20 @@ public class MainActivity extends AppCompatActivity implements
         int OTPS = 3;
         int MEMBERS = 4;
 
+    }
+
+    private boolean verified = false;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PIN_CHECK_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                verified = true;
+            } else {
+                finish();
+            }
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

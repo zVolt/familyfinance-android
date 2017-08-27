@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
+    android:layout_margin="8dp"
     android:orientation="vertical"
     tools:context="io.github.zkhan93.familyfinance.PinActivity">
 
@@ -15,12 +15,12 @@
         android:orientation="vertical">
 
         <ImageView
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:src="@mipmap/ic_launcher"/>
 
         <TextView
+            android:id="@+id/title"
             style="@style/Base.TextAppearance.AppCompat.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,6 +28,14 @@
             android:gravity="center"
             android:text="Enter PIN"/>
 
+        <TextView
+            android:id="@+id/msg"
+            style="@style/Base.TextAppearance.AppCompat.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Enter PIN"/>
     </LinearLayout>
 
     <LinearLayout
@@ -35,8 +43,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ll3"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp">
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
 
         <ImageButton
             style="@style/Base.Widget.AppCompat.Button.Small"
@@ -198,12 +206,19 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="48dp"
         android:layout_marginTop="16dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="3">
 
-        <View
+        <ImageButton
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:id="@+id/button_cancel"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cancel"
+            android:src="@drawable/ic_close_red_500_24dp"
+            android:visibility="invisible"
             />
 
         <Button

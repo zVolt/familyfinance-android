@@ -6,6 +6,7 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -17,10 +18,14 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.preference.SwitchPreference;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.widget.Toolbar;
+
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,6 +45,9 @@ public class SettingsActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    private static int REQUEST_CODE_SET_PIN = 102;
+    private static int REQUEST_CODE_CHECK_PIN = 103;
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -138,7 +146,7 @@ public class SettingsActivity extends AppCompatActivity {
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
     private void setupActionBar() {
-        setActionBar(toolbar);
+        setSupportActionBar(toolbar);
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
@@ -162,8 +170,7 @@ public class SettingsActivity extends AppCompatActivity {
      * Make sure to deny any unknown fragments here.
      */
     protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
+        return GeneralPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     /**
@@ -171,7 +178,9 @@ public class SettingsActivity extends AppCompatActivity {
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
+    public static class GeneralPreferenceFragment extends PreferenceFragment implements
+            Preference.OnPreferenceClickListener, SharedPreferences
+            .OnSharedPreferenceChangeListener {
         public static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
 
         @Override
@@ -185,7 +194,18 @@ public class SettingsActivity extends AppCompatActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+//            bindPreferenceSummaryToValue(findPreference("example_list"));
+//            enable_pin
+            findPreference("enable_pin").setOnPreferenceClickListener(this);
+            ((SwitchPreference) findPreference("enable_pin")).setChecked(PreferenceManager
+                    .getDefaultSharedPreferences(getActivity()).getBoolean("enable_pin", false));
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .registerOnSharedPreferenceChangeListener(this);
         }
 
         @Override
@@ -196,66 +216,54 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             }
             return super.onOptionsItemSelected(item);
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            if (preference.getKey().equals("enable_pin")) {
+                if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean
+                        ("enable_pin", false))
+                    startActivityForResult(new Intent(PinActivity.ACTIONS.CHECK_PIN, null,
+                                    getActivity(), PinActivity.class),
+                            REQUEST_CODE_CHECK_PIN);
+                else
+                    startActivityForResult(new Intent(PinActivity.ACTIONS.SET_PIN, null,
+                                    getActivity(), PinActivity.class),
+                            REQUEST_CODE_SET_PIN);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals("enable_pin"))
+                ((SwitchPreference) findPreference("enable_pin")).setChecked(sharedPreferences
+                        .getBoolean(key, false));
         }
     }
 
-    /**
-     * This fragment shows notification preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class NotificationPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
-            setHasOptionsMenu(true);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == REQUEST_CODE_SET_PIN) {
+            if (resultCode == RESULT_OK) {
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean
+                        ("enable_pin", true).apply();
+            } else {
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean
+                        ("enable_pin", false).apply();
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
             }
-            return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
-            setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
+        if (resultCode == REQUEST_CODE_CHECK_PIN) {
+            if (resultCode == RESULT_OK) {
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean
+                        ("enable_pin", false).putString("PIN", null).apply();
+            } else {
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean
+                        ("enable_pin", true).apply();
             }
-            return super.onOptionsItemSelected(item);
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
