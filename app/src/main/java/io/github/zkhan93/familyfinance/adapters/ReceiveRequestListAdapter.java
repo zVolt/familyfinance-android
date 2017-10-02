@@ -16,6 +16,8 @@ import org.greenrobot.greendao.query.DeleteQuery;
 import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -27,6 +29,8 @@ import io.github.zkhan93.familyfinance.tasks.DeleteTask;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.ReceiveRequestVH;
+
+import static io.github.zkhan93.familyfinance.models.Request.BY_UPDATEDON_ASC;
 
 /**
  * Created by zeeshan on 22/7/17.
@@ -75,7 +79,7 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
     private void startDataLoad() {
         Query<Request> query = requestDao.queryBuilder().where
                 (RequestDao.Properties.FamilyId.eq(familyId), RequestDao.Properties.UserId.notEq
-                        (familyModeratorId)).build();
+                        (familyModeratorId)).orderAsc(RequestDao.Properties.RequestedOn).build();
         new LoadFromDbTask<>(query, this).execute();
     }
 
@@ -102,8 +106,8 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
         Log.d(TAG, "data:" + data.toString());
         notifyDataSetChanged();
         ignoreChildEvents = true;
-        reqRef.addListenerForSingleValueEvent(this);
-        reqRef.addChildEventListener(this);
+        reqRef.orderByChild("requestedOn").addListenerForSingleValueEvent(this);
+        reqRef.orderByChild("requestedOn").addChildEventListener(this);
     }
 
     public boolean addOrUpdate(Request newRequest) {
@@ -122,6 +126,7 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
                 found = true;
                 break;
             }
+            position++;
         }
         if (found) notifyItemChanged(position);
         else {
@@ -221,6 +226,7 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
             }
         }
         requests.clear();
+        Collections.sort(items, BY_UPDATEDON_ASC);
         requests.addAll(items);
         notifyDataSetChanged();
         ignoreChildEvents = false;

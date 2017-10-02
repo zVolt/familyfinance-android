@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -17,7 +16,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -28,14 +26,16 @@ import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.models.OtpDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
+import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
 /**
  * Created by zeeshan on 8/7/17.
  */
 
-public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadFromDbTask
-        .Listener<Otp>, ValueEventListener, ChildEventListener, InsertTask.Listener<Otp> {
+public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
+        LoadFromDbTask
+                .Listener<Otp>, ValueEventListener, ChildEventListener, InsertTask.Listener<Otp> {
     public static final String TAG = OtpListAdapter.class.getSimpleName();
     private ArrayList<Otp> otps;
     private String familyId;
@@ -49,24 +49,34 @@ public class OtpListAdapter extends RecyclerView.Adapter<OtpVH> implements LoadF
         if (familyId == null)
             return;
         otpDao = app.getDaoSession().getOtpDao();
-        otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId).orderByChild("timestamp").limitToLast(10);
+        otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId).orderByChild
+                ("timestamp").limitToLast(10);
         new LoadFromDbTask<>(app.getDaoSession().getOtpDao(), this).execute();
     }
 
     @Override
-    public OtpVH onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new OtpVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                 .listitem_otp, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(OtpVH holder, int position) {
-        holder.setOtp(otps.get(position));
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ((OtpVH) holder).setOtp(otps.get(position));
     }
 
     @Override
     public int getItemCount() {
         return otps.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return ITEM_TYPE.NORMAL;
+    }
+
+    public interface ITEM_TYPE {
+        int NORMAL = 0;
     }
 
     public void registerForEvents() {

@@ -9,6 +9,8 @@ import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Index;
 
+import java.util.Comparator;
+
 /**
  * Created by zeeshan on 16/7/17.
  */
@@ -54,8 +56,8 @@ public class Request extends BaseModel {
 
     @Generated(hash = 1367759548)
     public Request(long id, String familyId, String userId, boolean approved,
-            boolean blocked, long requestedOn, long updatedOn, String email,
-            String name, String profilePic) {
+                   boolean blocked, long requestedOn, long updatedOn, String email,
+                   String name, String profilePic) {
         this.id = id;
         this.familyId = familyId;
         this.userId = userId;
@@ -181,6 +183,12 @@ public class Request extends BaseModel {
         @Override
         public Request[] newArray(int size) {
             return new Request[size];
+        }
+    };
+    public static Comparator<Request> BY_UPDATEDON_ASC = new Comparator<Request>() {
+        @Override
+        public int compare(Request o1, Request o2) {
+            return Long.compare(o2.getUpdatedOn(), o1.getUpdatedOn());
         }
     };
 }

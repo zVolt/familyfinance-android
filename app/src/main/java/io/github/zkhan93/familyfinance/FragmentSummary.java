@@ -4,11 +4,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,12 +58,16 @@ public class FragmentSummary extends Fragment {
     public TextView accountTotal;
     @BindView(R.id.consumed_cc_limit)
     public TextView consumedCCTotal;
-    @BindView(R.id.remaining_cc_limit)
-    public TextView remainingCCTotal;
+    @BindView(R.id.total_cc_limit)
+    public TextView totalCCTotal;
+    //    @BindView(R.id.remaining_cc_limit)
+//    public TextView remainingCCTotal;
     @BindView(R.id.account_title)
     public TextView accountTitle;
     @BindView(R.id.card_title)
     public TextView cardTitle;
+    @BindView(R.id.pichart)
+    public PieChart pieChart;
 
     @BindView(R.id.next_payment1)
     public View nextPayment1;
@@ -68,6 +78,7 @@ public class FragmentSummary extends Fragment {
 
     private String familyId;
     private OnFragmentInteractionListener mListener;
+    boolean ccLoaded, accountLoaded;
     private DaoSession daoSession;
     private float amountTotal, amountConsumedCC, amountRemainingCC, amountAccount;
     private List<CCard> cCards;
@@ -85,12 +96,14 @@ public class FragmentSummary extends Fragment {
                 if (cCard == null) return;
                 cCard.setNumber(dataSnapshot.getKey());
                 cCards.add(cCard);
-                recalculate();
+                amountConsumedCC += cCard.getConsumedLimit();
+                amountRemainingCC += cCard.getRemainingLimit();
+                if (ccLoaded) recalculate();
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                CCard oldCard;
+                CCard oldCard = null;
                 CCard cCard = dataSnapshot.getValue(CCard.class);
                 if (cCard == null) return;
                 cCard.setNumber(dataSnapshot.getKey());
@@ -99,10 +112,14 @@ public class FragmentSummary extends Fragment {
                     oldCard = itr.next();
                     if (oldCard.getNumber().equals(cCard.getNumber())) {
                         itr.set(cCard);
+                        amountConsumedCC -= oldCard.getConsumedLimit();
+                        amountRemainingCC -= oldCard.getRemainingLimit();
+                        amountConsumedCC += cCard.getConsumedLimit();
+                        amountRemainingCC += cCard.getRemainingLimit();
                         break;
                     }
                 }
-                recalculate();
+                if (ccLoaded) recalculate();
             }
 
             @Override
@@ -116,10 +133,12 @@ public class FragmentSummary extends Fragment {
                     oldCard = itr.next();
                     if (oldCard.getNumber().equals(cCard.getNumber())) {
                         itr.remove();
+                        amountConsumedCC -= oldCard.getConsumedLimit();
+                        amountRemainingCC -= oldCard.getRemainingLimit();
                         break;
                     }
                 }
-                recalculate();
+                if (ccLoaded) recalculate();
             }
 
             @Override
@@ -135,16 +154,18 @@ public class FragmentSummary extends Fragment {
         accountChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
                 Account account = dataSnapshot.getValue(Account.class);
                 if (account == null) return;
                 account.setAccountNumber(dataSnapshot.getKey());
                 accounts.add(account);
-                recalculate();
+                amountAccount += account.getBalance();
+                if (accountLoaded) recalculate();
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Account oldAccount;
+                Account oldAccount = null;
                 Account account = dataSnapshot.getValue(Account.class);
                 if (account == null) return;
                 account.setAccountNumber(dataSnapshot.getKey());
@@ -153,10 +174,12 @@ public class FragmentSummary extends Fragment {
                     oldAccount = itr.next();
                     if (oldAccount.getAccountNumber().equals(account.getAccountNumber())) {
                         itr.set(account);
+                        amountAccount -= oldAccount.getBalance();
+                        amountAccount += account.getBalance();
                         break;
                     }
                 }
-                recalculate();
+                if (accountLoaded) recalculate();
             }
 
             @Override
@@ -170,10 +193,11 @@ public class FragmentSummary extends Fragment {
                     oldAccount = itr.next();
                     if (oldAccount.getAccountNumber().equals(account.getAccountNumber())) {
                         itr.remove();
+                        amountAccount -= oldAccount.getBalance();
                         break;
                     }
                 }
-                recalculate();
+                if (accountLoaded) recalculate();
             }
 
             @Override
@@ -226,8 +250,8 @@ public class FragmentSummary extends Fragment {
             familyId = savedInstanceState.getString("familyId", familyId);
             consumedCCTotal.setText(NumberFormat.getCurrencyInstance().format
                     (amountConsumedCC));
-            remainingCCTotal.setText(NumberFormat.getCurrencyInstance().format
-                    (amountRemainingCC));
+            totalCCTotal.setText(NumberFormat.getCurrencyInstance().format
+                    (amountRemainingCC + amountConsumedCC));
             accountTotal.setText(NumberFormat.getCurrencyInstance().format
                     (amountAccount));
             grandTotal.setTextColor(ContextCompat.getColor(getActivity(), amountTotal >= 0 ?
@@ -236,9 +260,33 @@ public class FragmentSummary extends Fragment {
         return rootView;
     }
 
+    private void setChart(float remainingAmount, float consumedAmount) {
+        List<PieEntry> entries = new ArrayList<>();
+        float total = remainingAmount + consumedAmount;
+        if (total == 0) return;
+        consumedAmount = consumedAmount / total;
+        Log.d(TAG, String.format("lalal: %f", consumedAmount));
+        entries.add(new PieEntry(consumedAmount * 100));
+        entries.add(new PieEntry((1 - consumedAmount) * 100));
+        PieDataSet set = new PieDataSet(entries, null);
+        set.setColors(new int[]{R.color.md_deep_orange_300, R.color.md_green_200}, getActivity()
+                .getApplicationContext());
+        PieData data = new PieData(set);
+        pieChart.setData(data);
+        pieChart.setClickable(false);
+        pieChart.setTouchEnabled(false);
+        pieChart.getDescription().setText("");
+        pieChart.getLegend().setEnabled(false);
+        pieChart.invalidate(); // refresh
+    }
+
     @Override
     public void onStart() {
         super.onStart();
+        accountLoaded = ccLoaded = false;
+        cCards.clear();
+        accounts.clear();
+        amountAccount = amountConsumedCC = amountRemainingCC = 0;
         registerChildListeners();
     }
 
@@ -253,36 +301,65 @@ public class FragmentSummary extends Fragment {
                 .removeEventListener(ccardChildEventListener);
         FirebaseDatabase.getInstance().getReference("accounts").child(familyId)
                 .removeEventListener(accountChildEventListener);
-        cCards.clear();
-        accounts.clear();
     }
 
     private void registerChildListeners() {
+
         FirebaseDatabase.getInstance().getReference("ccards").child(familyId)
                 .addChildEventListener(ccardChildEventListener);
+        FirebaseDatabase.getInstance().getReference("ccards").child(familyId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "count=cards: " + dataSnapshot.getChildrenCount() + "=" +
+                                cCards.size());
+                        recalculate();
+//                        ccLoaded = true;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
         FirebaseDatabase.getInstance().getReference("accounts").child(familyId)
                 .addChildEventListener(accountChildEventListener);
+        FirebaseDatabase.getInstance().getReference("accounts").child(familyId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "count=account: " + dataSnapshot.getChildrenCount() + "=" +
+                                accounts.size());
+                        recalculate();
+//                        accountLoaded = true;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
+
+    int count = 0;
 
     private void recalculate() {
         //for cards
+        Log.d(TAG, "count=" + ++count);
+        setChart(amountRemainingCC, amountConsumedCC);
         int cardCount = cCards.size();
         cardTitle.setText(String.format(Locale.ENGLISH, "%d Cards", cardCount));
-        amountRemainingCC = 0;
-        amountConsumedCC = 0;
-        for (CCard cCard : cCards) {
-            amountConsumedCC += cCard.getConsumedLimit();
-            amountRemainingCC += cCard.getRemainingLimit();
-        }
+
         consumedCCTotal.setText(NumberFormat.getCurrencyInstance().format
                 (amountConsumedCC));
-        remainingCCTotal.setText(NumberFormat.getCurrencyInstance().format
-                (amountRemainingCC));
+        totalCCTotal.setText(NumberFormat.getCurrencyInstance().format
+                (amountRemainingCC + amountConsumedCC));
         amountTotal = amountAccount - amountConsumedCC;
         grandTotal.setText(NumberFormat.getCurrencyInstance().format(amountTotal));
         grandTotal.setTextColor(ContextCompat.getColor(getActivity(), amountTotal >= 0 ?
                 R.color.md_green_400 : R.color.md_red_400));
-        Collections.sort(cCards, CCard.BY_PAYMENT_DATE);
+
+
         View[] views = new View[]{
                 nextPayment1,
                 nextPayment2, nextPayment3
@@ -290,6 +367,7 @@ public class FragmentSummary extends Fragment {
         TextView txtView;
         CCard cCard;
         String str;
+        Collections.sort(cCards, CCard.BY_PAYMENT_DATE);
         for (int i = 0; i < views.length && i < cCards.size(); i++) {
             cCard = cCards.get(i);
             txtView = ButterKnife.findById(views[i], R.id.amount);
@@ -302,13 +380,9 @@ public class FragmentSummary extends Fragment {
             txtView = ButterKnife.findById(views[i], R.id.date);
             txtView.setText(Constants.PAYMENT_DATE.format(cCard.getPaymentDate()));
         }
+
         //for accounts
-        int accountCount = accounts.size();
-        amountAccount = 0;
-        for (Account account : accounts) {
-            amountAccount += account.getBalance();
-        }
-        accountTitle.setText(String.format(Locale.ENGLISH, "%d Accounts", accountCount));
+        accountTitle.setText(String.format(Locale.ENGLISH, "%d Accounts", accounts.size()));
         accountTotal.setText(NumberFormat.getCurrencyInstance().format
                 (amountAccount));
         amountTotal = amountAccount - amountConsumedCC;

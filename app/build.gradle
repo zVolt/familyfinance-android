@@ -65,6 +65,8 @@ dependencies {
     //guava-android
     compile 'com.google.guava:guava:23.0-android'
 
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+
     testCompile 'junit:junit:4.12'
 
 }

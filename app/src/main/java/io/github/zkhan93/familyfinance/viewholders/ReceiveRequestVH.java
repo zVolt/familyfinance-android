@@ -1,9 +1,11 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,11 +47,9 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
     private Request request;
     private PopupMenu popupMenu;
     private ItemInteractionListener itemInteractionListener;
-    private View itemView;
 
     public ReceiveRequestVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);
-        this.itemView = itemView;
         ButterKnife.bind(this, itemView);
         this.itemInteractionListener = itemInteractionListener;
         popupMenu = new PopupMenu(itemView.getContext(), showOptions);
@@ -60,19 +61,12 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
         this.request = request;
         name.setText(request.getName());
         email.setText(request.getEmail());
+        if (request.getProfilePic() != null && request.getProfilePic().trim().length() > 0)
+            Glide.with(avatar).load(request.getProfilePic()).apply(RequestOptions
+                    .circleCropTransform()).into(avatar);
         status.setText(request.getBlocked() ? " Blocked" : request.getApproved() ? "Approved" :
                 "Pending");
-        timestamp.setText(DATE_FORMAT.format(new Date(request.getUpdatedOn())));
-        if (request.getBlocked()) {
-            itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color
-                    .md_red_200));
-        } else if (request.getApproved()) {
-            itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color
-                    .md_green_200));
-        } else
-            itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), android.R
-                    .color
-                    .transparent));
+        timestamp.setText(DateUtils.getRelativeTimeSpanString(request.getUpdatedOn()));
     }
 
     @OnClick(R.id.show_options)

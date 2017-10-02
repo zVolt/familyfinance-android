@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -38,6 +39,6 @@ public class OtpVH extends RecyclerView.ViewHolder {
             name.setText("Unknown");
         number.setText(otp.getNumber());
         content.setText(otp.getContent());
-        timestamp.setText(Constants.DATE_FORMAT.format(otp.getTimestamp()));
+        timestamp.setText(DateUtils.getRelativeTimeSpanString(otp.getTimestamp()));
     }
 }

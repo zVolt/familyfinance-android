@@ -133,39 +133,39 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         mListener = null;
     }
 
-    @Override
-    public void toggleSms(Member member) {
-        Log.d(TAG, "toggleSms: " + member.toString());
-        boolean setEnabled = !member.getSmsEnabled();
-        enableSmsFor = member;
-        if (setEnabled) {
-            int permissionCheck = checkSelfPermission(getActivity(), Manifest
-                    .permission.RECEIVE_SMS) & checkSelfPermission(getActivity(), Manifest
-                    .permission.READ_PHONE_STATE);
-
-            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest
-                        .permission.RECEIVE_SMS)) {
-                    //explain the need of this permission
-                    //todo show a dialog and then on positive show request permission
-                    Log.d(TAG, "lol we need it :D");
-                    requestPermissions(new String[]{
-                            Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_PHONE_STATE
-                    }, PERMISSION_REQUEST_CODE);
-
-                } else {
-                    requestPermissions(new String[]{
-                            Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_PHONE_STATE
-                    }, PERMISSION_REQUEST_CODE);
-                }
-            }
-        } else {
-            member.setSmsEnabled(false);
-            ((App) getActivity().getApplication()).getDaoSession().getMemberDao().update
-                    (member);
-            memberListAdapter.addOrUpdate(member);
-        }
-    }
+//    @Override
+//    public void toggleSms(Member member) {
+//        Log.d(TAG, "toggleSms: " + member.toString());
+//        boolean setEnabled = !member.getSmsEnabled();
+//        enableSmsFor = member;
+//        if (setEnabled) {
+//            int permissionCheck = checkSelfPermission(getActivity(), Manifest
+//                    .permission.RECEIVE_SMS) & checkSelfPermission(getActivity(), Manifest
+//                    .permission.READ_PHONE_STATE);
+//
+//            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+//                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest
+//                        .permission.RECEIVE_SMS)) {
+//                    //explain the need of this permission
+//                    //todo show a dialog and then on positive show request permission
+//                    Log.d(TAG, "lol we need it :D");
+//                    requestPermissions(new String[]{
+//                            Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_PHONE_STATE
+//                    }, PERMISSION_REQUEST_CODE);
+//
+//                } else {
+//                    requestPermissions(new String[]{
+//                            Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_PHONE_STATE
+//                    }, PERMISSION_REQUEST_CODE);
+//                }
+//            }
+//        } else {
+//            member.setSmsEnabled(false);
+//            ((App) getActivity().getApplication()).getDaoSession().getMemberDao().update
+//                    (member);
+//            memberListAdapter.addOrUpdate(member);
+//        }
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,

@@ -35,10 +35,6 @@ public class MemberVH extends RecyclerView.ViewHolder {
     @BindView(R.id.timestamp)
     TextView timestamp;
 
-    @BindView(R.id.sms)
-    ImageButton toggleSms;
-    @BindView(R.id.remove)
-    ImageButton remove;
     @BindView(R.id.avatar)
     ImageView avatar;
     @BindView(R.id.state)
@@ -59,9 +55,6 @@ public class MemberVH extends RecyclerView.ViewHolder {
         this.member = member;
         name.setText(member.getName());
         email.setText(member.getEmail());
-        toggleSms.setImageDrawable(ContextCompat.getDrawable(context, member.getSmsEnabled() ?
-                R.drawable
-                        .ic_sms_teal_500_24dp : R.drawable.ic_sms_grey_500_24dp));
         if (member.getProfilePic() != null && member.getProfilePic().trim().length() > 0)
             Glide.with(context).load(member.getProfilePic()).apply(RequestOptions
                     .circleCropTransform()).into(avatar);
@@ -77,22 +70,7 @@ public class MemberVH extends RecyclerView.ViewHolder {
 
     }
 
-    @OnClick({R.id.remove, R.id.sms})
-    void onClick(ImageButton button) {
-        switch (button.getId()) {
-            case R.id.remove:
-                itemInteractionListener.remove(member);
-                break;
-            case R.id.sms:
-                itemInteractionListener.toggleSms(member);
-                break;
-        }
-    }
-
     public interface ItemInteractionListener {
-        void toggleSms(Member member);
-
         void remove(Member member);
-
     }
 }
