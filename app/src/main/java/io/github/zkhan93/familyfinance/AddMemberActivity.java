@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -57,6 +58,18 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
         requestList.setAdapter(receiveRequestListAdapter);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait..");
+        Log.d(TAG,"laddu");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void showMessageOnSnackbar(String message) {
