@@ -84,11 +84,11 @@
         </LinearLayout>
 
         <ProgressBar
+            android:id="@+id/card_limit_bar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="10dp"
-            android:progress="70"/>
+            tools:progress="70"/>
 
         <LinearLayout
             android:layout_width="match_parent"

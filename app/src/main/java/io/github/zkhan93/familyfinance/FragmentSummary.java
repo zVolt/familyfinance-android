@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -68,6 +69,9 @@ public class FragmentSummary extends Fragment {
     public TextView cardTitle;
     @BindView(R.id.pichart)
     public PieChart pieChart;
+    @BindView(R.id.card_limit_bar)
+    public ProgressBar cardLimitbar;
+
 
     @BindView(R.id.next_payment1)
     public View nextPayment1;
@@ -346,12 +350,14 @@ public class FragmentSummary extends Fragment {
     private void recalculate() {
         //for cards
         Log.d(TAG, "count=" + ++count);
-        setChart(amountRemainingCC, amountConsumedCC);
+//        setChart(amountRemainingCC, amountConsumedCC);
         int cardCount = cCards.size();
         cardTitle.setText(String.format(Locale.ENGLISH, "%d Cards", cardCount));
 
         consumedCCTotal.setText(NumberFormat.getCurrencyInstance().format
                 (amountConsumedCC));
+        cardLimitbar.setMax((int) (amountRemainingCC + amountConsumedCC));
+        cardLimitbar.setProgress((int) amountConsumedCC);
         totalCCTotal.setText(NumberFormat.getCurrencyInstance().format
                 (amountRemainingCC + amountConsumedCC));
         amountTotal = amountAccount - amountConsumedCC;
