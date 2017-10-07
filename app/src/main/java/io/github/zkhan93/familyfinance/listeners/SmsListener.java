@@ -45,8 +45,7 @@ public class SmsListener extends BroadcastReceiver {
                 ("activeFamilyId", null);
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser != null && activeFamilyId != null && intent.getAction().equals("android" +
-                ".provider.Telephony" +
-                ".SMS_RECEIVED")) {
+                ".provider.Telephony.SMS_RECEIVED")) {
 
             otps = new ArrayList<>();
             String mePk = fbUser.getUid();

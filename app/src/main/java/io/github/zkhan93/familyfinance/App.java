@@ -26,7 +26,7 @@ public class App extends Application {
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         if (BuildConfig.DEBUG)
-            FirebaseDatabase.getInstance().setLogLevel(Logger.Level.DEBUG);
+            ;//FirebaseDatabase.getInstance().setLogLevel(Logger.Level.DEBUG);
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, ENCRYPTED ?
                 "ff-db-encrypted" : "ff-db");
         Database db = ENCRYPTED ? helper.getEncryptedWritableDb("super-secret") : helper

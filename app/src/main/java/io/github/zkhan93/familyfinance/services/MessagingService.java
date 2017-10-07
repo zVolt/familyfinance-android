@@ -5,9 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,6 +18,9 @@ import java.util.Map;
 
 import io.github.zkhan93.familyfinance.MainActivity;
 import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.listeners.CopyOtpListener;
+
+import static io.github.zkhan93.familyfinance.listeners.CopyOtpListener.ACTION_COPY_OTP;
 
 /**
  * Created by zeeshan on 13/7/17.
@@ -73,8 +74,7 @@ public class MessagingService extends FirebaseMessagingService {
                 ("activeFamilyId", null);
         if (familyId == null) {
             Log.d(TAG, "active family not selected SmsListener will not be able to push the otp " +
-                    "to " +
-                    "cloud");
+                    "to cloud");
             return;
         }
         FirebaseDatabase.getInstance().getReference("members").child(familyId).child(user.getUid
@@ -83,11 +83,14 @@ public class MessagingService extends FirebaseMessagingService {
 
     private void showNotification(Map<String, String> data) {
         Intent resultIntent = new Intent(this, MainActivity.class);
+        Intent copyIntent = new Intent(ACTION_COPY_OTP);
+        copyIntent.putExtra("OTP", data.get(KEYS.CONTENT));
         // Because clicking the notification opens a new activity, there's
         // no need to create an artificial back stack.
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent copyPendingIntent = PendingIntent.getBroadcast(this, 1, copyIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
         String title = String.format("%s | %s", data.get(KEYS.FROM_NAME), data
                 .get(KEYS.NUMBER));
 
@@ -102,7 +105,9 @@ public class MessagingService extends FirebaseMessagingService {
                         .setSmallIcon(R.drawable.ic_stat_launcher)
                         .setContentTitle(title)
                         .setContentText(data.get(KEYS.CONTENT))
-                        .setStyle(bigTextStyle);
+                        .setStyle(bigTextStyle)
+                        .addAction(new NotificationCompat.Action(R.drawable
+                                .ic_content_copy_grey_50_24dp, "Copy OTP", copyPendingIntent));
 
         mBuilder.setContentIntent(resultPendingIntent);
         // Gets an instance of the NotificationManager service
