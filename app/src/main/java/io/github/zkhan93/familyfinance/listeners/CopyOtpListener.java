@@ -25,6 +25,7 @@ public class CopyOtpListener extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String message = intent.getStringExtra("OTP");
         Log.d(TAG, "copy OTP from" + message);
+        otp = null;
         String[] segments = message.split("\\s+");
         for (String segment : segments) {
             if (segment.startsWith("."))
@@ -34,8 +35,8 @@ public class CopyOtpListener extends BroadcastReceiver {
             if ((segment.length() == 4 || segment.length() == 6) && segment.matches("\\d+")) {
 
                 Log.d(TAG, "OTP is:" + segment);
-                otp = segment;
-                break;
+                if (otp == null || otp.length() < segment.length())
+                    otp = segment;
             }
         }
         Toast toast = Toast.makeText(context, otp, Toast.LENGTH_LONG);

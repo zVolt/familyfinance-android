@@ -22,6 +22,7 @@ import android.preference.SwitchPreference;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.prefs.PreferenceChangeEvent;
@@ -42,6 +43,7 @@ import butterknife.ButterKnife;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends AppCompatActivity {
+    public static final String TAG = SettingsActivity.class.getSimpleName();
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -182,10 +184,12 @@ public class SettingsActivity extends AppCompatActivity {
             Preference.OnPreferenceClickListener, SharedPreferences
             .OnSharedPreferenceChangeListener {
         public static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
+        private SharedPreferences sharedPreferences;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
 
@@ -196,9 +200,10 @@ public class SettingsActivity extends AppCompatActivity {
             bindPreferenceSummaryToValue(findPreference("example_text"));
 //            bindPreferenceSummaryToValue(findPreference("example_list"));
 //            enable_pin
-            findPreference("enable_pin").setOnPreferenceClickListener(this);
-            ((SwitchPreference) findPreference("enable_pin")).setChecked(PreferenceManager
-                    .getDefaultSharedPreferences(getActivity()).getBoolean("enable_pin", false));
+            Preference enablePin = findPreference("enable_pin");
+            enablePin.setOnPreferenceClickListener(this);
+            ((SwitchPreference) enablePin).setChecked(sharedPreferences.getBoolean("enable_pin",
+                    false));
         }
 
         @Override
@@ -220,16 +225,17 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
+            Log.d(TAG, "preferenceClick" + preference.getKey());
             if (preference.getKey().equals("enable_pin")) {
-                if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean
-                        ("enable_pin", false))
-                    startActivityForResult(new Intent(PinActivity.ACTIONS.CHECK_PIN, null,
-                                    getActivity(), PinActivity.class),
-                            REQUEST_CODE_CHECK_PIN);
-                else
+                if (((SwitchPreference) preference).isChecked()) {
+                    Log.d(TAG, "set new PIN");
                     startActivityForResult(new Intent(PinActivity.ACTIONS.SET_PIN, null,
-                                    getActivity(), PinActivity.class),
-                            REQUEST_CODE_SET_PIN);
+                            getActivity(), PinActivity.class), REQUEST_CODE_SET_PIN);
+                } else {
+                    Log.d(TAG, "check PIN then disable");
+                    startActivityForResult(new Intent(PinActivity.ACTIONS.CHECK_PIN, null,
+                            getActivity(), PinActivity.class), REQUEST_CODE_CHECK_PIN);
+                }
                 return true;
             }
             return false;
@@ -241,29 +247,41 @@ public class SettingsActivity extends AppCompatActivity {
                 ((SwitchPreference) findPreference("enable_pin")).setChecked(sharedPreferences
                         .getBoolean(key, false));
         }
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == REQUEST_CODE_SET_PIN) {
-            if (resultCode == RESULT_OK) {
-                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean
-                        ("enable_pin", true).apply();
-            } else {
-                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean
-                        ("enable_pin", false).apply();
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            Log.d(TAG, "onActivityResult req:"+requestCode+" res:"+resultCode);
+            //response for pin set
+            if (requestCode == REQUEST_CODE_SET_PIN) {
+                if (resultCode == RESULT_OK) {
+                    Log.d(TAG,"set pin success");
+                    sharedPreferences.edit().putBoolean
+                            ("enable_pin", true).apply();
+                } else {
+                    //cancelled
+                    Log.d(TAG,"set pin failed");
+                    sharedPreferences.edit().putBoolean
+                            ("enable_pin", false).remove("PIN").apply();
+                    ((SwitchPreference) findPreference("enable_pin")).setChecked(false);
+                }
+            }
+            //response for PIn check
+            if (requestCode == REQUEST_CODE_CHECK_PIN) {
 
+                if (resultCode == RESULT_OK) {
+                    //pin checked now disable the pin
+                    Log.d(TAG,"check pin success");
+                    sharedPreferences.edit().putBoolean
+                            ("enable_pin", false).putString("PIN", null).remove("PIN").apply();
+                } else {
+                    //pin verification failed keep the pin on
+                    Log.d(TAG,"check pin failed");
+                    sharedPreferences.edit().putBoolean
+                            ("enable_pin", true).apply();
+                    ((SwitchPreference) findPreference("enable_pin")).setChecked(true);
+                }
             }
+            super.onActivityResult(requestCode, resultCode, data);
         }
-        if (resultCode == REQUEST_CODE_CHECK_PIN) {
-            if (resultCode == RESULT_OK) {
-                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean
-                        ("enable_pin", false).putString("PIN", null).apply();
-            } else {
-                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean
-                        ("enable_pin", true).apply();
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }

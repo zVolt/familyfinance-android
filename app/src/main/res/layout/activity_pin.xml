@@ -1,245 +1,54 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="8dp"
     android:orientation="vertical"
+    android:padding="16dp"
+    tools:theme="@style/AppTheme.Dark"
     tools:context="io.github.zkhan93.familyfinance.PinActivity">
 
-    <LinearLayout
-        android:id="@+id/ll1"
+    <TextView
+        android:id="@+id/title"
+        style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/ll2"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher"/>
-
-        <TextView
-            android:id="@+id/title"
-            style="@style/Base.TextAppearance.AppCompat.Title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="Enter PIN"/>
-
-        <TextView
-            android:id="@+id/msg"
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="Enter PIN"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/ll3"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp">
-
-        <ImageButton
-            style="@style/Base.Widget.AppCompat.Button.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"/>
-
-        <TextView
-            android:id="@+id/pin"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null"
-            android:gravity="center"
-            android:lines="1"
-            android:maxLines="1"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-        <ImageButton
-            android:id="@+id/delete"
-            style="@style/Base.Widget.AppCompat.Button.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_backspace_grey_600_24dp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/ll4"
-        android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        android:weightSum="3">
+        android:textColor="@color/md_teal_a700"
+        tools:text="Unlock Family Finance"/>
 
-        <Button
-            android:id="@+id/button_1"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="1"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-        <Button
-            android:id="@+id/button_2"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="2"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-        <Button
-            android:id="@+id/button_3"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="3"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll4"
+    <TextView
+        android:id="@+id/msg"
+        style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/ll5"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Confirm your PIN"
+        android:textColor="@color/md_white"/>
+
+    <Button
+        android:id="@+id/cancel"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:orientation="horizontal">
+        android:background="?selectableItemBackground"
+        android:text="@string/cancel"
+        android:textColor="@color/md_white"/>
 
-        <Button
-            android:id="@+id/button_4"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="4"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-        <Button
-            android:id="@+id/button_5"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="5"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-        <Button
-            android:id="@+id/button_6"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="6"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll5"
+    <EditText
+        android:id="@+id/pin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/ll6"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/button_7"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="7"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-        <Button
-            android:id="@+id/button_8"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="8"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-        <Button
-            android:id="@+id/button_9"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="9"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="48dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        android:weightSum="3">
-
-        <ImageButton
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/button_cancel"
-            android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cancel"
-            android:src="@drawable/ic_close_red_500_24dp"
-            android:visibility="invisible"
-            />
-
-        <Button
-            android:id="@+id/button_0"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:text="0"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"/>
-
-        <ImageButton
-            android:id="@+id/button_ok"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_check_grey_600_36dp"/>
-
-    </LinearLayout>
-
-</RelativeLayout>
+        android:layout_marginEnd="64dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="64dp"
+        android:backgroundTint="@color/md_teal_a700"
+        android:foregroundTint="@color/md_teal_a700"
+        android:gravity="center"
+        android:imeOptions="actionNext"
+        android:inputType="numberPassword"
+        android:textColor="@color/md_white"
+        android:windowSoftInputMode="stateVisible|adjustPan"
+        tools:text="sdfsdf"/>
+</LinearLayout>

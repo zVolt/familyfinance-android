@@ -1,6 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
-import android.*;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +40,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.models.Member;
 
-import static android.support.v4.content.ContextCompat.checkSelfPermission;
 import static io.github.zkhan93.familyfinance.FragmentMembers.PERMISSION_REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity implements
@@ -140,9 +140,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        if (needsPinVerification())
+        if (needsPinVerification()) {
             startActivityForResult(new Intent(PinActivity.ACTIONS.CHECK_PIN, null, this, PinActivity
                     .class), PIN_CHECK_REQUEST_CODE);
+        }
     }
 
     @Override
@@ -206,8 +207,12 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putLong("lastActive", Calendar
-                .getInstance().getTimeInMillis()).apply();
+        if (verified) {
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putLong("lastActive",
+                    Calendar
+                            .getInstance().getTimeInMillis()).apply();
+            verified = !verified;
+        }
     }
 
     private boolean needsPinVerification() {
@@ -216,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements
         boolean pinEnabled = sharedPreferences.getBoolean("enable_pin", false);
         return pinEnabled &&
                 (lastActive == -1 || lastActive < Calendar.getInstance().getTimeInMillis() - 10 *
-                        1000);//10 sec
+                        500);//10 sec
     }
 
     @Override
@@ -377,6 +382,9 @@ public class MainActivity extends AppCompatActivity implements
         if (requestCode == PIN_CHECK_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 verified = true;
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putLong("lastActive",
+                        Calendar
+                                .getInstance().getTimeInMillis()).apply();
             } else {
                 finish();
             }

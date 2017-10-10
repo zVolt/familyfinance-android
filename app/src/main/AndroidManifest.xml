@@ -85,7 +85,7 @@
             android:name=".PinActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_pin"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.Dark">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.github.zkhan93.familyfinance.MainActivity"/>

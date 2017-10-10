@@ -365,11 +365,12 @@ public class FragmentSummary extends Fragment {
         grandTotal.setTextColor(ContextCompat.getColor(getActivity(), amountTotal >= 0 ?
                 R.color.md_green_400 : R.color.md_red_400));
 
-
         View[] views = new View[]{
                 nextPayment1,
                 nextPayment2, nextPayment3
         };
+        for (View view : views)
+            view.setVisibility(View.GONE);
         TextView txtView;
         CCard cCard;
         String str;
@@ -385,6 +386,7 @@ public class FragmentSummary extends Fragment {
             txtView.setText(str);
             txtView = ButterKnife.findById(views[i], R.id.date);
             txtView.setText(Constants.PAYMENT_DATE.format(cCard.getPaymentDate()));
+            views[i].setVisibility(View.VISIBLE);
         }
 
         //for accounts
