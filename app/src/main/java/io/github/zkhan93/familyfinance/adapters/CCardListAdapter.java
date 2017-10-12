@@ -33,14 +33,17 @@ import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.AddonCardVH;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
+import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 
 /**
  * Created by zeeshan on 8/7/17.
  */
 
-public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements LoadFromDbTask
-        .Listener<CCard>, InsertTask.Listener<BaseModel>, ChildEventListener, ValueEventListener {
+public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
+        LoadFromDbTask
+                .Listener<CCard>, InsertTask.Listener<BaseModel>, ChildEventListener,
+        ValueEventListener {
     public static final String TAG = CCardListAdapter.class.getSimpleName();
     private ArrayList<CCard> ccards;
     private CCardVH.ItemInteractionListener itemInteractionListener;
@@ -69,35 +72,42 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType==ITEM_TYPE.FOOTER)
+        if (viewType == ITEM_TYPE.EMPTY)
+            return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+                    .listitem_empty, parent, false),"blankCCard");
+        else if (viewType == ITEM_TYPE.FOOTER)
             return new FooterVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                     .listitem_footer, parent, false));
         else
-        return new CCardVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_ccard, parent, false), itemInteractionListener,
-                addonCardInteractionListener);
+            return new CCardVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+                    .listitem_ccard, parent, false), itemInteractionListener,
+                    addonCardInteractionListener);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(getItemViewType(position)==ITEM_TYPE.NORMAL)
-            ((CCardVH)holder).setCCard(ccards.get(position));
+        if (getItemViewType(position) == ITEM_TYPE.NORMAL)
+            ((CCardVH) holder).setCCard(ccards.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return ccards.size() > 0 ? ccards.size() + 1 : 0;
+        return ccards.size() + 1;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position == ccards.size()? ITEM_TYPE.FOOTER: ITEM_TYPE.NORMAL ;
+        if (ccards.size() == 0)
+            return ITEM_TYPE.EMPTY;
+        return position == ccards.size() ? ITEM_TYPE.FOOTER : ITEM_TYPE.NORMAL;
     }
 
     public interface ITEM_TYPE {
         int NORMAL = 0;
         int FOOTER = 1;
+        int EMPTY = 2;
     }
+
     @Override
     public void onLoadTaskComplete(List<CCard> data) {
 //        Log.d(TAG, "loaded: " + data.toString());

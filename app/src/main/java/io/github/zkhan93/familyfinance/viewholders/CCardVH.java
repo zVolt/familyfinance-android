@@ -2,15 +2,12 @@ package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,19 +21,14 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.github.zkhan93.familyfinance.BuildConfig;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.adapters.AddonCardListAdapter;
-import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Constants;
@@ -69,8 +61,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     TextView updatedOn;
     @BindView(R.id.menu)
     ImageButton menu;
-    @BindView(R.id.max_limit)
-    TextView maxLimit;
+    @BindView(R.id.consumed_limit)
+    TextView consumedLimit;
     @BindView(R.id.expires_on)
     TextView expiresOn;
     @BindView(R.id.addon_cards)
@@ -170,9 +162,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
             limit.getProgressDrawable().setColorFilter(color, android.graphics.PorterDuff.Mode
                     .SRC_IN);
         }
-        maxLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit()));
-        remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit() - cCard
-                .getConsumedLimit()));
+        consumedLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getConsumedLimit()));
+        remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getRemainingLimit()));
 
         Member _updatedBy = cCard.getUpdatedBy();
 

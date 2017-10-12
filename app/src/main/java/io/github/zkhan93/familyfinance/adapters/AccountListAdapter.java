@@ -31,10 +31,10 @@ import io.github.zkhan93.familyfinance.models.AccountDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
+import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 
 /**
- *
  * Created by zeeshan on 8/7/17.
  */
 
@@ -70,7 +70,12 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        if (viewType == ITEM_TYPE.NORMAL) {
+        if(viewType==ITEM_TYPE.EMPTY){
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout
+                    .listitem_empty, parent, false);
+            return new EmptyVH(view,"blankAccount");
+        }
+        else if (viewType == ITEM_TYPE.NORMAL) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout
                     .listitem_account, parent, false);
             return new AccountVH(view, itemInteractionListener);
@@ -83,7 +88,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof AccountVH)
+        if (getItemViewType(position)==ITEM_TYPE.NORMAL)
             ((AccountVH) holder).setAccount(accounts.get(position));
     }
 
@@ -94,6 +99,9 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemViewType(int position) {
+        if (accounts.size() == 0) {
+            return ITEM_TYPE.EMPTY;
+        }
         return position == accounts.size() ? ITEM_TYPE.FOOTER : ITEM_TYPE.NORMAL;
     }
 
@@ -116,6 +124,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public interface ITEM_TYPE {
         int NORMAL = 0;
         int FOOTER = 1;
+        int EMPTY = 2;
     }
 
 //    public void reloadFromDisk(App app) {

@@ -48,7 +48,7 @@
             android:layout_marginTop="4dp"
             android:textIsSelectable="true"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/remaining_limit"
+            app:layout_constraintTop_toBottomOf="@+id/consumed_limit"
             tools:text="23 July - 10 Aug"/>
 
         <TextView
@@ -85,7 +85,7 @@
             tools:text="SBI bank iof indiaaaaaa aaaaa"/>
 
         <TextView
-            android:id="@+id/remaining_limit"
+            android:id="@+id/consumed_limit"
             style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
             app:layout_constraintTop_toBottomOf="@+id/number"/>
 
         <TextView
-            android:id="@+id/max_limit"
+            android:id="@+id/remaining_limit"
             style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

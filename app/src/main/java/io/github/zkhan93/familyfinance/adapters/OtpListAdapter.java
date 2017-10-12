@@ -26,6 +26,7 @@ import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.models.OtpDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
+import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
@@ -56,27 +57,33 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(viewType==ITEM_TYPE.EMPTY)
+            return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+                    .listitem_empty, parent, false),"blankOTP");
         return new OtpVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                 .listitem_otp, parent, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ((OtpVH) holder).setOtp(otps.get(position));
+        if (getItemViewType(position) == ITEM_TYPE.NORMAL)
+            ((OtpVH) holder).setOtp(otps.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return otps.size();
+        return otps.size() + 1;
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (otps.size() == 0) return ITEM_TYPE.EMPTY;
         return ITEM_TYPE.NORMAL;
     }
 
     public interface ITEM_TYPE {
         int NORMAL = 0;
+        int EMPTY = 1;
     }
 
     public void registerForEvents() {

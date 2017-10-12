@@ -179,7 +179,6 @@ public class SettingsActivity extends AppCompatActivity {
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment implements
             Preference.OnPreferenceClickListener, SharedPreferences
             .OnSharedPreferenceChangeListener {
@@ -204,6 +203,7 @@ public class SettingsActivity extends AppCompatActivity {
             enablePin.setOnPreferenceClickListener(this);
             ((SwitchPreference) enablePin).setChecked(sharedPreferences.getBoolean("enable_pin",
                     false));
+            Log.d(TAG, "setting all set");
         }
 
         @Override
@@ -250,16 +250,16 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            Log.d(TAG, "onActivityResult req:"+requestCode+" res:"+resultCode);
+            Log.d(TAG, "onActivityResult req:" + requestCode + " res:" + resultCode);
             //response for pin set
             if (requestCode == REQUEST_CODE_SET_PIN) {
                 if (resultCode == RESULT_OK) {
-                    Log.d(TAG,"set pin success");
+                    Log.d(TAG, "set pin success");
                     sharedPreferences.edit().putBoolean
                             ("enable_pin", true).apply();
                 } else {
                     //cancelled
-                    Log.d(TAG,"set pin failed");
+                    Log.d(TAG, "set pin failed");
                     sharedPreferences.edit().putBoolean
                             ("enable_pin", false).remove("PIN").apply();
                     ((SwitchPreference) findPreference("enable_pin")).setChecked(false);
@@ -270,12 +270,12 @@ public class SettingsActivity extends AppCompatActivity {
 
                 if (resultCode == RESULT_OK) {
                     //pin checked now disable the pin
-                    Log.d(TAG,"check pin success");
+                    Log.d(TAG, "check pin success");
                     sharedPreferences.edit().putBoolean
                             ("enable_pin", false).putString("PIN", null).remove("PIN").apply();
                 } else {
                     //pin verification failed keep the pin on
-                    Log.d(TAG,"check pin failed");
+                    Log.d(TAG, "check pin failed");
                     sharedPreferences.edit().putBoolean
                             ("enable_pin", true).apply();
                     ((SwitchPreference) findPreference("enable_pin")).setChecked(true);

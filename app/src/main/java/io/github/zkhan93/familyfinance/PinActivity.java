@@ -3,6 +3,7 @@ package io.github.zkhan93.familyfinance;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.transition.TransitionManager;
@@ -99,7 +100,9 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
                 }
                 break;
         }
-        getWindow().setEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.slide));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            getWindow().setEnterTransition(TransitionInflater.from(this).inflateTransition(R
+                    .transition.slide));
     }
 
     @Override
