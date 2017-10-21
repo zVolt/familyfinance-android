@@ -162,7 +162,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                     member.setId(ds.getKey());
                     members.add(member);
                 }
-                new InsertTask<>(memberDao, null).execute(members.toArray(new Member[members.size
+                new InsertTask<MemberDao,Member>(memberDao, null).execute(members.toArray(new Member[members.size
                         ()]));
                 taskStatus = taskStatus | 2;
                 if (callbackCounter == 0)

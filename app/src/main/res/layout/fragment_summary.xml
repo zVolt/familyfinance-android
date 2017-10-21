@@ -14,11 +14,11 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pichart"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:visibility="gone"/>
+        <!--<com.github.mikephil.charting.charts.PieChart-->
+            <!--android:id="@+id/pichart"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="200dp"-->
+            <!--android:visibility="gone"/>-->
 
         <TextView
             style="@style/TextAppearance.AppCompat.Subhead"

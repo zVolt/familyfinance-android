@@ -4,7 +4,7 @@
         android:title="@string/pref_header_general">
         <SwitchPreference
             android:defaultValue="true"
-            android:key="pref_key_copy"
+            android:key="@string/pref_key_copy"
             android:summary="@string/pref_copy_enable"
             android:title="@string/pref_title_copy"/>
     </PreferenceCategory>
@@ -14,16 +14,24 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="pref_key_pin"
+            android:key="@string/pref_key_pin"
             android:summary="@string/pref_pin_disable"
             android:title="@string/pref_title_pin"/>
+        <ListPreference
+            android:defaultValue="10"
+            android:dependency="@string/pref_key_pin"
+            android:entries="@array/pref_autolock_keys"
+            android:entryValues="@array/pref_autolock_values"
+            android:key="@string/pref_key_autolock"
+            android:summary="@string/pref_autolock"
+            android:title="@string/pref_title_autolock"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="notification"
         android:title="@string/pref_header_notifications">
         <SwitchPreference
             android:defaultValue="true"
-            android:key="pref_key_notification"
+            android:key="@string/pref_key_notification"
             android:summary="@string/pref_notification_enable"
             android:title="@string/pref_title_notifications"/>
         <!-- Allows the user to choose a ringtone in the 'notification' category. -->
@@ -31,16 +39,16 @@
         <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
         <RingtonePreference
             android:defaultValue="content://settings/system/notification_sound"
-            android:dependency="pref_key_notification"
-            android:key="pref_key_ringtone"
+            android:dependency="@string/pref_key_notification"
+            android:key="@string/pref_key_ringtone"
             android:ringtoneType="notification"
             android:summary="@string/pref_ringtone_silent"
             android:title="@string/pref_title_ringtone"/>
 
         <SwitchPreference
             android:defaultValue="true"
-            android:dependency="pref_key_notification"
-            android:key="pref_key_vibrate"
+            android:dependency="@string/pref_key_notification"
+            android:key="@string/pref_key_vibrate"
             android:title="@string/pref_title_vibrate"/>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -24,6 +24,10 @@
 # hide the original source file accountHolder.
 #-renamesourcefileattribute SourceFile
 
+#firebase
+# Add this global rule
+-keepattributes Signature
+
 #Eventbus
 -keepattributes *Annotation*
 -keepclassmembers class ** {
@@ -44,13 +48,10 @@ public static java.lang.String TABLENAME;
 
 # If you do not use SQLCipher:
 -dontwarn org.greenrobot.greendao.database.**
-# If you do not use RxJava:
+# If you do not use Rx:
 -dontwarn rx.**
 
 #firebase
-# Add this global rule
--keepattributes Signature
-
 # This rule will properly ProGuard all the model classes in
 # the package com.yourcompany.models. Modify to fit the structure
 # of your app.
@@ -58,8 +59,19 @@ public static java.lang.String TABLENAME;
   *;
 }
 
+#Glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
 #remove log statementes
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
 }
+-dontnote
+-dontwarn com.google.errorprone.**
+-dontwarn com.google.common.**

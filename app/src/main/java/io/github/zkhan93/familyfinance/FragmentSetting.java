@@ -6,6 +6,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
@@ -14,6 +15,8 @@ import android.preference.SwitchPreference;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+
+import java.util.Collections;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -77,6 +80,12 @@ public class FragmentSetting extends PreferenceFragment implements Preference
                             preference.setSummary((boolean) value ? R.string.pref_pin_enable : R
                                     .string.pref_pin_disable);
                             return true;
+                        case "pref_key_autolock":
+                            int index = ((ListPreference) preference).findIndexOfValue(stringValue);
+                            preference.setSummary(preference.getContext().getString(R.string
+                                    .pref_autolock, ((ListPreference) preference).getEntries()
+                                    [index]));
+                            return true;
                         default:
                             return false;
                     }
@@ -104,7 +113,7 @@ public class FragmentSetting extends PreferenceFragment implements Preference
                     PreferenceManager
                             .getDefaultSharedPreferences(preference.getContext())
                             .getBoolean(preference.getKey(), false));
-        else if (preference instanceof RingtonePreference)
+        else if (preference instanceof RingtonePreference || preference instanceof ListPreference)
             sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
                     PreferenceManager
                             .getDefaultSharedPreferences(preference.getContext())
@@ -134,6 +143,7 @@ public class FragmentSetting extends PreferenceFragment implements Preference
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_notification)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_ringtone)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_vibrate)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_autolock)));
 
         Log.d(TAG, "setting all set");
     }
@@ -202,7 +212,8 @@ public class FragmentSetting extends PreferenceFragment implements Preference
                 //cancelled
                 Log.d(TAG, "set pin failed");
                 sharedPreferences.edit().putBoolean
-                        (getString(R.string.pref_key_pin), false).remove(getString(R.string.pref_key_pin_value)).apply();
+                        (getString(R.string.pref_key_pin), false).remove(getString(R.string
+                        .pref_key_pin_value)).apply();
                 ((SwitchPreference) findPreference(getString(R.string.pref_key_pin)))
                         .setChecked(false);
             }
@@ -214,7 +225,8 @@ public class FragmentSetting extends PreferenceFragment implements Preference
                 //pin checked now disable the pin
                 Log.d(TAG, "check pin success");
                 sharedPreferences.edit().putBoolean
-                        (getString(R.string.pref_key_pin), false).putString(getString(R.string.pref_key_pin_value), null)
+                        (getString(R.string.pref_key_pin), false).putString(getString(R.string
+                        .pref_key_pin_value), null)
                         .remove(getString(R.string.pref_key_pin_value)).apply();
             } else {
                 //pin verification failed keep the pin on

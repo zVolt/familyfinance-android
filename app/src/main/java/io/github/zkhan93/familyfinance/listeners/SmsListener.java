@@ -25,6 +25,7 @@ import java.util.List;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.Otp;
+import io.github.zkhan93.familyfinance.models.OtpDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 
 /**
@@ -99,7 +100,7 @@ public class SmsListener extends BroadcastReceiver {
                         Log.d(TAG, "No OTP in SMS");
                     }
                 }
-                new InsertTask<>(((App) context.getApplicationContext()).getDaoSession()
+                new InsertTask<OtpDao, Otp>(((App) context.getApplicationContext()).getDaoSession()
                         .getOtpDao())
                         .execute(otps.toArray(new Otp[otps.size()]));
                 new PushOtpTask(activeFamilyId).execute(otps.toArray(new Otp[otps.size()

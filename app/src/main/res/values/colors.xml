@@ -8,6 +8,8 @@
     <color name="colorAccentLight">#ffc246</color>
     <color name="textPrimary">#ffffff</color>
     <color name="textAccent">#000000</color>
+    <color name="errorColor">#ff2d6f</color>
+
 
     <!--Login Activity shade-->
     <color name="darkShade6">#66000000</color>

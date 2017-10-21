@@ -11,18 +11,11 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.greenrobot.greendao.query.Query;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -36,7 +29,6 @@ import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.DaoSession;
-import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.util.Constants;
 
 
@@ -67,8 +59,8 @@ public class FragmentSummary extends Fragment {
     public TextView accountTitle;
     @BindView(R.id.card_title)
     public TextView cardTitle;
-    @BindView(R.id.pichart)
-    public PieChart pieChart;
+//    @BindView(R.id.pichart)
+//    public PieChart pieChart;
     @BindView(R.id.card_limit_bar)
     public ProgressBar cardLimitbar;
 
@@ -264,25 +256,25 @@ public class FragmentSummary extends Fragment {
         return rootView;
     }
 
-    private void setChart(float remainingAmount, float consumedAmount) {
-        List<PieEntry> entries = new ArrayList<>();
-        float total = remainingAmount + consumedAmount;
-        if (total == 0) return;
-        consumedAmount = consumedAmount / total;
-        Log.d(TAG, String.format("lalal: %f", consumedAmount));
-        entries.add(new PieEntry(consumedAmount * 100));
-        entries.add(new PieEntry((1 - consumedAmount) * 100));
-        PieDataSet set = new PieDataSet(entries, null);
-        set.setColors(new int[]{R.color.md_deep_orange_300, R.color.md_green_200}, getActivity()
-                .getApplicationContext());
-        PieData data = new PieData(set);
-        pieChart.setData(data);
-        pieChart.setClickable(false);
-        pieChart.setTouchEnabled(false);
-        pieChart.getDescription().setText("");
-        pieChart.getLegend().setEnabled(false);
-        pieChart.invalidate(); // refresh
-    }
+//    private void setChart(float remainingAmount, float consumedAmount) {
+//        List<PieEntry> entries = new ArrayList<>();
+//        float total = remainingAmount + consumedAmount;
+//        if (total == 0) return;
+//        consumedAmount = consumedAmount / total;
+//        Log.d(TAG, String.format("lalal: %f", consumedAmount));
+//        entries.add(new PieEntry(consumedAmount * 100));
+//        entries.add(new PieEntry((1 - consumedAmount) * 100));
+//        PieDataSet set = new PieDataSet(entries, null);
+//        set.setColors(new int[]{R.color.md_deep_orange_300, R.color.md_green_200}, getActivity()
+//                .getApplicationContext());
+//        PieData data = new PieData(set);
+//        pieChart.setData(data);
+//        pieChart.setClickable(false);
+//        pieChart.setTouchEnabled(false);
+//        pieChart.getDescription().setText("");
+//        pieChart.getLegend().setEnabled(false);
+//        pieChart.invalidate(); // refresh
+//    }
 
     @Override
     public void onStart() {
