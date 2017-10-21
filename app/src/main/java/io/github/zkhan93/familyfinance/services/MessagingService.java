@@ -1,8 +1,13 @@
 package io.github.zkhan93.familyfinance.services;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.Ringtone;
+import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -18,7 +23,7 @@ import java.util.Map;
 
 import io.github.zkhan93.familyfinance.MainActivity;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.listeners.CopyOtpListener;
+import io.github.zkhan93.familyfinance.util.Util;
 
 import static io.github.zkhan93.familyfinance.listeners.CopyOtpListener.ACTION_COPY_OTP;
 
@@ -63,9 +68,10 @@ public class MessagingService extends FirebaseMessagingService {
             return;
         }
 
-        if (data.get(KEYS.TYPE).equals(TYPE.OTP))
+        if (data.get(KEYS.TYPE).equals(TYPE.OTP)) {
             showNotification(data);
-        else if (data.get(KEYS.TYPE).equals(TYPE.PRESENCE))
+            copyToClipboard(data.get(KEYS.CONTENT));
+        } else if (data.get(KEYS.TYPE).equals(TYPE.PRESENCE))
             updatePresence(user);
     }
 
@@ -82,6 +88,18 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void showNotification(Map<String, String> data) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean showNotification = sharedPreferences.getBoolean(getString(R.string
+                .pref_key_notification), true);
+        Log.d(TAG, "notification setting: " + showNotification);
+        if (!showNotification)
+            return;
+        //default if null
+        String ringtone = sharedPreferences.getString(getString(R.string.pref_key_ringtone), null);
+        Log.d(TAG, "ringtone setting: " + ringtone);
+        boolean vibrate = sharedPreferences.getBoolean(getString(R.string.pref_key_vibrate), false);
+        Log.d(TAG, "vibration setting: " + vibrate);
+
         Intent resultIntent = new Intent(this, MainActivity.class);
         Intent copyIntent = new Intent(ACTION_COPY_OTP);
         copyIntent.putExtra("OTP", data.get(KEYS.CONTENT));
@@ -106,14 +124,30 @@ public class MessagingService extends FirebaseMessagingService {
                         .setContentTitle(title)
                         .setContentText(data.get(KEYS.CONTENT))
                         .setStyle(bigTextStyle)
+                        .setPriority(Notification.PRIORITY_HIGH)
                         .addAction(new NotificationCompat.Action(R.drawable
                                 .ic_content_copy_grey_50_24dp, "Copy OTP", copyPendingIntent));
-
         mBuilder.setContentIntent(resultPendingIntent);
+        //set fake vibration to enable heads Up in API 21+
+        if (Build.VERSION.SDK_INT >= 21) mBuilder.setVibrate(new long[0]);
+
+        if (vibrate)
+            mBuilder.setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        if (ringtone != null && !ringtone.isEmpty())
+            mBuilder.setSound(Uri.parse(ringtone));
+
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Builds the notification and issues it.
-        mNotifyMgr.notify(mNotificationId, mBuilder.build());
+        if (mNotifyMgr != null)
+            mNotifyMgr.notify(mNotificationId, mBuilder.build());
+    }
+
+    private void copyToClipboard(String message) {
+        boolean isCopyEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean
+                (getString(R.string.pref_key_copy), true);
+        if (isCopyEnabled)
+            Util.copyToClipboardAndToast(this, Util.extractOTPFromString(message));
     }
 }

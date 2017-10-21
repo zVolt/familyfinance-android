@@ -32,7 +32,7 @@ public class EmptyVH extends RecyclerView.ViewHolder implements ValueEventListen
         ButterKnife.bind(this, itemView);
         Log.d(TAG, "empty VH created");
         FirebaseDatabase.getInstance().getReference("images").child(childName)
-                .addValueEventListener(this);
+                .addListenerForSingleValueEvent(this);
     }
 
     @Override

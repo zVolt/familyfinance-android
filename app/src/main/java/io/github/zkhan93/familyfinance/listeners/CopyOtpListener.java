@@ -9,6 +9,9 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.util.Util;
+
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
@@ -25,32 +28,6 @@ public class CopyOtpListener extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String message = intent.getStringExtra("OTP");
         Log.d(TAG, "copy OTP from" + message);
-        otp = null;
-        String[] segments = message.split("\\s+");
-        for (String segment : segments) {
-            if (segment.startsWith("."))
-                segment = segment.substring(1);
-            if (segment.endsWith("."))
-                segment = segment.substring(0, segment.length() - 1);
-            if ((segment.length() == 4 || segment.length() == 6) && segment.matches("\\d+")) {
-
-                Log.d(TAG, "OTP is:" + segment);
-                if (otp == null || otp.length() < segment.length())
-                    otp = segment;
-            }
-        }
-        Toast toast = Toast.makeText(context, otp, Toast.LENGTH_LONG);
-        toast.show();
-        //copy otp to clipboard
-        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context
-                .CLIPBOARD_SERVICE);
-        if (clipboard == null) {
-            Log.d(TAG, "cannot get clipboard");
-            return;
-        }
-        ClipData clip = ClipData.newPlainText("OTP", otp);
-        clipboard.setPrimaryClip(clip);
-        toast.setText(otp + " copied to clipboard");
-        toast.show();
+        Util.copyToClipboardAndToast(context, Util.extractOTPFromString(message));
     }
 }

@@ -72,7 +72,7 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
         action = getIntent().getAction();
         Log.d(TAG, "action:" + action);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String actualPin = sharedPreferences.getString("PIN", null);
+        String actualPin = sharedPreferences.getString(getString(R.string.pref_key_pin_value), null);
         if (action == null ||
                 !(action.equals(ACTIONS.SET_PIN) ||
                         action.equals(ACTIONS.CONFIRM_PIN) ||
@@ -120,7 +120,7 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
                     pin.setText(str.substring(0, str.length() - 1));
                 break;
             case R.id.cancel:
-                sharedPreferences.edit().putString("PIN", null).apply();
+                sharedPreferences.edit().putString(getString(R.string.pref_key_pin_value), null).apply();
                 break;
         }
     }
@@ -149,7 +149,7 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
                 .hash();
         if (sharedPreferences == null)
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences.edit().putString("PIN", hc.toString()).apply();
+        sharedPreferences.edit().putString(getString(R.string.pref_key_pin_value), hc.toString()).apply();
         Intent intent = new Intent(ACTIONS.CONFIRM_PIN, null, this, PinActivity.class);
         startActivityForResult(intent, REQUEST_CONFIRM_PIN);
     }
@@ -165,7 +165,7 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
                 .hash();
         if (sharedPreferences == null)
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String actualPin = sharedPreferences.getString("PIN", null);
+        String actualPin = sharedPreferences.getString(getString(R.string.pref_key_pin_value), null);
         if (hc.toString().equals(actualPin)) {
             // all set
             setResult(RESULT_OK);
@@ -183,7 +183,7 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
     private void checkPin() {
         msg.setVisibility(View.GONE);
         String enteredPin = pin.getText().toString();
-        String actualPin = sharedPreferences.getString("PIN", null);
+        String actualPin = sharedPreferences.getString(getString(R.string.pref_key_pin_value), null);
         if (actualPin == null) {
             // No pin set call finish() on this activity returning positive result
             setResult(RESULT_OK);
@@ -224,7 +224,7 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
                 finish(); //pin set successful nothing else to do
             } else {
                 //clear pin from preference
-                sharedPreferences.edit().putString("PIN", null).apply();
+                sharedPreferences.edit().putString(getString(R.string.pref_key_pin_value), null).apply();
                 setResult(RESULT_CANCELED);
                 finish();
             }

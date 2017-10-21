@@ -19,6 +19,7 @@
     <string name="title_new_card">Add Card</string>
     <string name="title_activity_select_family">Family</string>
     <string name="title_activity_add_member">Requests</string>
+    <string name="title_activity_pin">@string/app_name</string>
 
     <!--Menu Titles-->
     <string name="action_copy">Copy to clipboard</string>
@@ -64,82 +65,39 @@
     <string name="requests">Your Request</string>
     <string name="or">OR</string>
     <string name="start_new_family">Start New Family</string>
+    <string name="copy_message"> %1$s copied</string>
+    <string name="no_otp_found">Oops! cannot find OTP</string>
+    <string name="error_clipboard"> %1$s cannot copy to clipboard</string>
 
-    <!-- Example General settings -->
+    <!--Category title-->
     <string name="pref_header_general">General</string>
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
-    <string-array name="multi_select_list_preference_default_value"/>
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
     <string name="pref_header_security">Security</string>
-
-    <string name="pref_title_new_otp_notifications">New OTP notifications</string>
-
+    <!--preference title-->
+    <string name="pref_title_notifications">Notification</string>
+    <string name="pref_title_copy">Auto Copy</string>
     <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
     <string name="pref_title_vibrate">Vibrate</string>
-    <string name="pref_title_enable_pin">Enable PIN</string>
+    <string name="pref_title_pin">Secure PIN</string>
 
-    <string name="title_activity_pin">@string/app_name</string>
+    <string name="pref_copy_enable">Incoming OTP will get copied to your clipboard automatically</string>
+    <string name="pref_copy_disable">Do not copy incoming OTP automatically to clipboard</string>
+    <string name="pref_ringtone_silent">Silent</string>
+    <string name="pref_notification_enable">Show notification on new OTP</string>
+    <string name="pref_notification_disable">Do not show notification when new OTP arrives</string>
+    <string name="pref_pin_enable">Using secure PIN to unlock</string>
+    <string name="pref_pin_disable">Do not use PIN to unlock</string>
 
+    <string name="pref_key_notification" translatable="false">pref_key_notification</string>
+    <string name="pref_key_vibrate" translatable="false">pref_key_vibrate</string>
+    <string name="pref_key_ringtone" translatable="false">pref_key_ringtone</string>
+    <string name="pref_key_copy" translatable="false">pref_key_copy</string>
+    <string name="pref_key_pin" translatable="false">pref_key_pin</string>
+    <string name="pref_key_pin_value" translatable="false">pref_key_pin_value</string>
+
+    <!--PIN Activity related strings-->
     <string name="enter_pin">Unlock Family Finance</string>
     <string name="cancel">Cancel</string>
-
     <string name="confirm_pin">Confirm PIN for Family Finance</string>
     <string name="set_pin">Set PIN to access Family Finance</string>
 

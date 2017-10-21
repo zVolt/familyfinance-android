@@ -57,9 +57,9 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType==ITEM_TYPE.EMPTY)
+        if (viewType == ITEM_TYPE.EMPTY)
             return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                    .listitem_empty, parent, false),"blankOTP");
+                    .listitem_empty, parent, false), "blankOTP");
         return new OtpVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                 .listitem_otp, parent, false));
     }
@@ -72,7 +72,8 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return otps.size() + 1;
+        if (otps.size() == 0) return 1;
+        return otps.size();
     }
 
     @Override

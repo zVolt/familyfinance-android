@@ -208,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
         if (verified) {
+
             PreferenceManager.getDefaultSharedPreferences(this).edit().putLong("lastActive",
                     Calendar
                             .getInstance().getTimeInMillis()).apply();
@@ -218,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements
     private boolean needsPinVerification() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Long lastActive = sharedPreferences.getLong("lastActive", -1);
-        boolean pinEnabled = sharedPreferences.getBoolean("enable_pin", false);
+        boolean pinEnabled = sharedPreferences.getBoolean(getString(R.string.pref_key_pin), false);
         return pinEnabled &&
                 (lastActive == -1 || lastActive < Calendar.getInstance().getTimeInMillis() - 10 *
                         500);//10 sec
