@@ -3,14 +3,17 @@ package io.github.zkhan93.familyfinance.services;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Ringtone;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -147,7 +150,12 @@ public class MessagingService extends FirebaseMessagingService {
     private void copyToClipboard(String message) {
         boolean isCopyEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean
                 (getString(R.string.pref_key_copy), true);
-        if (isCopyEnabled)
-            Util.copyToClipboardAndToast(this, Util.extractOTPFromString(message));
+        if (!isCopyEnabled) return;
+        if (Looper.myLooper() == null) { Looper.prepare(); }
+        String toastMessage = Util.copyToClipboard(getApplicationContext(), (ClipboardManager)
+                getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE), Util
+                .extractOTPFromString(message));
+        if (toastMessage == null || toastMessage.isEmpty()) return;
+        Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_LONG).show();
     }
 }

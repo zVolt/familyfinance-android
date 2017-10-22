@@ -2,14 +2,12 @@ package io.github.zkhan93.familyfinance.listeners;
 
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.util.Util;
 
 /**
@@ -28,6 +26,9 @@ public class CopyOtpListener extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String message = intent.getStringExtra("OTP");
         Log.d(TAG, "copy OTP from" + message);
-        Util.copyToClipboardAndToast(context, Util.extractOTPFromString(message));
+        String toastMessage = Util.copyToClipboard(context, (ClipboardManager) context
+                .getSystemService(Context.CLIPBOARD_SERVICE), Util.extractOTPFromString(message));
+        if (toastMessage == null || toastMessage.isEmpty()) return;
+        Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show();
     }
 }

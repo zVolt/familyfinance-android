@@ -46,15 +46,12 @@ public class Util {
         return otp;
     }
 
-    public static void copyToClipboardAndToast(Context context, String otp) {
+    public static String copyToClipboard(Context context, ClipboardManager clipboard, String otp) {
         String message = null;
-        Toast toast = Toast.makeText(context, "", Toast.LENGTH_LONG);
         if (otp == null)
             message = context.getString(R.string.no_otp_found);
         else {
             message = context.getString(R.string.copy_message, otp);
-            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context
-                    .CLIPBOARD_SERVICE);
             if (clipboard == null) {
                 Log.d(TAG, "cannot get clipboard");
                 message = context.getString(R.string.error_clipboard, otp);
@@ -63,7 +60,6 @@ public class Util {
                 clipboard.setPrimaryClip(clip);
             }
         }
-        toast.setText(message);
-        toast.show();
+        return message;
     }
 }
