@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_marginBottom="54dp"
+              android:orientation="vertical"
+              app:layout_behavior="@string/appbar_scrolling_view_behavior"
+              tools:context="io.github.zkhan93.familyfinance.FragmentChatroom">
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/hello_blank_fragment"
+        tools:listitem="@layout/listitem_chat_text_send"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center">
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:background="@null"
+            android:maxLines="3"
+            tools:text="this is a multi line edit text that will grow once I start typing and will scroll alsonsdflskdgfsdlkghdskfg kdsfgh dsg sdkg jsdg fsdm fjsdg f"/>
+
+        <ImageButton
+            android:id="@+id/send"
+            style="@style/Base.Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/md_teal_500"
+            android:src="@drawable/circle_orange"/>
+    </LinearLayout>
+</LinearLayout>

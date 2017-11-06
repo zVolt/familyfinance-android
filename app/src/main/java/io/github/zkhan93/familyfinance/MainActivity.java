@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -17,7 +16,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -108,6 +106,11 @@ public class MainActivity extends AppCompatActivity implements
                                 familyModeratorId.equals(me.getId()))
                             showFab();
                         else hideFab();
+                        break;
+                    case PAGE_POSITION.EMAILS:
+                        hideFab();
+                    case PAGE_POSITION.CHAT_ROOM:
+                        hideFab();
                         break;
                 }
             }
@@ -332,17 +335,23 @@ public class MainActivity extends AppCompatActivity implements
             // Return a PlaceholderFragment (defined as a static inner class below).
             Fragment fragment;
             switch (position) {
-                case 1:
+                case PAGE_POSITION.ACCOUNTS:
                     fragment = FragmentAccounts.newInstance(familyId);
                     break;
-                case 2:
+                case PAGE_POSITION.CCARDS:
                     fragment = FragmentCCards.newInstance(familyId);
                     break;
-                case 3:
+                case PAGE_POSITION.OTPS:
                     fragment = FragmentOtps.newInstance(familyId);
                     break;
-                case 4:
+                case PAGE_POSITION.EMAILS:
+                    fragment = FragmentEmails.newInstance(familyId);
+                    break;
+                case PAGE_POSITION.MEMBERS:
                     fragment = FragmentMembers.newInstance(familyId, familyModeratorId);
+                    break;
+                case PAGE_POSITION.CHAT_ROOM:
+                    fragment = FragmentChatroom.newInstance(familyId);
                     break;
                 default: //0 or other
                     fragment = FragmentSummary.newInstance(familyId);
@@ -353,8 +362,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public int getCount() {
-            // Show 5 total pages.
-            return 5;
+            return PAGE_POSITION.class.getDeclaredFields().length;
         }
 
         @Override
@@ -370,6 +378,10 @@ public class MainActivity extends AppCompatActivity implements
                     return getString(R.string.title_otps);
                 case PAGE_POSITION.MEMBERS:
                     return getString(R.string.title_members);
+                case PAGE_POSITION.EMAILS:
+                    return getString(R.string.title_emails);
+                case PAGE_POSITION.CHAT_ROOM:
+                    return getString(R.string.title_chat_room);
             }
             return null;
         }
@@ -382,8 +394,9 @@ public class MainActivity extends AppCompatActivity implements
         int ACCOUNTS = 1;
         int CCARDS = 2;
         int OTPS = 3;
-        int MEMBERS = 4;
-
+        int EMAILS = 4;
+        int CHAT_ROOM = 5;
+        int MEMBERS = 6;
     }
 
     private boolean verified = false;
