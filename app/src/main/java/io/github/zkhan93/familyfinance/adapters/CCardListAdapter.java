@@ -377,10 +377,14 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         CCard cCard;
         ListIterator<CCard> itr = ccards.listIterator();
         int i = 0;
+        text = text.toLowerCase();
         while (itr.hasNext()) {
             cCard = itr.next();
-            if (!cCard.getCardholder().toLowerCase().contains(text) && !cCard.getNumber()
-                    .contains(text) && !cCard.getBank().toLowerCase().contains(text)) {
+            if (    !cCard.getCardholder().toLowerCase().contains(text) &&
+                    !cCard.getNumber().contains(text) &&
+                    !cCard.getBank().toLowerCase().contains(text) &&
+                    !text.contains(cCard.getBank().toLowerCase())
+                    ) {
                 itr.remove();
             }
             i++;

@@ -318,8 +318,11 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         int i = 0;
         while (itr.hasNext()) {
             account = itr.next();
-            if (!account.getAccountHolder().toLowerCase().contains(text) && !account.getAccountNumber()
-                    .contains(text) && !account.getBank().toLowerCase().contains(text)) {
+            if (    !account.getAccountHolder().toLowerCase().contains(text) &&
+                    !account.getAccountNumber().contains(text) &&
+                    !account.getBank().toLowerCase().contains(text) &&
+                    !text.contains(account.getBank().toLowerCase())
+                    ) {
                 itr.remove();
             }
             i++;
