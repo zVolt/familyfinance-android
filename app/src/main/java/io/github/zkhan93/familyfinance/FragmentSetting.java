@@ -86,6 +86,10 @@ public class FragmentSetting extends PreferenceFragment implements Preference
                                     .pref_autolock, ((ListPreference) preference).getEntries()
                                     [index]));
                             return true;
+                        case "pref_key_allsms":
+                            preference.setSummary((boolean) value ? R.string.pref_allsms_enable : R
+                                    .string.pref_allsms_disable);
+                            return true;
                         default:
                             return false;
                     }
@@ -144,6 +148,7 @@ public class FragmentSetting extends PreferenceFragment implements Preference
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_ringtone)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_vibrate)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_autolock)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_allsms)));
 
         Log.d(TAG, "setting all set");
     }

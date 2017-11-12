@@ -3,7 +3,11 @@ package io.github.zkhan93.familyfinance.viewholders;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,8 +21,8 @@ import io.github.zkhan93.familyfinance.util.Constants;
  */
 
 public class OtpVH extends RecyclerView.ViewHolder {
-    @BindView(R.id.name)
-    TextView name;
+    @BindView(R.id.receiver)
+    ImageView receiver;
     @BindView(R.id.number)
     TextView number;
     @BindView(R.id.content)
@@ -33,10 +37,13 @@ public class OtpVH extends RecyclerView.ViewHolder {
 
     public void setOtp(Otp otp) {
         Member from = otp.getFrom();
-        if (from != null && from.getName() != null)
-            name.setText(from.getName());
+        String url;
+        if (from != null && from.getProfilePic() != null)
+            url = from.getProfilePic();
         else
-            name.setText("Unknown");
+            url = "";//TOGO get gavatar of the email
+        Glide.with(receiver.getContext()).load(url).apply(RequestOptions
+                .circleCropTransform()).into(receiver);
         number.setText(otp.getNumber());
         content.setText(otp.getContent());
         timestamp.setText(DateUtils.getRelativeTimeSpanString(otp.getTimestamp()));

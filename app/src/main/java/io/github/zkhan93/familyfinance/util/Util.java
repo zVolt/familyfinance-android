@@ -5,10 +5,14 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.net.InetAddress;
+import java.util.Calendar;
 
 import io.github.zkhan93.familyfinance.R;
 
@@ -62,4 +66,74 @@ public class Util {
         }
         return message;
     }
+
+    public static class Log {
+        public static void d(String TAG, String msg, Object... args) {
+            android.util.Log.d(TAG, String.format(msg, args));
+        }
+
+        public static void i(String TAG, String msg, Object... args) {
+            android.util.Log.i(TAG, String.format(msg, args));
+        }
+
+        public static void e(String TAG, String msg, Object... args) {
+            android.util.Log.e(TAG, String.format(msg, args));
+        }
+    }
+
+    public static int getBankDrawableResource(String bankCode) {
+        switch (bankCode) {
+            case "ICICI":
+                return R.drawable.ic_bank_icici;
+            case "HDFC":
+                return R.drawable.ic_bank_hdfc;
+            case "AXIS":
+                return R.drawable.ic_bank_axis;
+            case "SBI":
+                return R.drawable.ic_bank_sbi;
+            case "BOB":
+                return R.drawable.ic_bank_bob;
+            case "PNB":
+                return R.drawable.ic_bank_pnb;
+            case "HSBC":
+                return R.drawable.ic_bank_hsbc;
+            case "ALLA":
+                return R.drawable.ic_bank_allahabad;
+            case "UBI":
+                return R.drawable.ic_bank_union;
+            default:
+                return R.drawable.ic_bank_grey_600_18dp;
+        }
+    }
+
+    /**
+     * calculate next payment day ie., suppose 15th is the payment day so if current day is less
+     * than of equal to 15 then next payment date is 15th of current month and if current day
+     * is greater than 15th then next payment date is 15th of next month.
+     **/
+    public static String getBillingCycleString(int billingDay, int paymentDay, @NonNull String
+            format) {
+
+        Calendar today = Calendar.getInstance();
+
+        Calendar paymentDate = Calendar.getInstance();
+        paymentDate.set(Calendar.DAY_OF_MONTH, paymentDay);
+
+        Calendar billingDate = Calendar.getInstance();
+        billingDate.set(Calendar.DAY_OF_MONTH, billingDay);
+
+        if (today.get(Calendar.DAY_OF_MONTH) > paymentDay)
+            paymentDate.add(Calendar.MONTH, 1);
+
+        if (billingDay < paymentDate.get(Calendar.DAY_OF_MONTH))
+            billingDate.set(Calendar.MONTH, paymentDate.get(Calendar.MONTH));
+        else {
+            billingDate.set(Calendar.MONTH, paymentDate.get(Calendar.MONTH));
+            billingDate.add(Calendar.MONTH, -1);
+        }
+
+        return String.format(format, Constants.PAYMENT_DATE.format(billingDate
+                .getTime()), Constants.PAYMENT_DATE.format(paymentDate.getTime()));
+    }
 }
+

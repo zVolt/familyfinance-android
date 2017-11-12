@@ -1,51 +1,91 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.ResultCodes;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.models.Member;
+import io.github.zkhan93.familyfinance.util.Util;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener,
+        GoogleApiClient.OnConnectionFailedListener, OnCompleteListener<AuthResult> {
 
     public static final String TAG = LoginActivity.class.getSimpleName();
-    private static final int RC_SIGN_IN = 123;
+    private static final int RC_SIGN_IN = 1005;
+    private GoogleApiClient mGoogleApiClient;
+    private FirebaseAuth mAuth;
+    private GoogleSignInAccount account;
+    @BindView(R.id.sign_in_button)
+    public SignInButton btnLogin;
+    private OnCompleteListener<Void> saveUserDataListener;
+
+    {
+        saveUserDataListener = new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    startMainActivity();
+                } else {
+                    //writing to firebase failed for some reason
+                    Log.d(TAG, "failed write operation" + task.getException()
+                            .getLocalizedMessage());
+                }
+            }
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() != null) {
-            FirebaseUser user = auth.getCurrentUser();
+        ButterKnife.bind(this);
+        btnLogin.setOnClickListener(this);
+        mAuth = FirebaseAuth.getInstance();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions
+                .DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.web_client_id))
+                .requestEmail()
+                .requestServerAuthCode(getString(R.string.web_client_id), false)
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        if (mAuth.getCurrentUser() != null) {
+            FirebaseUser user = mAuth.getCurrentUser();
             // already signed in
             Member member = new Member(user.getUid(), user.getDisplayName(), user
                     .getEmail(), Calendar.getInstance().getTimeInMillis(), false, user
@@ -53,18 +93,41 @@ public class LoginActivity extends AppCompatActivity {
             ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
             Log.d(TAG, "already logged in");
             startMainActivity();
-            finish();
-        } else
-            startActivityForResult(
-                    // Get an instance of AuthUI based on the default app
-                    AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders
-                            (Arrays.asList(
-                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
-                            ))
-                            .setLogo(R.mipmap.ic_launcher)
-                            .setTosUrl("http://google.com")
-                            .setTheme(R.style.AppTheme_NoActionBar)
-                            .build(), RC_SIGN_IN);
+        } else {
+//            AuthUI.IdpConfig.Builder config = new AuthUI.IdpConfig.Builder(AuthUI
+// .GOOGLE_PROVIDER);
+//            GmailScopes.GMAIL_READONLY
+//            config.setPermissions(Collections.singletonList(GmailScopes.GMAIL_READONLY));
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+//            startActivityForResult(
+//                    // Get an instance of AuthUI based on the default app
+//                    AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders
+//                            (Arrays.asList(
+//                                    config.build()
+//                            ))
+//                            .setLogo(R.mipmap.ic_launcher)
+//                            .setTosUrl("http://google.com")
+//                            .setTheme(R.style.AppTheme_NoActionBar)
+//                            .build(), RC_SIGN_IN);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.sign_in_button) {
+            startSignIn();
+        }
+    }
+
+    private void startSignIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "connection failed");
     }
 
     private void startMainActivity() {
@@ -84,71 +147,77 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onComplete(@NonNull Task<AuthResult> task) {
+        if (task.isSuccessful()) {
+            // Sign in success, update UI with the signed-in user's information
+            Util.Log.d(TAG, "signInWithCredential: success");
+            FirebaseUser user = mAuth.getCurrentUser();
+            if (user != null) {
+                Member member = new Member(user.getUid(), user.getDisplayName(), user
+                        .getEmail(), Calendar.getInstance().getTimeInMillis(), false, user
+                        .getPhotoUrl().toString());
+                ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
+                Map<String, Object> updates = new HashMap<>();
+                String prefix = "users/" + user.getUid() + "/";
+                updates.put(prefix + "name", member.getName());
+                updates.put(prefix + "id", member.getId());
+                updates.put(prefix + "email", member.getEmail());
+                updates.put(prefix + "profilePic", member.getProfilePic());
+                updates.put(prefix + "smsEnabled", member.getSmsEnabled());
+                updates.put(prefix + "token", FirebaseInstanceId.getInstance().getToken());
+                updates.put(prefix + "serverAuth", account.getServerAuthCode());
+                FirebaseDatabase.getInstance().getReference().updateChildren(updates)
+                        .addOnCompleteListener(saveUserDataListener);
+            } else {
+                // If sign in fails, display a message to the user.
+                Util.Log.e(TAG, "signInWithCredential: task failed with exception %s", task
+                        .getException().getLocalizedMessage());
+                Toast.makeText(getApplicationContext(), "Authentication failed.", Toast
+                        .LENGTH_SHORT).show();
+            }
+        } else {
+            // cannot get user's data
+            Util.Log.d(TAG, "onComplete: task failed");
+        }
+        return;
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when
         // starting the sign in flow.
+        Util.Log.i(TAG, "onActivityResult: requestCode: %d resultCode: %d", requestCode,
+                resultCode);
         if (requestCode == RC_SIGN_IN) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
-
+//            IdpResponse response = IdpResponse.fromResultIntent(data);
+            GoogleSignInResult response = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             // Successfully signed in
-            if (resultCode == ResultCodes.OK) {
+            if (resultCode == Activity.RESULT_OK) {
                 //TODO: show progress bar during this process
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user != null) {
-                    Member member = new Member(user.getUid(), user.getDisplayName(), user
-                            .getEmail(), Calendar.getInstance().getTimeInMillis(),false, user
-                            .getPhotoUrl().toString());
-                    ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
-                    Map<String, Object> updates = new HashMap<>();
-                    String prefix = "users/" + user.getUid() + "/";
-                    updates.put(prefix + "name", member.getName());
-                    updates.put(prefix + "id", member.getId());
-                    updates.put(prefix + "email", member.getEmail());
-                    updates.put(prefix + "profilePic", member.getProfilePic());
-                    updates.put(prefix + "smsEnabled", member.getSmsEnabled());
-                    updates.put(prefix + "token", FirebaseInstanceId
-                            .getInstance().getToken());
-                    FirebaseDatabase.getInstance().getReference().updateChildren(updates)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        startMainActivity();
-                                    } else {
-                                        //writing to firebase failed for some reason
-                                        Log.d(TAG, "failed write operation" + task.getException()
-                                                .getLocalizedMessage());
-                                    }
-                                }
-                            });
-                } else {
-                    // cannot get user's data
-                    Log.d(TAG, "no data");
+                if (!response.isSuccess()) {
+                    Util.Log.d(TAG, "sign in attempt failed");
                 }
-                return;
+                // Google Sign In was successful, authenticate with Firebase
+                account = response.getSignInAccount();
+                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken()
+                        , null);
+                mAuth.signInWithCredential(credential).addOnCompleteListener(this);
+
             } else {
                 // Sign in failed
                 if (response == null) {
-                    // User pressed back button
-//                    showSnackbar(R.string.sign_in_cancelled);
-                    Log.d(TAG, "User pressed back button");
-                    finish();
+                    Log.d(TAG, "null response object");
                     return;
                 }
-
-                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
-//                    showSnackbar(R.string.no_internet_connection);
-                    Log.d(TAG, "No internet");
-                    return;
-                }
-
-                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    Log.d(TAG, "Unknown Error");
-                    return;
+                switch (response.getStatus().getStatusCode()) {
+                    case GoogleSignInStatusCodes.SIGN_IN_CANCELLED:
+                        Log.d(TAG, "User pressed back button");
+                        break;
+                    case GoogleSignInStatusCodes.SIGN_IN_FAILED:
+                        Log.d(TAG, "No internet");
+                        break;
                 }
             }
-
-            Log.d(TAG, "Unknown Signin Response");
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

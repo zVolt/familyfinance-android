@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,7 +26,7 @@ import io.github.zkhan93.familyfinance.util.Constants;
  * Use the {@link FragmentOtps#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentOtps extends Fragment {
+public class FragmentOtps extends Fragment implements OtpListAdapter.ItemInsertedListener {
     public static final String TAG = FragmentOtps.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_FAMILY_ID = "familyId";
@@ -65,15 +67,22 @@ public class FragmentOtps extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
         ButterKnife.bind(this, rootView);
-        otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(), familyId);
+        otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(), familyId, this);
         otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        otpsList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        otpsList.scrollToPosition(0);
         otpsList.setAdapter(otpListAdapter);
-
         return rootView;
     }
 
@@ -109,5 +118,11 @@ public class FragmentOtps extends Fragment {
      */
     public interface OnFragmentInteractionListener {
 
+    }
+
+    @Override
+    public void onItemAdded(int position) {
+        if (otpsList != null)
+            otpsList.smoothScrollToPosition(position);
     }
 }

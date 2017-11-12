@@ -27,7 +27,6 @@ import io.github.zkhan93.familyfinance.models.OtpDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
-import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
 /**
@@ -43,8 +42,10 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Query otpRef;
     private OtpDao otpDao;
     private boolean ignoreChildEvents;
+    private ItemInsertedListener itemInsertedListener;
 
-    public OtpListAdapter(App app, String familyId) {
+    public OtpListAdapter(App app, String familyId, ItemInsertedListener itemInsertedListener) {
+        this.itemInsertedListener = itemInsertedListener;
         this.otps = new ArrayList<>();
         this.familyId = familyId;
         if (familyId == null)
@@ -117,6 +118,8 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (insertPosition == -1) insertPosition = 0;
             otps.add(insertPosition, newOtp);
             notifyItemInserted(insertPosition);
+            if (itemInsertedListener != null)
+                itemInsertedListener.onItemAdded(insertPosition);
         }
     }
 
@@ -215,11 +218,14 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onInsertTaskComplete(List<Otp> items) {
         //initial data load callback
-        Log.d(TAG, items.toString());
         otps.clear();
         otps.addAll(items);
         Collections.sort(otps, Otp.BY_TIMESTAMP);
         notifyDataSetChanged();
         ignoreChildEvents = false;
+    }
+
+    public interface ItemInsertedListener {
+        void onItemAdded(int position);
     }
 }

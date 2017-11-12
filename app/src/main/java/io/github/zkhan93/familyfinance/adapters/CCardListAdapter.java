@@ -74,7 +74,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == ITEM_TYPE.EMPTY)
             return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                    .listitem_empty, parent, false),"blankCCard");
+                    .listitem_empty, parent, false), "blankCCard");
         else if (viewType == ITEM_TYPE.FOOTER)
             return new FooterVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                     .listitem_footer, parent, false));
@@ -350,5 +350,41 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             notifyDataSetChanged();
             ignoreChildEvent = false;
         }
+    }
+
+    private ArrayList<CCard> _ccards;
+
+    public void onSearch(String text) {
+        //skip first blank call
+        if ((text == null || text.isEmpty()) && _ccards == null)
+            return;
+        //if search ended restore the backup
+        if (_ccards != null && (text == null || text.isEmpty())) {
+            ccards = _ccards;
+            _ccards = null;
+            notifyDataSetChanged();
+            return;
+        }
+        //first time take backup
+        if (_ccards == null) {
+            _ccards = new ArrayList<>();
+            _ccards.addAll(ccards);
+        } else { // from subsequent calls work on a copy
+            ccards = new ArrayList<>();
+            ccards.addAll(_ccards);
+        }
+
+        CCard cCard;
+        ListIterator<CCard> itr = ccards.listIterator();
+        int i = 0;
+        while (itr.hasNext()) {
+            cCard = itr.next();
+            if (!cCard.getCardholder().toLowerCase().contains(text) && !cCard.getNumber()
+                    .contains(text) && !cCard.getBank().toLowerCase().contains(text)) {
+                itr.remove();
+            }
+            i++;
+        }
+        notifyDataSetChanged();
     }
 }

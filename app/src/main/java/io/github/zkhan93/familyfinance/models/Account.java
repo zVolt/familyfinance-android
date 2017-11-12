@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
@@ -21,10 +22,11 @@ import io.github.zkhan93.familyfinance.events.BaseEvent;
  * Created by zeeshan on 7/7/17.
  */
 @Entity
+@IgnoreExtraProperties
 public class Account extends BaseModel {
     @Id
     String accountNumber;
-    String accountHolder, bank, ifsc, userid, password;
+    String accountHolder, bank, ifsc, userid, password, email, phoneNumber;
     float balance;
     long updatedOn;
 
@@ -136,6 +138,22 @@ public class Account extends BaseModel {
         this.updatedByMemberId = updatedByMemberId;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     public void updateFrom(Account account) {
         setAccountNumber(account.getAccountNumber());
         setAccountHolder(account.getAccountHolder());
@@ -146,6 +164,8 @@ public class Account extends BaseModel {
         setBalance(account.getBalance());
         setUpdatedOn(account.getUpdatedOn());
         setUpdatedByMemberId(account.getUpdatedByMemberId());
+        setEmail(account.getEmail());
+        setPhoneNumber(account.getPhoneNumber());
     }
 
     /**
@@ -257,6 +277,7 @@ public class Account extends BaseModel {
 
 
     @Keep
+    @Exclude
     public String getReadableContent() {
         StringBuilder strb = new StringBuilder();
         strb.append("Account Number: ").append(getAccountNumber()).append("\n");
@@ -266,16 +287,18 @@ public class Account extends BaseModel {
         return strb.toString();
     }
 
-    @Generated(hash = 1857341911)
-    public Account(String accountNumber, String accountHolder, String bank, String ifsc, String
-            userid,
-                   String password, float balance, long updatedOn, String updatedByMemberId) {
+    @Generated(hash = 594599301)
+    public Account(String accountNumber, String accountHolder, String bank, String ifsc, String userid,
+            String password, String email, String phoneNumber, float balance, long updatedOn,
+            String updatedByMemberId) {
         this.accountNumber = accountNumber;
         this.accountHolder = accountHolder;
         this.bank = bank;
         this.ifsc = ifsc;
         this.userid = userid;
         this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
         this.balance = balance;
         this.updatedOn = updatedOn;
         this.updatedByMemberId = updatedByMemberId;
@@ -298,6 +321,9 @@ public class Account extends BaseModel {
         dest.writeLong(this.updatedOn);
         dest.writeParcelable(this.updatedBy, flags);
         dest.writeString(this.updatedByMemberId);
+        dest.writeString(this.email);
+        dest.writeString(this.phoneNumber);
+
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -318,6 +344,8 @@ public class Account extends BaseModel {
         this.updatedOn = in.readLong();
         this.updatedBy = in.readParcelable(Member.class.getClassLoader());
         this.updatedByMemberId = in.readString();
+        this.email = in.readString();
+        this.phoneNumber = in.readString();
     }
 
     public static final Creator<Account> CREATOR = new Creator<Account>() {

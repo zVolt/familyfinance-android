@@ -32,17 +32,17 @@ import io.github.zkhan93.familyfinance.adapters.AddonCardListAdapter;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Constants;
+import io.github.zkhan93.familyfinance.util.Util;
 
 /**
  * Created by zeeshan on 7/7/17.
  */
 
-public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener {
+public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
+        .OnMenuItemClickListener, View.OnClickListener {
 
     public static final String TAG = CCardVH.class.getSimpleName();
 
-    @BindView(R.id.name)
-    TextView name;
     @BindView(R.id.number)
     TextView number;
     @BindView(R.id.date)
@@ -50,7 +50,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
     @BindView(R.id.cardholder)
     TextView cardholder;
     @BindView(R.id.bank)
-    TextView bank;
+    ImageView bank;
     @BindView(R.id.limit)
     ProgressBar limit;
     @BindView(R.id.remaining_limit)
@@ -86,6 +86,10 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         limit.setIndeterminate(false);
 
         popup = new PopupMenu(itemView.getContext(), menu);
+        itemView.setOnClickListener(this);
+        menu.setOnClickListener(this);
+        addonTitle.setOnClickListener(this);
+
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
         inflater.inflate(R.menu.ccard_item_menu, popup.getMenu());
@@ -99,41 +103,15 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
 
     public void setCCard(CCard cCard) {
         this.cCard = cCard;
-        if (cCard.getName() == null || cCard.getName().trim().length() == 0)
-            name.setVisibility(View.GONE);
-        else
-            name.setText(cCard.getName());
-        NumberFormat cardNumberFormat = new DecimalFormat("");
-        number.setText(cCard.getFormattedNumber(' '));
 
-        /*
-        calculate next payment day ie., suppose 15th is the payment day so if current day is less
-         than of equal to 15 then next payment date is 15th of current month and if current day
-         is greater than 15th then next payment date is 15th of next month.
-        **/
-        Calendar today = Calendar.getInstance();
+        number.setText(cCard.getFormattedNumber('-',true));
 
-        Calendar paymentDate = Calendar.getInstance();
-        paymentDate.set(Calendar.DAY_OF_MONTH, cCard.getPaymentDay());
-
-        Calendar billingDate = Calendar.getInstance();
-        billingDate.set(Calendar.DAY_OF_MONTH, cCard.getBillingDay());
-
-        if (today.get(Calendar.DAY_OF_MONTH) > cCard.getPaymentDay())
-            paymentDate.add(Calendar.MONTH, 1);
-
-        if (cCard.getBillingDay() < paymentDate.get(Calendar.DAY_OF_MONTH))
-            billingDate.set(Calendar.MONTH, paymentDate.get(Calendar.MONTH));
-        else {
-            billingDate.set(Calendar.MONTH, paymentDate.get(Calendar.MONTH));
-            billingDate.add(Calendar.MONTH, -1);
-        }
-
-        date.setText(String.format("%s - %s", Constants.PAYMENT_DATE.format(billingDate
-                .getTime()), Constants.PAYMENT_DATE.format(paymentDate.getTime())));
+        date.setText(Util.getBillingCycleString(cCard.getBillingDay(), cCard.getPaymentDay(), "%s" +
+                " - %s"));
 
         cardholder.setText(cCard.getCardholder());
-        bank.setText(cCard.getBank());
+        bank.setImageDrawable(ContextCompat.getDrawable(context, Util.getBankDrawableResource
+                (cCard.getBank())));
 
         limit.setMax((int) cCard.getMaxLimit());
         limit.setProgress((int) cCard.getConsumedLimit());
@@ -163,7 +141,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
                     .SRC_IN);
         }
         consumedLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getConsumedLimit()));
-        remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getRemainingLimit()));
+        remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getRemainingLimit
+                ()));
 
         Member _updatedBy = cCard.getUpdatedBy();
 
@@ -179,14 +158,15 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         } else {
             addonTitle.setVisibility(View.GONE);
         }
-        updatedOn.setText(DateUtils.getRelativeTimeSpanString(cCard.getUpdatedOn()));
+        updatedOn.setText(DateUtils.getRelativeTimeSpanString(context, cCard.getUpdatedOn(), true));
         //Constants.DATE_FORMAT.format(cCard.getUpdatedOn())
 
         expiresOn.setText(CCard.EXPIRE_ON.format(new Date(cCard.getExpireOn())));
     }
 
-    @OnClick({R.id.menu, R.id.addons_title})
-    void onClick(View view) {
+
+    @Override
+    public void onClick(View view) {
         switch (view.getId()) {
             case R.id.menu:
                 popup.show();
@@ -195,6 +175,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
                 addonCards.setVisibility(addonCards.getVisibility() == View.VISIBLE ? View.GONE :
                         View.VISIBLE);
                 break;
+            default:
+                itemInteractionListener.onView(cCard);
         }
     }
 
@@ -230,6 +212,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenu
         void edit(CCard cCard);
 
         void addAddonCard(CCard cCard);
+
+        void onView(CCard cCard);
 
     }
 }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00796b</color>
-    <color name="colorPrimaryDark">#004c40</color>
-    <color name="colorPrimaryLight">#48a999</color>
+    <color name="colorPrimary">#009688</color>
+    <color name="colorPrimaryDark">#00796B</color>
+    <color name="colorPrimaryLight">#B2DFDB</color>
     <color name="colorAccentDark">#c56200</color>
-    <color name="colorAccent">#ff9100</color>
+    <color name="colorAccent">#FFC107</color>
     <color name="colorAccentLight">#ffc246</color>
-    <color name="textPrimary">#ffffff</color>
-    <color name="textAccent">#000000</color>
-    <color name="errorColor">#ff2d6f</color>
+    <color name="textPrimary">#212121</color>
+    <color name="textAccent">#757575</color>
+    <color name="errorColor">#f36c60</color>
 
 
     <!--Login Activity shade-->

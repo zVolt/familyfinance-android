@@ -1,11 +1,13 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @BindView(R.id.fab)
     FloatingActionButton fab;
+    @Nullable
     @BindView(R.id.tabs)
     TabLayout tabLayout;
 
@@ -125,11 +128,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -137,7 +140,8 @@ public class MainActivity extends AppCompatActivity implements
         hideFab();
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(pageChangeListener);
-        tabLayout.setupWithViewPager(mViewPager);
+        if (tabLayout != null)
+            tabLayout.setupWithViewPager(mViewPager);
     }
 
     @Override

@@ -9,6 +9,8 @@
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginTop="4dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="4dp">
 
     <android.support.constraint.ConstraintLayout
@@ -16,136 +18,33 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp">
 
-
-        <TextView
-            android:id="@+id/cardholder"
-            style="@style/TextAppearance.AppCompat.Title"
+        <LinearLayout
+            android:id="@+id/ll1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLength="15"
-            android:textIsSelectable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Zeeshan Khan"/>
+            app:layout_constraintTop_toTopOf="parent">
 
+            <ImageView
+                android:id="@+id/bank"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_bank_sbi"/>
 
-        <TextView
-            android:id="@+id/number"
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textIsSelectable="true"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            tools:text="1234 4556 6778 6778"/>
+            <TextView
+                android:id="@+id/number"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textIsSelectable="true"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll1"
+                tools:text="xxxx-xxxx-xxxx-6778"/>
 
-        <TextView
-            android:id="@+id/date"
-            style="@style/TextAppearance.AppCompat.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textIsSelectable="true"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/consumed_limit"
-            tools:text="23 July - 10 Aug"/>
-
-        <TextView
-            android:id="@+id/name"
-            style="@style/TextAppearance.AppCompat.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textIsSelectable="true"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardholder"
-            tools:text="SBI Air India"/>
-
-        <TextView
-            android:id="@+id/bank"
-            style="@style/TextAppearance.AppCompat.Body1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:textIsSelectable="true"
-            app:layout_constraintBottom_toBottomOf="@+id/cardholder"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toRightOf="@+id/cardholder"
-            app:layout_constraintRight_toLeftOf="@+id/menu"
-            tools:text="SBI bank iof indiaaaaaa aaaaa"/>
-
-        <TextView
-            android:id="@+id/consumed_limit"
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textIsSelectable="true"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/limit"
-            tools:text="25$"/>
-
-        <ProgressBar
-            android:id="@+id/limit"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:indeterminate="false"
-            android:max="100"
-            android:progress="75"
-            android:progressTint="@color/colorPrimary"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/number"/>
-
-        <TextView
-            android:id="@+id/remaining_limit"
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textIsSelectable="true"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/limit"
-            tools:text="100$"/>
-
-
-        <ImageView
-            android:id="@+id/updated_by"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginBottom="0dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginRight="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addon_cards"
-            tools:src="@color/md_orange_500"
-            tools:text="Bushra Rehman"/>
-
-        <TextView
-            android:id="@+id/updated_on"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginRight="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/updated_by"
-            tools:text="27, July 12:45 AM"/>
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/menu"
@@ -156,16 +55,90 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
+            android:id="@+id/cardholder"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:maxLength="15"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll1"
+            tools:text="Zeeshan Khan"/>
+
+
+        <ProgressBar
+            android:id="@+id/limit"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="75"
+            android:progressTint="@color/colorPrimary"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardholder"/>
+
+        <TextView
+            android:id="@+id/consumed_limit"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/limit"
+            tools:text="25$"/>
+
+        <TextView
+            android:id="@+id/remaining_limit"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/limit"
+            tools:text="100$"/>
+
+        <TextView
+            android:id="@+id/tv1"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="8dp"
+            android:text="Billing Cycle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/consumed_limit"/>
+
+        <TextView
+            android:id="@+id/date"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv1"
+            tools:text="23 July - 10 Aug"/>
+
+        <TextView
+            android:id="@+id/tv2"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Expires on"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv1"/>
+
+        <TextView
             android:id="@+id/expires_on"
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/date"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintLeft_toRightOf="@+id/date"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/date"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="@+id/tv2"
+            app:layout_constraintTop_toBottomOf="@+id/tv2"
             tools:text="12/19"/>
 
         <TextView
@@ -173,8 +146,7 @@
             style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:text="Addons Cards"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/date"/>
@@ -188,6 +160,40 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/addons_title"
-            tools:listitem="@layout/listitem_addon_card"/>
+            tools:layout_height="110dp"
+            tools:listitem="@layout/listitem_addon_card"
+            tools:visibility="visible"/>
+
+        <TextView
+            android:id="@+id/tv3"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            android:text="updated by"
+            app:layout_constraintBottom_toBottomOf="@+id/updated_on"
+            app:layout_constraintRight_toLeftOf="@+id/updated_by"
+            />
+
+        <ImageView
+            android:id="@+id/updated_by"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginRight="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/updated_on"
+            app:layout_constraintRight_toLeftOf="@+id/updated_on"
+            tools:src="@color/md_orange_500"
+            />
+
+        <TextView
+            android:id="@+id/updated_on"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addon_cards"
+            tools:text="7 minutes ago"/>
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

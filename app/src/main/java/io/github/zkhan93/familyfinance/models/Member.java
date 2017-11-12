@@ -3,6 +3,8 @@ package io.github.zkhan93.familyfinance.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
@@ -16,6 +18,7 @@ import java.util.List;
  * Created by zeeshan on 7/7/17.
  */
 @Entity
+@IgnoreExtraProperties
 public class Member extends BaseModel {
     @Id
     String id;

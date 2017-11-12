@@ -28,6 +28,7 @@ import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.events.InsertEvent;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.AccountDao;
+import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
@@ -288,5 +289,41 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         accountsRef.addListenerForSingleValueEvent(this);
         accountsRef.addChildEventListener(this);
+    }
+
+    private ArrayList<Account> _accounts;
+
+    public void onSearch(String text) {
+        //skip first blank call
+        if ((text == null || text.isEmpty()) && _accounts == null)
+            return;
+        //if search ended restore the backup
+        if (_accounts != null && (text == null || text.isEmpty())) {
+            accounts = _accounts;
+            _accounts = null;
+            notifyDataSetChanged();
+            return;
+        }
+        //first time take backup
+        if (_accounts == null) {
+            _accounts = new ArrayList<>();
+            _accounts.addAll(accounts);
+        } else { // from subsequent calls work on a copy
+            accounts = new ArrayList<>();
+            accounts.addAll(_accounts);
+        }
+
+        Account account;
+        ListIterator<Account> itr = accounts.listIterator();
+        int i = 0;
+        while (itr.hasNext()) {
+            account = itr.next();
+            if (!account.getAccountHolder().toLowerCase().contains(text) && !account.getAccountNumber()
+                    .contains(text) && !account.getBank().toLowerCase().contains(text)) {
+                itr.remove();
+            }
+            i++;
+        }
+        notifyDataSetChanged();
     }
 }

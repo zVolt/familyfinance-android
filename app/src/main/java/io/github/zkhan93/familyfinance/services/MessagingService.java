@@ -36,7 +36,7 @@ import static io.github.zkhan93.familyfinance.listeners.CopyOtpListener.ACTION_C
 
 public class MessagingService extends FirebaseMessagingService {
     public static final String TAG = MessagingService.class.getSimpleName();
-    public static final int mNotificationId = 001;
+    public static final int mNotificationId = 1001;
 
     interface KEYS {
         String FROM_EMAIL = "from_email";
@@ -63,7 +63,6 @@ public class MessagingService extends FirebaseMessagingService {
         for (Map.Entry<String, String> me : data.entrySet()) {
             strb.append(me.getKey()).append(": ").append(me.getValue()).append("\n");
         }
-        Log.d(TAG, "fcm message:" + strb.toString());
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -82,7 +81,7 @@ public class MessagingService extends FirebaseMessagingService {
         String familyId = PreferenceManager.getDefaultSharedPreferences(this).getString
                 ("activeFamilyId", null);
         if (familyId == null) {
-            Log.d(TAG, "active family not selected SmsListener will not be able to push the otp " +
+            Log.d(TAG, "active family not selected SmsReceiver will not be able to push the otp " +
                     "to cloud");
             return;
         }

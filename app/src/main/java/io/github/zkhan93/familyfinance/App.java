@@ -32,7 +32,6 @@ public class App extends Application {
         Database db = ENCRYPTED ? helper.getEncryptedWritableDb("super-secret") : helper
                 .getWritableDb();
         daoSession = new DaoMaster(db).newSession();
-        Constants.generateDummyData(this);
     }
 
     public DaoSession getDaoSession() {

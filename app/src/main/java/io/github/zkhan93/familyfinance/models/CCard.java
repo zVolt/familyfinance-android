@@ -29,7 +29,7 @@ public class CCard extends BaseModel {
     public static final SimpleDateFormat EXPIRE_ON = new SimpleDateFormat("mm/yy");
     @Id
     String number;
-    String name, bank, cardholder, userid, password, cvv, phoneNumber;
+    String name, bank, cardholder, userid, password, cvv, phoneNumber, email;
     long updatedOn, expireOn;
     int paymentDay, billingDay;
     @ToOne(joinProperty = "updatedByMemberId")
@@ -154,6 +154,14 @@ public class CCard extends BaseModel {
         this.consumedLimit = consumedLimit;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Exclude
     public Date getPaymentDate() {
         Calendar today = Calendar.getInstance();
@@ -170,14 +178,28 @@ public class CCard extends BaseModel {
     }
 
     public String getFormattedNumber(char delimiter) {
+        return getFormattedNumber(delimiter, false);
+    }
+
+    public String getFormattedNumber(char delimiter, boolean hideDigits) {
         StringBuilder strb = new StringBuilder(19);
-        int i = 1;
+        int i;
+        if (hideDigits) {
+            for (i = 0; i < this.number.length() - 4; i++)
+                strb.append("X");
+            strb.append(number.substring(number.length() - 4));
+        } else
+            strb.append(this.number);
+        String number = strb.toString();
+        strb.setLength(0);
+        i = 1;
         for (char c : number.toCharArray()) {
             strb.append(c);
             if (i % 4 == 0)
                 strb.append(delimiter);
             i++;
         }
+        strb.deleteCharAt(strb.length() - 1);
         return strb.toString();
     }
 
@@ -198,6 +220,7 @@ public class CCard extends BaseModel {
                 ", phoneNumber=" + phoneNumber +
                 ", consumedLimit=" + consumedLimit +
                 ", updatedByMemberId='" + updatedByMemberId + '\'' +
+                ", email=" + email +
                 '}';
     }
 
@@ -336,11 +359,11 @@ public class CCard extends BaseModel {
         this.password = password;
     }
 
-    @Generated(hash = 1861521360)
+    @Generated(hash = 66803068)
     public CCard(String number, String name, String bank, String cardholder, String userid,
-                 String password, String cvv, String phoneNumber, long updatedOn, long expireOn,
-                 int paymentDay, int billingDay, float maxLimit, float consumedLimit,
-                 String updatedByMemberId) {
+            String password, String cvv, String phoneNumber, String email, long updatedOn,
+            long expireOn, int paymentDay, int billingDay, float maxLimit, float consumedLimit,
+            String updatedByMemberId) {
         this.number = number;
         this.name = name;
         this.bank = bank;
@@ -349,6 +372,7 @@ public class CCard extends BaseModel {
         this.password = password;
         this.cvv = cvv;
         this.phoneNumber = phoneNumber;
+        this.email = email;
         this.updatedOn = updatedOn;
         this.expireOn = expireOn;
         this.paymentDay = paymentDay;
@@ -404,6 +428,7 @@ public class CCard extends BaseModel {
         dest.writeFloat(this.consumedLimit);
         dest.writeTypedList(this.addonCards);
         dest.writeString(this.updatedByMemberId);
+        dest.writeString(this.email);
     }
 
     /**
@@ -462,6 +487,7 @@ public class CCard extends BaseModel {
         this.consumedLimit = in.readFloat();
         this.addonCards = in.createTypedArrayList(AddonCard.CREATOR);
         this.updatedByMemberId = in.readString();
+        this.email = in.readString();
     }
 
     public static final Creator<CCard> CREATOR = new Creator<CCard>() {

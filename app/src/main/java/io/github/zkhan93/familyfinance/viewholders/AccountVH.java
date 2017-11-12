@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -26,21 +25,21 @@ import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.Member;
-import io.github.zkhan93.familyfinance.util.Constants;
+import io.github.zkhan93.familyfinance.util.Util;
 
 /**
  * Created by zeeshan on 7/7/17.
  */
 
 public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
-        .OnMenuItemClickListener {
+        .OnMenuItemClickListener, View.OnClickListener {
     public static final String TAG = AccountVH.class.getSimpleName();
     @BindView(R.id.account_holder)
     TextView name;
     @BindView(R.id.account_number)
     TextView accountNumber;
     @BindView(R.id.bank)
-    TextView bank;
+    ImageView bank;
     @BindView(R.id.ifsc)
     TextView ifsc;
     @BindView(R.id.balance)
@@ -67,14 +66,17 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
         inflater.inflate(R.menu.ccard_item_menu, popup.getMenu());
+        itemView.setOnClickListener(this);
+        menu.setOnClickListener(this);
     }
 
     public void setAccount(Account account) {
-        Log.d(TAG, "item: " + account.toString());
         this.account = account;
         name.setText(account.getAccountHolder());
         accountNumber.setText(account.getAccountNumber());
-        bank.setText(account.getBank());
+
+        bank.setImageDrawable(ContextCompat.getDrawable(context, Util.getBankDrawableResource
+                (account.getBank())));
         ifsc.setText(account.getIfsc());
         balance.setText(NumberFormat.getCurrencyInstance().format(account.getBalance()));
 
@@ -90,9 +92,16 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
                 (_updatedOn.getTime()));
     }
 
-    @OnClick(R.id.menu)
-    void OnClick(View button) {
-        popup.show();
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.menu:
+                popup.show();
+                return;
+            default:
+                if (itemInteractionListener != null)
+                    itemInteractionListener.view(account);
+        }
     }
 
     @Override
@@ -123,6 +132,8 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         void share(Account account);
 
         void edit(Account account);
+
+        void view(Account account);
 
     }
 }

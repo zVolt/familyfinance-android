@@ -7,6 +7,11 @@
             android:key="@string/pref_key_copy"
             android:summary="@string/pref_copy_enable"
             android:title="@string/pref_title_copy"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_allsms"
+            android:summary="@string/pref_allsms_enable"
+            android:title="@string/pref_title_allsms"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="security_setting"

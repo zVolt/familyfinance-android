@@ -1,5 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -7,8 +8,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -34,7 +39,7 @@ import io.github.zkhan93.familyfinance.viewholders.CCardVH;
  * create an instance of this fragment.
  */
 public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionListener,
-        AddonCardVH.ItemInteractionListener {
+        AddonCardVH.ItemInteractionListener, SearchView.OnQueryTextListener {
 
     public static final String TAG = FragmentCCards.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,7 +92,16 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
                 FragmentCCards.this, this);
         ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);
+        setHasOptionsMenu(true);
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_ccard_main, menu);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setOnQueryTextListener(this);
     }
 
     @Override
@@ -127,16 +141,25 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         mListener = null;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                Log.d(TAG, "search something bro");
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void copy(CCard cCard) {
         //TODO Copy the card data into clipboard
-        Log.d(TAG, "copy: " + cCard.toString());
+        Log.d(TAG, "copy: ");
     }
 
     @Override
     public void delete(CCard cCard) {
-        Log.d(TAG, "delete: " + cCard.toString());
+        Log.d(TAG, "delete: " + cCard.getNumber());
         cCardToDelete = cCard.getNumber();
         String title = "You want to delete account " + cCard.getNumber();
         DialogFragmentConfirm<CCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
@@ -150,7 +173,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void share(CCard cCard) {
-        Log.d(TAG, "share: " + cCard.toString());
+        Log.d(TAG, "share: " + cCard.getNumber());
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, cCard.getReadableContent());
@@ -161,21 +184,28 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void edit(CCard cCard) {
-        Log.d(TAG, "edit: " + cCard.toString());
+        Log.d(TAG, "edit: " + cCard.getNumber());
         DialogFragmentCcard.newInstance(familyId, cCard).show(getFragmentManager(),
                 DialogFragmentCcard.TAG);
     }
 
     @Override
+    public void onView(CCard cCard) {
+        Log.d(TAG, "view: " + cCard.getNumber());
+        DialogFragmentViewCard.newInstance(cCard, familyId).show(getFragmentManager(),
+                DialogFragmentCcard.TAG);
+    }
+
+    @Override
     public void addAddonCard(CCard cCard) {
-        Log.d(TAG, "addAddonCard: " + cCard.toString());
+        Log.d(TAG, "addAddonCard: " + cCard.getNumber());
         DialogFragmentAddonCard.newInstance(familyId, cCard.getNumber()).show(getFragmentManager(),
                 DialogFragmentAddonCard.TAG);
     }
 
     @Override
     public void delete(AddonCard addonCard) {
-        Log.d(TAG, "delete addon" + addonCard.toString());
+        Log.d(TAG, "delete addon" + addonCard.getNumber());
         addonCardToDelete = addonCard.getNumber();
         String title = "You want to delete Addon Card " + addonCard.getNumber();
         DialogFragmentConfirm<AddonCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
@@ -189,15 +219,15 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void edit(AddonCard addonCard) {
-        Log.d(TAG, "edit addon" + addonCard.toString());
+        Log.d(TAG, "edit addon" + addonCard.getNumber());
         DialogFragmentAddonCard.newInstance(familyId, addonCard.getMainCardNumber(), addonCard)
                 .show(getFragmentManager(),
-                DialogFragmentAddonCard.TAG);
+                        DialogFragmentAddonCard.TAG);
     }
 
     @Override
     public void share(AddonCard addonCard) {
-        Log.d(TAG, "share addon" + addonCard.toString());
+        Log.d(TAG, "share addon" + addonCard.getNumber());
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, addonCard.getReadableContent());
@@ -223,6 +253,20 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
                     (addonCard.getNumber());
             cCardListAdapter.deleteCcard(addonCard.getNumber(), true);
         }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.d(TAG, "saarch for: " + query);
+        cCardListAdapter.onSearch(query);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Log.d(TAG, "search for: " + newText);
+        cCardListAdapter.onSearch(newText);
+        return true;
     }
 
     /**

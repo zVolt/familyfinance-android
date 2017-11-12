@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -36,7 +39,7 @@ import io.github.zkhan93.familyfinance.viewholders.AccountVH;
  * Use the {@link FragmentAccounts#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentAccounts extends Fragment implements AccountVH.ItemInteractionListener {
+public class FragmentAccounts extends Fragment implements AccountVH.ItemInteractionListener,SearchView.OnQueryTextListener {
 
     public static final String TAG = FragmentAccounts.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -117,6 +120,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         accountsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         accountsList.setAdapter(accountListAdapter);
+        setHasOptionsMenu(true);
         return rootView;
     }
 
@@ -151,7 +155,13 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         mListener = null;
     }
 
-
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_ccard_main, menu);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setOnQueryTextListener(this);
+    }
     @Override
     public void copy(Account account) {
         //TODO Copy the Account data into clipboard
@@ -189,6 +199,12 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
                 DialogFragmentAddAccount.TAG);
     }
 
+    @Override
+    public void view(Account account) {
+        DialogFragmentViewAccount.newInstance(account, familyId).show(getFragmentManager(),
+                DialogFragmentAddAccount.TAG);
+    }
+
     /**
      * Events fired from DialogFragmentConfirm
      */
@@ -201,7 +217,19 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         }
 
     }
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.d(TAG, "saarch for: " + query);
+        accountListAdapter.onSearch(query);
+        return true;
+    }
 
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Log.d(TAG, "search for: " + newText);
+        accountListAdapter.onSearch(newText);
+        return true;
+    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
