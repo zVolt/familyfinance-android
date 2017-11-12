@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,6 +30,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 
@@ -54,7 +56,7 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
     @BindView(R.id.password)
     TextInputEditText password;
     @BindView(R.id.bank)
-    TextInputEditText bank;
+    Spinner bank;
     @BindView(R.id.max_limit)
     TextInputEditText maxLimit;
     @BindView(R.id.consumed_cc_limit)
@@ -70,9 +72,10 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
     @BindView(R.id.phone_number)
     TextInputEditText phoneNumber;
 
-    private String familyId;
+    private String familyId, selectedBankId;
     private CCard cCard;
     private TextWatcher expiresOnTextWatcher;
+    private BankSpinnerAdapter bankSpinnerAdapter;
 
     {
         expiresOnTextWatcher = new TextWatcher() {
@@ -137,6 +140,8 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
             familyId = bundle.getString(ARG_FAMILY_ID);
             cCard = bundle.getParcelable(ARG_CARD);
         }
+        if (bankSpinnerAdapter == null)
+            bankSpinnerAdapter = new BankSpinnerAdapter(getActivity().getApplicationContext());
     }
 
     @NonNull
@@ -156,9 +161,17 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
         paymentDay.setMinValue(1);
         paymentDay.setMaxValue(31);
         expiresOn.addTextChangedListener(expiresOnTextWatcher);
+        bank.setAdapter(bankSpinnerAdapter);
         if (cCard != null) {
             cardName.setText(cCard.getName());
-            bank.setText(cCard.getBank());
+            selectedBankId = cCard.getBank();
+            bankSpinnerAdapter.setOnLoadCompleteListener(new BankSpinnerAdapter
+                    .OnLoadCompleteListener() {
+                @Override
+                public void onLoadComplete() {
+                    bank.setSelection(bankSpinnerAdapter.getPosition(selectedBankId));
+                }
+            });
             number.setText(cCard.getNumber());
             cardHolder.setText(cCard.getCardholder());
             maxLimit.setText(String.valueOf(cCard.getMaxLimit()));
@@ -180,7 +193,7 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(ARG_FAMILY_ID,familyId);
+        outState.putString(ARG_FAMILY_ID, familyId);
         //todo: save the card edited content
     }
 
@@ -194,7 +207,7 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
                 newCcard.setUpdatedByMemberId(FirebaseAuth.getInstance
                         ().getCurrentUser().getUid());
                 newCcard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
-                newCcard.setBank(bank.getText().toString());
+                newCcard.setBank(selectedBankId);
                 newCcard.setName(cardName.getText().toString());
                 newCcard.setNumber(number.getText().toString());
                 newCcard.setCardholder(cardHolder.getText().toString());

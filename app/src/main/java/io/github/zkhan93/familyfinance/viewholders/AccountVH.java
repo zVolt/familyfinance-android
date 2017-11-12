@@ -15,6 +15,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
 import java.util.Date;
@@ -55,6 +59,26 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
     private ItemInteractionListener itemInteractionListener;
     private PopupMenu popup;
     private Account account;
+    private ValueEventListener bankImageLinkListener;
+
+    {
+        bankImageLinkListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String url = dataSnapshot.getValue(String.class);
+                if (url != null)
+                    Glide.with(context).load(url).into(bank);
+                else
+                    Glide.with(context).load("http://via.placeholder" +
+                            ".com/200x200/f0f0f0/2c2c2c?text=" + dataSnapshot.getKey()).into(bank);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "bank image loading cancelled");
+            }
+        };
+    }
 
     public AccountVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);
@@ -74,9 +98,8 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         this.account = account;
         name.setText(account.getAccountHolder());
         accountNumber.setText(account.getAccountNumber());
-
-        bank.setImageDrawable(ContextCompat.getDrawable(context, Util.getBankDrawableResource
-                (account.getBank())));
+        FirebaseDatabase.getInstance().getReference("images").child("banks").child(account.getBank
+                ().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);
         ifsc.setText(account.getIfsc());
         balance.setText(NumberFormat.getCurrencyInstance().format(account.getBalance()));
 

@@ -13,6 +13,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
@@ -22,6 +24,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.AccountDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
@@ -31,7 +34,7 @@ import io.github.zkhan93.familyfinance.tasks.InsertTask;
  */
 
 public class DialogFragmentAddAccount extends DialogFragment implements DialogInterface
-        .OnClickListener, InsertTask.Listener<Account> {
+        .OnClickListener, InsertTask.Listener<Account>, AdapterView.OnItemSelectedListener {
 
     public static final String TAG = DialogFragmentAddAccount.class.getSimpleName();
     public static final String ARG_FAMILY_ID = "familyID";
@@ -46,14 +49,14 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     @BindView(R.id.password)
     TextInputEditText password;
     @BindView(R.id.bank)
-    TextInputEditText bank;
+    Spinner bank;
     @BindView(R.id.ifsc)
     TextInputEditText ifsc;
-    @BindView(R.id.balance)
-    TextInputEditText balance;
 
     private String familyId;
     private Account account;
+    private BankSpinnerAdapter bankSpinnerAdapter;
+    private String selectedBankId;
 
     public static DialogFragmentAddAccount newInstance(String familyId) {
         DialogFragmentAddAccount dialogFragmentAddAccount = new DialogFragmentAddAccount();
@@ -80,6 +83,8 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
             familyId = bundle.getString(ARG_FAMILY_ID);
             account = bundle.getParcelable(ARG_ACCOUNT);
         }
+        if (bankSpinnerAdapter == null)
+            bankSpinnerAdapter = new BankSpinnerAdapter(getActivity().getApplicationContext());
     }
 
     @NonNull
@@ -94,12 +99,20 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_account,
                 null);
         ButterKnife.bind(this, rootView);
+        bank.setAdapter(bankSpinnerAdapter);
+        bank.setOnItemSelectedListener(this);
         if (account != null) {
             number.setText(account.getAccountNumber());
             accountHolder.setText(account.getAccountHolder());
             ifsc.setText(account.getIfsc());
-            bank.setText(account.getBank());
-            balance.setText(String.valueOf(account.getBalance()));
+            selectedBankId = account.getBank();
+            bankSpinnerAdapter.setOnLoadCompleteListener(new BankSpinnerAdapter
+                    .OnLoadCompleteListener() {
+                @Override
+                public void onLoadComplete() {
+                    bank.setSelection(bankSpinnerAdapter.getPosition(selectedBankId));
+                }
+            });
             userid.setText(account.getUserid());
             password.setText(account.getPassword());
             builder.setPositiveButton(R.string.update, this);
@@ -122,12 +135,12 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
                 String amount;
                 Account account = new Account();
                 account.setAccountHolder(accountHolder.getText().toString());
-                account.setBank(bank.getText().toString());
+                account.setBank(selectedBankId);
                 account.setIfsc(ifsc.getText().toString());
                 account.setAccountNumber(number.getText().toString());
-                amount = balance.getText().toString().trim();
-                if (amount.length() == 0) amount = "0";
-                account.setBalance(Float.parseFloat(amount));
+//                amount = balance.getText().toString().trim();
+//                if (amount.length() == 0) amount = "0";
+//                account.setBalance(Float.parseFloat(amount));
                 account.setUpdatedByMemberId(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 account.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
                 new InsertTask<>(((App) getActivity().getApplication())
@@ -139,6 +152,16 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
             default:
                 Log.d(TAG, "action not implemented/invalid action");
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+        selectedBankId = bankSpinnerAdapter.getBankId(position);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 
     @Override

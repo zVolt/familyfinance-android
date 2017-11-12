@@ -81,31 +81,6 @@ public class Util {
         }
     }
 
-    public static int getBankDrawableResource(String bankCode) {
-        switch (bankCode) {
-            case "ICICI":
-                return R.drawable.ic_bank_icici;
-            case "HDFC":
-                return R.drawable.ic_bank_hdfc;
-            case "AXIS":
-                return R.drawable.ic_bank_axis;
-            case "SBI":
-                return R.drawable.ic_bank_sbi;
-            case "BOB":
-                return R.drawable.ic_bank_bob;
-            case "PNB":
-                return R.drawable.ic_bank_pnb;
-            case "HSBC":
-                return R.drawable.ic_bank_hsbc;
-            case "ALLA":
-                return R.drawable.ic_bank_allahabad;
-            case "UBI":
-                return R.drawable.ic_bank_union;
-            default:
-                return R.drawable.ic_bank_grey_600_18dp;
-        }
-    }
-
     /**
      * calculate next payment day ie., suppose 15th is the payment day so if current day is less
      * than of equal to 15 then next payment date is 15th of current month and if current day

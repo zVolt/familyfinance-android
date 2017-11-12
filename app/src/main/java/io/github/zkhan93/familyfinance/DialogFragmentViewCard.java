@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,8 +25,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
 import java.util.Calendar;
@@ -56,6 +60,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
     private AddonCardListAdapter addonCardListAdapter;
     private DatabaseReference cardRef;
     private Map<String, Object> updateMap;
+    private ValueEventListener bankImageLinkListener;
 
     @BindView(R.id.bank)
     ImageView bank;
@@ -89,6 +94,25 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
     TextView addonTitle;
     @BindView(R.id.addon_cards)
     RecyclerView addonCards;
+
+    {
+        bankImageLinkListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String url = dataSnapshot.getValue(String.class);
+                if (url != null)
+                    Glide.with(bank.getContext()).load(url).into(bank);
+                else
+                    Glide.with(bank.getContext()).load("http://via.placeholder" +
+                            ".com/200x200/f0f0f0/2c2c2c?text=" + dataSnapshot.getKey()).into(bank);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "bank image loading cancelled");
+            }
+        };
+    }
 
     public static DialogFragmentViewCard newInstance(CCard cCard, String familyId) {
         DialogFragmentViewCard dialogFragmentAddAccount = new DialogFragmentViewCard();
@@ -124,8 +148,8 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
                 null);
         ButterKnife.bind(this, rootView);
         if (cCard != null) {
-            bank.setImageDrawable(ContextCompat.getDrawable(getContext(), Util
-                    .getBankDrawableResource(cCard.getBank())));
+            FirebaseDatabase.getInstance().getReference("images").child("banks").child(cCard
+                    .getBank().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);
             cardHolder.setText(getDefaultNotSet(cCard.getCardholder()));
             cardNumber.setText(cCard.getFormattedNumber('-'));
             consumedLimit.setText(NumberFormat.getCurrencyInstance().format(cCard

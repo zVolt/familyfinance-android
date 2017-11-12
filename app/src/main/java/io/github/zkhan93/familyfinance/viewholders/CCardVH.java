@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -76,6 +81,26 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
     private ItemInteractionListener itemInteractionListener;
     private CCard cCard;
     private AddonCardListAdapter addonCardListAdapter;
+    private ValueEventListener bankImageLinkListener;
+
+    {
+        bankImageLinkListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String url = dataSnapshot.getValue(String.class);
+                if (url != null)
+                    Glide.with(context).load(url).into(bank);
+                else
+                    Glide.with(context).load("http://via.placeholder" +
+                            ".com/200x200/f0f0f0/2c2c2c?text=" + dataSnapshot.getKey()).into(bank);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "bank image loading cancelled");
+            }
+        };
+    }
 
     public CCardVH(View itemView, ItemInteractionListener itemInteractionListener, AddonCardVH
             .ItemInteractionListener addonCardInteractionListener) {
@@ -104,14 +129,14 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
     public void setCCard(CCard cCard) {
         this.cCard = cCard;
 
-        number.setText(cCard.getFormattedNumber('-',true));
+        number.setText(cCard.getFormattedNumber('-', true));
 
         date.setText(Util.getBillingCycleString(cCard.getBillingDay(), cCard.getPaymentDay(), "%s" +
                 " - %s"));
 
         cardholder.setText(cCard.getCardholder());
-        bank.setImageDrawable(ContextCompat.getDrawable(context, Util.getBankDrawableResource
-                (cCard.getBank())));
+        FirebaseDatabase.getInstance().getReference("images").child("banks").child(cCard.getBank
+                ().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);
 
         limit.setMax((int) cCard.getMaxLimit());
         limit.setProgress((int) cCard.getConsumedLimit());
