@@ -1,195 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/ll1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/bank"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:maxLines="1"
-            android:textIsSelectable="true"
-            tools:src="@drawable/ic_bank_sbi"/>
-
-        <TextView
-            android:id="@+id/account_number"
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textIsSelectable="true"
-            tools:text="1234 6787 3456 8765"/>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/account_holder"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ll1"
-        android:layout_marginTop="8dp"
-        android:textIsSelectable="true"
-        tools:text="Zeeshan Khan"/>
-
-    <TextView
-        android:id="@+id/balance"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/account_holder"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal"
-        android:textIsSelectable="true"
-        tools:text="25$"/>
-
-    <SeekBar
-        android:id="@+id/limit"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/balance"
-        android:layout_marginTop="8dp"
-        android:indeterminate="false"
-        android:progressTint="@color/colorPrimary"
-        tools:max="100"
-        tools:progress="75"
-        />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tv1"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/limit"
-        android:layout_marginTop="8dp"
-        android:text="IFSC"/>
+        <LinearLayout
+            android:id="@+id/ll1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/ifsc"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/tv1"
-        android:layout_below="@+id/tv1"
-        tools:text="ICIC0000866"/>
+            <ImageView
+                android:id="@+id/bank"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:maxLines="1"
+                android:textIsSelectable="true"
+                tools:src="@drawable/ic_bank_sbi"/>
 
-    <TextView
-        android:id="@+id/tv3"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ifsc"
-        android:layout_marginTop="8dp"
-        android:text="Email"/>
+            <TextView
+                android:id="@+id/account_number"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textIsSelectable="true"
+                tools:text="1234 6787 3456 8765"/>
+        </LinearLayout>
 
-    <TextView
-        android:id="@+id/email"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/tv3"
-        android:layout_below="@+id/tv3"
-        android:textIsSelectable="true"
-        tools:text="zkhan1093@gmail.com"/>
+        <TextView
+            android:id="@+id/account_holder"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll1"
+            android:layout_marginTop="8dp"
+            android:textIsSelectable="true"
+            tools:text="Zeeshan Khan"/>
 
-    <TextView
-        android:id="@+id/tv4"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/tv3"
-        android:text="Phone Number"/>
+        <TextView
+            android:id="@+id/balance"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/account_holder"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
+            android:textIsSelectable="true"
+            tools:text="25$"/>
 
-    <TextView
-        android:id="@+id/phone_number"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/tv4"
-        android:layout_below="@+id/tv4"
-        tools:text="8932061116"/>
+        <SeekBar
+            android:id="@+id/limit"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/balance"
+            android:layout_marginTop="8dp"
+            android:indeterminate="false"
+            android:progressTint="@color/colorPrimary"
+            tools:max="100"
+            tools:progress="75"
+            />
 
-    <TextView
-        android:id="@+id/tv5"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/email"
-        android:layout_marginTop="8dp"
-        android:text="User Id"/>
+        <TextView
+            android:id="@+id/tv1"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/limit"
+            android:layout_marginTop="8dp"
+            android:text="IFSC"/>
 
-    <TextView
-        android:id="@+id/userid"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/tv5"
-        android:layout_below="@+id/tv5"
-        android:textIsSelectable="true"
-        tools:text="zkhan1993"/>
+        <TextView
+            android:id="@+id/ifsc"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tv1"
+            android:layout_below="@+id/tv1"
+            tools:text="ICIC0000866"/>
 
-    <TextView
-        android:id="@+id/tv6"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/tv5"
-        android:text="Password"/>
+        <TextView
+            android:id="@+id/tv3"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ifsc"
+            android:layout_marginTop="8dp"
+            android:text="Email"/>
 
-    <TextView
-        android:id="@+id/password"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/tv6"
-        android:layout_below="@+id/tv6"
-        tools:text="P@ssw0rd!"/>
+        <TextView
+            android:id="@+id/email"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tv3"
+            android:layout_below="@+id/tv3"
+            android:textIsSelectable="true"
+            tools:text="zkhan1093@gmail.com"/>
+
+        <TextView
+            android:id="@+id/tv4"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/tv3"
+            android:text="Phone Number"/>
+
+        <TextView
+            android:id="@+id/phone_number"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/tv4"
+            android:layout_below="@+id/tv4"
+            tools:text="8932061116"/>
+
+        <TextView
+            android:id="@+id/tv5"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/email"
+            android:layout_marginTop="8dp"
+            android:text="User Id"/>
+
+        <TextView
+            android:id="@+id/userid"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tv5"
+            android:layout_below="@+id/tv5"
+            android:textIsSelectable="true"
+            tools:text="zkhan1993"/>
+
+        <TextView
+            android:id="@+id/tv6"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/tv5"
+            android:text="Password"/>
+
+        <TextView
+            android:id="@+id/password"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/tv6"
+            android:layout_below="@+id/tv6"
+            tools:text="P@ssw0rd!"/>
 
 
+        <TextView
+            android:id="@+id/tv7"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/updated_on"
+            android:layout_marginEnd="4dp"
+            android:layout_toStartOf="@+id/updated_by"
+            android:text="Last updated by"/>
 
-    <TextView
-        android:id="@+id/tv7"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/updated_on"
-        android:layout_marginEnd="4dp"
-        android:layout_toStartOf="@+id/updated_by"
-        android:text="Last updated by"/>
+        <ImageView
+            android:id="@+id/updated_by"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignTop="@+id/updated_on"
+            android:layout_marginEnd="4dp"
+            android:layout_toStartOf="@+id/updated_on"
+            tools:src="@drawable/googleg_standard_color_18"/>
 
-    <ImageView
-        android:id="@+id/updated_by"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_alignTop="@+id/updated_on"
-        android:layout_marginEnd="4dp"
-        android:layout_toStartOf="@+id/updated_on"
-        tools:src="@drawable/googleg_standard_color_18"/>
+        <TextView
+            android:id="@+id/updated_on"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/userid"
+            android:layout_marginTop="8dp"
+            tools:text="7 minutes ago"/>
 
-    <TextView
-        android:id="@+id/updated_on"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/userid"
-        android:layout_marginTop="8dp"
-        tools:text="7 minutes ago"/>
-
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>
