@@ -56,6 +56,7 @@ public class CCard extends BaseModel {
         cvv = cCard.getCvv();
         expireOn = cCard.getExpireOn();
         addonCards = cCard.addonCards;
+        phoneNumber = cCard.getPhoneNumber();
     }
 
     public String getCvv() {
