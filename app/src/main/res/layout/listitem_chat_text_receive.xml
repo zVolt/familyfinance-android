@@ -2,19 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="wrap_content"
+              android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_marginBottom="4dp"
-              android:layout_gravity="start"
-              android:layout_marginEnd="50dp"
-              android:layout_marginStart="8dp"
-              android:layout_marginTop="4dp">
+              android:layout_gravity="start">
 
     <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:maxWidth="150dp"
-        app:cardCornerRadius="8dp">
+        app:cardBackgroundColor="@color/md_grey_100"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="2dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -44,10 +46,10 @@
                 <TextView
                     android:id="@+id/sender_name"
                     style="@style/TextAppearance.AppCompat.Body2"
-                    android:textColor="@color/md_orange_800"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
+                    android:textColor="@color/md_orange_800"
                     tools:text="Zeeshan Khan"/>
             </LinearLayout>
 

@@ -18,16 +18,15 @@ import io.github.zkhan93.familyfinance.util.Util;
  */
 public class CopyOtpListener extends BroadcastReceiver {
     public static final String TAG = CopyOtpListener.class.getSimpleName();
-    public static final String ACTION_COPY_OTP = "io.github.zkhan93.familyfinance.listeners" +
-            ".CopyOtpListener.COPY_OTP";
+    public static final String ACTION_COPY_OTP = CopyOtpListener.class.getSimpleName() +
+            ".COPY_OTP";
     private String otp;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String message = intent.getStringExtra("OTP");
-        Log.d(TAG, "copy OTP from" + message);
+        String otp = intent.getStringExtra("OTP");
         String toastMessage = Util.copyToClipboard(context, (ClipboardManager) context
-                .getSystemService(Context.CLIPBOARD_SERVICE), Util.extractOTPFromString(message));
+                .getSystemService(Context.CLIPBOARD_SERVICE), otp);
         if (toastMessage == null || toastMessage.isEmpty()) return;
         Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show();
     }

@@ -1,5 +1,8 @@
 package io.github.zkhan93.familyfinance.adapters;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,9 +53,17 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.familyId = familyId;
         if (familyId == null)
             return;
+        int noOfSms;
+        try {
+            noOfSms = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(app
+                    .getApplicationContext()).getString(app.getString(R.string
+                    .pref_key_no_of_sms), "50"));
+        } catch (Exception ex) {
+            noOfSms = 50;
+        }
         otpDao = app.getDaoSession().getOtpDao();
         otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId).orderByChild
-                ("timestamp").limitToLast(10);
+                ("timestamp").limitToLast(noOfSms);
         new LoadFromDbTask<>(app.getDaoSession().getOtpDao(), this).execute();
     }
 

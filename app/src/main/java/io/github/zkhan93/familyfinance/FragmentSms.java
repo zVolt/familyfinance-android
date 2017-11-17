@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,19 +14,18 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
-import io.github.zkhan93.familyfinance.util.Constants;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FragmentOtps.OnFragmentInteractionListener} interface
+ * {@link FragmentSms.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FragmentOtps#newInstance} factory method to
+ * Use the {@link FragmentSms#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentOtps extends Fragment implements OtpListAdapter.ItemInsertedListener {
-    public static final String TAG = FragmentOtps.class.getSimpleName();
+public class FragmentSms extends Fragment implements OtpListAdapter.ItemInsertedListener {
+    public static final String TAG = FragmentSms.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_FAMILY_ID = "familyId";
 
@@ -39,7 +37,7 @@ public class FragmentOtps extends Fragment implements OtpListAdapter.ItemInserte
     @BindView(R.id.list)
     RecyclerView otpsList;
 
-    public FragmentOtps() {
+    public FragmentSms() {
         // Required empty public constructor
     }
 
@@ -47,11 +45,11 @@ public class FragmentOtps extends Fragment implements OtpListAdapter.ItemInserte
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment FragmentOtps.
+     * @return A new instance of fragment FragmentSms.
      */
 
-    public static FragmentOtps newInstance(String familyId) {
-        FragmentOtps fragment = new FragmentOtps();
+    public static FragmentSms newInstance(String familyId) {
+        FragmentSms fragment = new FragmentSms();
         Bundle args = new Bundle();
         args.putString(ARG_FAMILY_ID, familyId);
         fragment.setArguments(args);

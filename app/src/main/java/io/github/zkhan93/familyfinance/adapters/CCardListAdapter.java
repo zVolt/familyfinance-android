@@ -149,6 +149,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (!found) {
             addonCardDao.insertOrReplaceInTx(addonCards);
             cCardDao.insertOrReplace(newCcard);
+
             newCcard = cCardDao.load(newCcard.getNumber());
             ccards.add(0, newCcard);
             notifyItemInserted(0);
@@ -237,6 +238,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Subscribe()
     public void onCcardEvent(InsertEvent<CCard> insertEvent) {
+        Log.d(TAG, "card event receivied");
         if (insertEvent.getItems() == null)
             return;
         for (CCard cCard : insertEvent.getItems()) {
@@ -380,7 +382,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         text = text.toLowerCase();
         while (itr.hasNext()) {
             cCard = itr.next();
-            if (    !cCard.getCardholder().toLowerCase().contains(text) &&
+            if (!cCard.getCardholder().toLowerCase().contains(text) &&
                     !cCard.getNumber().contains(text) &&
                     !cCard.getBank().toLowerCase().contains(text) &&
                     !text.contains(cCard.getBank().toLowerCase())

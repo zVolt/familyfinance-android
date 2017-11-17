@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -30,20 +29,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.models.Member;
+import io.github.zkhan93.familyfinance.util.Util;
 
 import static io.github.zkhan93.familyfinance.FragmentMembers.PERMISSION_REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity implements
-        FragmentMembers.OnFragmentInteractionListener, FragmentOtps
+        FragmentMembers.OnFragmentInteractionListener, FragmentSms
         .OnFragmentInteractionListener, FragmentAccounts.OnFragmentInteractionListener,
         FragmentCCards.OnFragmentInteractionListener, FragmentSummary
         .OnFragmentInteractionListener {
@@ -77,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements
     private int activePage;
     private String familyModeratorId;
     private Member me;
+    private ValueEventListener keywordsListener, otpCharsListener, otpLengthListener;
+    private int compilePatternAfterNoOfCallback;
+    private SharedPreferences sharedPreferences;
 
     {
         activePage = PAGE_POSITION.SUMMARY;
@@ -101,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements
                     case PAGE_POSITION.CCARDS:
                         showFab();
                         break;
-                    case PAGE_POSITION.OTPS:
+                    case PAGE_POSITION.SMS:
                         hideFab();
                         break;
                     case PAGE_POSITION.MEMBERS:
@@ -123,6 +129,70 @@ public class MainActivity extends AppCompatActivity implements
 
             }
         };
+        otpCharsListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot == null || dataSnapshot.getChildrenCount() == 0) return;
+                StringBuilder otpChars = new StringBuilder();
+                String otpChar;
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    otpChar = ds.getValue(String.class);
+                    if (otpChar == null) continue;
+                    otpChars.append(otpChar);
+                }
+                sharedPreferences.edit().putString("otpChars", otpChars.toString()).apply();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        keywordsListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot == null || dataSnapshot.getChildrenCount() == 0) return;
+                Set<String> keywords = new HashSet<>();
+                String keyword;
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    keyword = ds.getValue(String.class);
+                    if (keyword == null) continue;
+                    keywords.add(keyword);
+                }
+                sharedPreferences.edit().putStringSet("keywords", keywords).apply();
+                compilePatternAfterNoOfCallback -= 1;
+                tryCompilePattern();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        otpLengthListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot == null || dataSnapshot.getChildrenCount() == 0) return;
+                StringBuilder lengths = new StringBuilder();
+                String length;
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    length = ds.getValue(String.class);
+                    if (length == null) continue;
+                    lengths.append(length);
+                    lengths.append(",");
+                }
+                if (lengths.length() > 0)
+                    lengths.deleteCharAt(lengths.length() - 1);
+                sharedPreferences.edit().putString("otpLengths", lengths.toString()).apply();
+                compilePatternAfterNoOfCallback -= 1;
+                tryCompilePattern();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
 
     @Override
@@ -130,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         // Create the adapter that will return a fragment for each of the three
@@ -142,6 +212,11 @@ public class MainActivity extends AppCompatActivity implements
         mViewPager.addOnPageChangeListener(pageChangeListener);
         if (tabLayout != null)
             tabLayout.setupWithViewPager(mViewPager);
+        Intent intent = getIntent();
+        if (intent != null) {
+            int currentFragment = intent.getIntExtra("FragmentPosition", 0);
+            mViewPager.setCurrentItem(currentFragment);
+        }
     }
 
     @Override
@@ -156,9 +231,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        familyId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                .getString("activeFamilyId", null);
-        FirebaseDatabase.getInstance().getReference("family").child(familyId).child("moderator")
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        familyId = sharedPreferences.getString("activeFamilyId", null);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        compilePatternAfterNoOfCallback = 2;
+        ref.child("charsToIgnore").addListenerForSingleValueEvent
+                (otpCharsListener);
+        ref.child("keywords").addListenerForSingleValueEvent
+                (keywordsListener);
+        ref.child("family").child(familyId).child("moderator")
                 .child("id").addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -345,8 +426,8 @@ public class MainActivity extends AppCompatActivity implements
                 case PAGE_POSITION.CCARDS:
                     fragment = FragmentCCards.newInstance(familyId);
                     break;
-                case PAGE_POSITION.OTPS:
-                    fragment = FragmentOtps.newInstance(familyId);
+                case PAGE_POSITION.SMS:
+                    fragment = FragmentSms.newInstance(familyId);
                     break;
                 case PAGE_POSITION.EMAILS:
                     fragment = FragmentEmails.newInstance(familyId);
@@ -366,7 +447,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public int getCount() {
-            return PAGE_POSITION.class.getDeclaredFields().length;
+            return PAGE_POSITION.class.getDeclaredFields().length - 1;
         }
 
         @Override
@@ -378,8 +459,8 @@ public class MainActivity extends AppCompatActivity implements
                     return getString(R.string.title_accounts);
                 case PAGE_POSITION.CCARDS:
                     return getString(R.string.title_ccards);
-                case PAGE_POSITION.OTPS:
-                    return getString(R.string.title_otps);
+                case PAGE_POSITION.SMS:
+                    return getString(R.string.title_sms);
                 case PAGE_POSITION.MEMBERS:
                     return getString(R.string.title_members);
                 case PAGE_POSITION.EMAILS:
@@ -393,14 +474,14 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    private interface PAGE_POSITION {
+    public interface PAGE_POSITION {
         int SUMMARY = 0;
         int ACCOUNTS = 1;
         int CCARDS = 2;
-        int OTPS = 3;
-        int EMAILS = 4;
-        int CHAT_ROOM = 5;
-        int MEMBERS = 6;
+        int SMS = 3;
+        int CHAT_ROOM = 4;
+        int MEMBERS = 5;
+        int EMAILS = 6;
     }
 
     private boolean verified = false;
@@ -419,5 +500,11 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void tryCompilePattern() {
+        if (compilePatternAfterNoOfCallback == 0) {
+            Util.readOtpRegexValuesAndCompilePattern(getApplicationContext());
+        }
     }
 }

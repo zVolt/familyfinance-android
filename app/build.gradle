@@ -41,8 +41,7 @@ dependencies {
     compile 'com.android.support:design:26.1.0'
     compile 'com.android.support:support-v4:26.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
-    compile 'com.firebase:firebase-jobdispatcher:0.8.4'
+    
     compile 'com.firebaseui:firebase-ui-auth:3.1.0'
 
     // Firebase Authentication and Realtimedatabase
@@ -89,6 +88,6 @@ dependencies {
 
 }
 greendao {
-    schemaVersion 25
+    schemaVersion 29
 }
 apply plugin: 'com.google.gms.google-services'

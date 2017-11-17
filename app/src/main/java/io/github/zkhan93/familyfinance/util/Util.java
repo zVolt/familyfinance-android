@@ -3,16 +3,15 @@ package io.github.zkhan93.familyfinance.util;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.net.InetAddress;
 import java.util.Calendar;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.github.zkhan93.familyfinance.R;
 
@@ -29,25 +28,44 @@ public class Util {
         return cm.getActiveNetworkInfo() != null;
     }
 
-    public static String extractOTPFromString(String message) {
-        if (message == null || message.isEmpty())
-            return null;
+    public static String extractOTPFromString(@NonNull Context context, @NonNull String messages) {
+        if (pattern == null)
+            readOtpRegexValuesAndCompilePattern(context);
         String otp = null;
         otp = null;
-        String[] segments = message.split("\\s+");
-        for (String segment : segments) {
-            if (segment.startsWith("."))
-                segment = segment.substring(1);
-            if (segment.endsWith("."))
-                segment = segment.substring(0, segment.length() - 1);
-            if ((segment.length() == 8 || segment.length() == 4 || segment.length() == 6) &&
-                    segment.matches("\\d+")) {
-                Log.d(TAG, "OTP is:" + segment);
-                if (otp == null || otp.length() < segment.length())
-                    otp = segment;
-            }
+        Matcher match = pattern.matcher(messages);
+        while (match.find()) {
+            if (otp == null || otp.length() <= match.group(1).length())
+                otp = match.group(1);
         }
         return otp;
+    }
+
+    private static Pattern pattern;
+
+    public static void readOtpRegexValuesAndCompilePattern(Context context) {
+        if (context == null) return;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
+                (context);
+        String otpChars = sharedPreferences.getString("otpChars", null);
+        if (otpChars == null || otpChars.length() == 0) return;
+        String otpLengths = sharedPreferences.getString("otpLengths", null);
+        if (otpLengths == null || otpLengths.length() == 0) return;
+        String[] lengths = otpLengths.split(",");
+        Util.compilePattern(otpChars, lengths);
+    }
+
+    private static void compilePattern(String acceptedChars, String[] lengths) {
+        StringBuilder strb = new StringBuilder();
+        strb.append("[^%1$s](");
+        for (String len : lengths) {
+            strb.append("[%1$s]{");
+            strb.append(len);
+            strb.append("}|");
+        }
+        strb.deleteCharAt(strb.length() - 1);
+        strb.append(")[^%1$s]");
+        pattern = Pattern.compile(String.format(strb.toString(), acceptedChars));
     }
 
     public static String copyToClipboard(Context context, ClipboardManager clipboard, String otp) {
@@ -109,6 +127,15 @@ public class Util {
 
         return String.format(format, Constants.PAYMENT_DATE.format(billingDate
                 .getTime()), Constants.PAYMENT_DATE.format(paymentDate.getTime()));
+    }
+
+    public static boolean hasKeywords(String content, @NonNull Set<String> keywords) {
+        if (content == null || content.isEmpty()) return false;
+        content = content.replace(" ", "").toLowerCase();
+        for (String keyword : keywords)
+            if (content.contains(keyword))
+                return true;
+        return false;
     }
 }
 

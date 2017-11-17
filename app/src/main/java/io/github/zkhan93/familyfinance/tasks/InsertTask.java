@@ -64,7 +64,6 @@ public class InsertTask<D extends AbstractDao, T> extends AsyncTask<T, Void, Lis
     protected void onPostExecute(List<T> items) {
         if(items==null)
             return;
-        Log.d(TAG, String.format("item inserted", items.toString()));
         if (listenerWeakReference == null)
             EventBus.getDefault().post(new InsertEvent<T>(items));
         else {

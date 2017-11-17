@@ -22,7 +22,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import io.github.zkhan93.familyfinance.MainActivity;
 import io.github.zkhan93.familyfinance.R;
@@ -71,8 +73,8 @@ public class MessagingService extends FirebaseMessagingService {
         }
 
         if (data.get(KEYS.TYPE).equals(TYPE.OTP)) {
-            showNotification(data);
-            copyToClipboard(data.get(KEYS.CONTENT));
+            String otp = showNotification(data);
+            copyToClipboard(otp);
         } else if (data.get(KEYS.TYPE).equals(TYPE.PRESENCE))
             updatePresence(user);
     }
@@ -89,27 +91,31 @@ public class MessagingService extends FirebaseMessagingService {
                 ()).child("wasPresentOn").setValue(Calendar.getInstance().getTimeInMillis());
     }
 
-    private void showNotification(Map<String, String> data) {
+    private String showNotification(Map<String, String> data) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean showNotification = sharedPreferences.getBoolean(getString(R.string
                 .pref_key_notification), true);
-        Log.d(TAG, "notification setting: " + showNotification);
-        if (!showNotification)
-            return;
-        //default if null
+        Set<String> keywords = sharedPreferences.getStringSet("keywords", new HashSet<String>());
+        String content = data.get(KEYS.CONTENT);
+        if (content == null) return null;
+        boolean hasKeyword = Util.hasKeywords(content, keywords);
+        String otp = "";
+        if (hasKeyword)
+            otp = Util.extractOTPFromString(getApplicationContext(), content);
+        //check notification for me setting
+        boolean onlyOtp = sharedPreferences.getBoolean(getString(R.string
+                .pref_key_notification_only_otp), false);
+        if ((!showNotification) || (onlyOtp && !hasKeyword))
+            return otp;
+
         String ringtone = sharedPreferences.getString(getString(R.string.pref_key_ringtone), null);
         Log.d(TAG, "ringtone setting: " + ringtone);
         boolean vibrate = sharedPreferences.getBoolean(getString(R.string.pref_key_vibrate), false);
         Log.d(TAG, "vibration setting: " + vibrate);
 
         Intent resultIntent = new Intent(this, MainActivity.class);
-        Intent copyIntent = new Intent(ACTION_COPY_OTP);
-        copyIntent.putExtra("OTP", data.get(KEYS.CONTENT));
-        // Because clicking the notification opens a new activity, there's
-        // no need to create an artificial back stack.
+        resultIntent.putExtra("FragmentPosition", MainActivity.PAGE_POSITION.SMS);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent copyPendingIntent = PendingIntent.getBroadcast(this, 1, copyIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         String title = String.format("%s | %s", data.get(KEYS.FROM_NAME), data
                 .get(KEYS.NUMBER));
@@ -124,17 +130,23 @@ public class MessagingService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_stat_launcher)
                         .setContentTitle(title)
-                        .setContentText(data.get(KEYS.CONTENT))
+                        .setContentText(content)
                         .setStyle(bigTextStyle)
-                        .setPriority(Notification.PRIORITY_HIGH)
-                        .addAction(new NotificationCompat.Action(R.drawable
-                                .ic_content_copy_grey_50_24dp, "Copy OTP", copyPendingIntent));
+                        .setPriority(Notification.PRIORITY_HIGH);
+        if (otp != null && !otp.isEmpty()) {
+            Intent copyIntent = new Intent(ACTION_COPY_OTP);
+            copyIntent.putExtra("OTP", otp);
+            PendingIntent copyPendingIntent = PendingIntent.getBroadcast(this, 1, copyIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.addAction(new NotificationCompat.Action(R.drawable
+                    .ic_content_copy_grey_50_24dp, "Copy OTP", copyPendingIntent));
+        }
         mBuilder.setContentIntent(resultPendingIntent);
         //set fake vibration to enable heads Up in API 21+
         if (Build.VERSION.SDK_INT >= 21) mBuilder.setVibrate(new long[0]);
 
         if (vibrate)
-            mBuilder.setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mBuilder.setVibrate(new long[]{100, 300, 300, 100});
         if (ringtone != null && !ringtone.isEmpty())
             mBuilder.setSound(Uri.parse(ringtone));
 
@@ -144,17 +156,19 @@ public class MessagingService extends FirebaseMessagingService {
         // Builds the notification and issues it.
         if (mNotifyMgr != null)
             mNotifyMgr.notify(mNotificationId, mBuilder.build());
+        return otp;
     }
 
-    private void copyToClipboard(String message) {
+    private void copyToClipboard(String otp) {
         boolean isCopyEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean
                 (getString(R.string.pref_key_copy), true);
         if (!isCopyEnabled) return;
-        if (Looper.myLooper() == null) { Looper.prepare(); }
+        if (Looper.myLooper() == null) {
+            Looper.prepare();
+        }
         String toastMessage = Util.copyToClipboard(getApplicationContext(), (ClipboardManager)
-                getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE), Util
-                .extractOTPFromString(message));
-        if (toastMessage == null || toastMessage.isEmpty()) return;
+                getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE), otp);
+        if (toastMessage == null || toastMessage.isEmpty()) toastMessage = "No OTP found";
         Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_LONG).show();
     }
 }

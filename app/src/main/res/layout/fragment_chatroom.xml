@@ -1,27 +1,33 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_marginBottom="54dp"
-              android:orientation="vertical"
-              app:layout_behavior="@string/appbar_scrolling_view_behavior"
-              tools:context="io.github.zkhan93.familyfinance.FragmentChatroom">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_grey_200"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="io.github.zkhan93.familyfinance.FragmentChatroom">
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="@string/hello_blank_fragment"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll1"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         tools:listitem="@layout/listitem_chat_text_send"/>
 
     <LinearLayout
+        android:id="@+id/ll1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_margin="8dp"
         android:gravity="center">
 
         <EditText
+            android:id="@+id/content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -38,4 +44,4 @@
             android:background="@color/md_teal_500"
             android:src="@drawable/circle_orange"/>
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

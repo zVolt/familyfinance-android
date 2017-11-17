@@ -16,8 +16,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 
-import java.util.Collections;
-
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -90,6 +88,15 @@ public class FragmentSetting extends PreferenceFragment implements Preference
                             preference.setSummary((boolean) value ? R.string.pref_allsms_enable : R
                                     .string.pref_allsms_disable);
                             return true;
+                        case "pref_key_notification_only_otp":
+                            preference.setSummary((boolean) value ? R.string
+                                    .pref_notificationOnlyOtp_enable : R
+                                    .string.pref_notificationOnlyOtp_disable);
+                            return true;
+                        case "pref_key_no_of_sms":
+                            preference.setSummary(preference.getContext().getString(R.string
+                                    .pref_no_of_sms, value));
+                            return true;
                         default:
                             return false;
                     }
@@ -145,10 +152,13 @@ public class FragmentSetting extends PreferenceFragment implements Preference
         bindPreferenceSummaryToValue(pinPreference);
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_copy)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_notification)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string
+                .pref_key_notification_only_otp)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_ringtone)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_vibrate)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_autolock)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_allsms)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_no_of_sms)));
 
         Log.d(TAG, "setting all set");
     }
@@ -244,4 +254,5 @@ public class FragmentSetting extends PreferenceFragment implements Preference
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 }

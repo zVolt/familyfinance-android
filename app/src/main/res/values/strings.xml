@@ -13,7 +13,7 @@
     <string name="title_emails">Emails</string>
     <string name="title_accounts">Accounts</string>
     <string name="title_members">Members</string>
-    <string name="title_otps">OTPs</string>
+    <string name="title_sms">SMS</string>
     <string name="title_ccards">Credit Cards</string>
     <string name="title_settings">Settings</string>
     <string name="title_new_account">Add Account</string>
@@ -79,32 +79,42 @@
     <string name="pref_header_security">Security</string>
     <!--preference title-->
     <string name="pref_title_notifications">Notification</string>
+    <string name="pref_title_notifications_only_otp">Only OTP SMS</string>
     <string name="pref_title_copy">Auto Copy</string>
     <string name="pref_title_ringtone">Ringtone</string>
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="pref_title_vibrate_duration">Vibrate Duration</string>
     <string name="pref_title_pin">Secure PIN</string>
     <string name="pref_title_autolock">Auto-Lock</string>
     <string name="pref_title_allsms">SMS Sync</string>
+    <string name="pref_title_no_of_sms">Number of SMS</string>
 
     <string name="pref_copy_enable">Incoming OTP will get copied to your clipboard automatically</string>
     <string name="pref_copy_disable">Do not copy incoming OTP automatically to clipboard</string>
     <string name="pref_ringtone_silent">Silent</string>
-    <string name="pref_notification_enable">Show notification on new OTP</string>
-    <string name="pref_notification_disable">Do not show notification when new OTP arrives</string>
+    <string name="pref_notification_enable">Show notification on new SMS</string>
+    <string name="pref_notification_disable">Do not show any notification</string>
+    <string name="pref_notificationOnlyOtp_disable">Show notification for all SMS</string>
+    <string name="pref_notificationOnlyOtp_enable">Show notification only for SMS containing OTP</string>
     <string name="pref_pin_enable">Using secure PIN to unlock</string>
     <string name="pref_pin_disable">Do not use PIN to unlock</string>
     <string name="pref_autolock">Lock after %1$s</string>
     <string name="pref_allsms_enable">Send all incomming SMS to family</string>
     <string name="pref_allsms_disable">Send SMS containing OTP only</string>
+    <string name="pref_no_of_sms">Show only %1$s latest SMS</string>
+    <string name="pref_no_of_sms_default">Show only 50 latest SMS</string>
 
     <string name="pref_key_notification" translatable="false">pref_key_notification</string>
+    <string name="pref_key_notification_only_otp" translatable="false">pref_key_notification_only_otp</string>
     <string name="pref_key_vibrate" translatable="false">pref_key_vibrate</string>
+    <string name="pref_key_vibrate_duration" translatable="false">pref_key_vibrate_duration</string>
     <string name="pref_key_ringtone" translatable="false">pref_key_ringtone</string>
     <string name="pref_key_copy" translatable="false">pref_key_copy</string>
     <string name="pref_key_pin" translatable="false">pref_key_pin</string>
     <string name="pref_key_pin_value" translatable="false">pref_key_pin_value</string>
     <string name="pref_key_autolock" translatable="false">pref_key_autolock</string>
     <string name="pref_key_allsms">pref_key_allsms</string>
+    <string name="pref_key_no_of_sms">pref_key_no_of_sms</string>
 
 
     <string-array name="pref_autolock_values">
@@ -127,9 +137,6 @@
 
 
     <string name="web_client_id" translatable="false">683400004161-nq55dgjn8ubrmt1mjcg79gfnuckui6fe.apps.googleusercontent.com</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

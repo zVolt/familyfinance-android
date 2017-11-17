@@ -243,6 +243,7 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
     public void onInsertTaskComplete(List<CCard> items) {
         if (items == null || items.size() == 0)
             return;
+        Log.d(TAG, "card inserted: " + items.get(0).getPhoneNumber());
         CCard newCcard = items.get(0);
         if (cCard != null && !newCcard.getNumber().trim().equals(cCard.getNumber().trim())) {
             //cards id changed delete previous from firebase , different node

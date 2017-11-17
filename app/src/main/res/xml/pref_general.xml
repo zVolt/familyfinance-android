@@ -12,6 +12,12 @@
             android:key="@string/pref_key_allsms"
             android:summary="@string/pref_allsms_enable"
             android:title="@string/pref_title_allsms"/>
+        <EditTextPreference
+            android:defaultValue="50"
+            android:key="@string/pref_key_no_of_sms"
+            android:inputType="number"
+            android:summary="@string/pref_no_of_sms_default"
+            android:title="@string/pref_title_no_of_sms"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="security_setting"
@@ -39,6 +45,12 @@
             android:key="@string/pref_key_notification"
             android:summary="@string/pref_notification_enable"
             android:title="@string/pref_title_notifications"/>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dependency="@string/pref_key_notification"
+            android:key="@string/pref_key_notification_only_otp"
+            android:summary="@string/pref_notificationOnlyOtp_disable"
+            android:title="@string/pref_title_notifications_only_otp"/>
         <!-- Allows the user to choose a ringtone in the 'notification' category. -->
         <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
         <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->

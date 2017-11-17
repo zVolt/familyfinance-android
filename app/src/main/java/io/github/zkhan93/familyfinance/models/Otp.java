@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
@@ -19,6 +20,7 @@ import org.greenrobot.greendao.DaoException;
 /**
  * Created by zeeshan on 7/7/17.
  */
+@IgnoreExtraProperties
 @Entity
 public class Otp extends BaseModel{
     @Id
@@ -108,7 +110,8 @@ public class Otp extends BaseModel{
     /**
      * To-one relationship, resolved on first access.
      */
-    @Generated(hash = 841990476)
+    @Exclude
+    @Keep
     public Member getFrom() {
         String __key = this.fromMemberId;
         if (from__resolvedKey == null || from__resolvedKey != __key) {
@@ -129,7 +132,8 @@ public class Otp extends BaseModel{
     /**
      * called by internal mechanisms, do not call yourself.
      */
-    @Generated(hash = 354503711)
+    @Exclude
+    @Keep
     public void setFrom(Member from) {
         synchronized (this) {
             this.from = from;
