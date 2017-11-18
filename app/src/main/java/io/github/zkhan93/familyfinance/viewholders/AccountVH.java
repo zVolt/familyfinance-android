@@ -91,7 +91,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         popup = new PopupMenu(itemView.getContext(), menu);
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
-        inflater.inflate(R.menu.ccard_item_menu, popup.getMenu());
+        inflater.inflate(R.menu.ccard_item, popup.getMenu());
         itemView.setOnClickListener(this);
         menu.setOnClickListener(this);
     }

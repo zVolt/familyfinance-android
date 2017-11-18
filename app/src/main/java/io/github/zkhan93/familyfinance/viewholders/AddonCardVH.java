@@ -63,7 +63,7 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
         popup = new PopupMenu(itemView.getContext(), menu);
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
-        inflater.inflate(R.menu.ccard_item_menu, popup.getMenu());
+        inflater.inflate(R.menu.ccard_item, popup.getMenu());
         popup.getMenu().findItem(R.id.action_add_addoncard).setVisible(false);
     }
 

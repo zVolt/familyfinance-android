@@ -116,7 +116,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
-        inflater.inflate(R.menu.ccard_item_menu, popup.getMenu());
+        inflater.inflate(R.menu.ccard_item, popup.getMenu());
 
         addonCardListAdapter = new AddonCardListAdapter(addonCardInteractionListener);
         addonCards.setAdapter(addonCardListAdapter);

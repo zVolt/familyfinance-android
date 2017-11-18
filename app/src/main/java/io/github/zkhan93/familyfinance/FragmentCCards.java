@@ -96,7 +96,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_ccard_main, menu);
+        inflater.inflate(R.menu.fragment_ccard, menu);
         SearchView searchView =
                 (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(this);

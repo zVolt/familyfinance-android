@@ -50,7 +50,7 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
         ButterKnife.bind(this, itemView);
         this.itemInteractionListener = itemInteractionListener;
         popupMenu = new PopupMenu(itemView.getContext(), showOptions);
-        popupMenu.inflate(R.menu.receive_request_menu);
+        popupMenu.inflate(R.menu.receive_request);
         popupMenu.setOnMenuItemClickListener(this);
     }
 
