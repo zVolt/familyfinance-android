@@ -163,10 +163,11 @@ public class MessagingService extends FirebaseMessagingService {
             Looper.prepare();
         }
         String toastMessage = null;
-        if (!otp.isEmpty())
+        if (!otp.isEmpty()) {
             toastMessage = Util.copyToClipboard(context, (ClipboardManager)
                     context.getSystemService(Context.CLIPBOARD_SERVICE), otp);
-        if (toastMessage == null || toastMessage.isEmpty()) toastMessage = "No OTP found";
-        Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show();
+            if (toastMessage == null || toastMessage.isEmpty()) toastMessage = "No OTP found";
+            Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show();
+        }
     }
 }
