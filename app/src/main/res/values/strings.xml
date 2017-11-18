@@ -4,9 +4,7 @@
     <!-- Labels -->
     <string name="label_signin">Sign in</string>
 
-    <!-- menu titles -->
-    <string name="action_settings">Settings</string>
-    <string name="action_logout">Sign out</string>
+
 
     <!-- activity titles -->
     <string name="title_summary">Summary</string>
@@ -22,8 +20,12 @@
     <string name="title_activity_add_member">Requests</string>
     <string name="title_activity_pin">@string/app_name</string>
     <string name="title_chat_room">Chat Room</string>
+    <string name="title_filter_sms">Show SMS only from</string>
 
     <!--Menu Titles-->
+    <string name="action_settings">Settings</string>
+    <string name="action_logout">Sign out</string>
+    <string name="action_filter_sms">Filter SMS</string>
     <string name="action_copy">Copy to clipboard</string>
     <string name="action_edit">Edit</string>
     <string name="action_update">Update</string>
@@ -32,6 +34,7 @@
     <string name="action_add_addoncard">Add Addon Card</string>
     <string name="action_remove">Remove</string>
     <string name="action_switch_family">Switch Family</string>
+
     <!--hints -->
     <string name="hint_account_name">Account\'s Name</string>
     <string name="hint_account_holder_name">Account holder\'s name</string>
@@ -56,6 +59,7 @@
 
     <!--Contants-->
     <string name="rs">\u20B9</string>
+    <string name="clear">clear</string>
     <string name="add">Add</string>
     <string name="subscribe">Allow read emails</string>
     <string name="email_subscribe">Allow us to read your email and show it to everyone in this family.</string>

@@ -126,4 +126,10 @@ public class Member extends BaseModel {
             return Long.compare(o2.getWasPresentOn(), o1.getWasPresentOn());
         }
     };
+    public static final Comparator<Member> BY_NAME = new Comparator<Member>() {
+        @Override
+        public int compare(Member o1, Member o2) {
+            return String.CASE_INSENSITIVE_ORDER.compare(o1.getName(), o2.getName());
+        }
+    };
 }

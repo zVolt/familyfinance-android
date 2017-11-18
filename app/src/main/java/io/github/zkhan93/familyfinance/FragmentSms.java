@@ -1,19 +1,28 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
+import io.github.zkhan93.familyfinance.models.Member;
+import io.github.zkhan93.familyfinance.util.Util;
+import io.github.zkhan93.familyfinance.viewholders.FilterSMSMemberVH;
 
 
 /**
@@ -24,7 +33,8 @@ import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
  * Use the {@link FragmentSms#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentSms extends Fragment implements OtpListAdapter.ItemInsertedListener {
+public class FragmentSms extends Fragment implements OtpListAdapter.ItemInsertedListener,
+        SearchView.OnQueryTextListener {
     public static final String TAG = FragmentSms.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_FAMILY_ID = "familyId";
@@ -32,6 +42,7 @@ public class FragmentSms extends Fragment implements OtpListAdapter.ItemInserted
 
     private OnFragmentInteractionListener mListener;
     private String familyId;
+    private OtpListAdapter otpListAdapter;
 
     @BindView(R.id.list)
     RecyclerView otpsList;
@@ -69,12 +80,56 @@ public class FragmentSms extends Fragment implements OtpListAdapter.ItemInserted
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
         ButterKnife.bind(this, rootView);
-        OtpListAdapter otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(), familyId, this);
+        otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(),
+                familyId, this);
         otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-        otpsList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        otpsList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration
+                .VERTICAL));
         otpsList.scrollToPosition(0);
         otpsList.setAdapter(otpListAdapter);
+        setHasOptionsMenu(true);
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
+                .registerOnSharedPreferenceChangeListener(otpListAdapter);
+    }
+
+    @Override
+    public void onStop() {
+        Util.Log.d(TAG, "onStop");
+        super.onStop();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
+                (getActivity().getApplicationContext());
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(otpListAdapter);
+        sharedPreferences.edit().remove("filter_sms_by_member").apply();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_sms, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setOnQueryTextListener(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_filter:
+                //show dialog to set filter
+                DialogFragmentSmsFilter.newInstance(familyId).show(getActivity()
+                                .getSupportFragmentManager(),
+                        DialogFragmentSmsFilter.TAG);
+                return true;
+            case R.id.action_search:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
     public void onButtonPressed(Uri uri) {
@@ -100,6 +155,17 @@ public class FragmentSms extends Fragment implements OtpListAdapter.ItemInserted
         mListener = null;
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        otpListAdapter.filterByString(query.toLowerCase());
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        otpListAdapter.filterByString(newText.toLowerCase());
+        return true;
+    }
 
     /**
      * This interface must be implemented by activities that contain this

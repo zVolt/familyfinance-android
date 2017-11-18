@@ -15,6 +15,7 @@ import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -30,10 +31,11 @@ import io.github.zkhan93.familyfinance.viewholders.MemberVH;
  * Created by zeeshan on 8/7/17.
  */
 
-public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements LoadFromDbTask
+public class MemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements LoadFromDbTask
         .Listener<Member>, InsertTask.Listener<Member>, ChildEventListener, ValueEventListener {
     public static final String TAG = MemberListAdapter.class.getSimpleName();
-    private List<Member> members;
+    protected List<Member> members;
+    protected Comparator<Member> comparator;
     private DatabaseReference membersRef;
     private boolean ignoreChildEvents;
     private MemberDao memberDao;
@@ -45,17 +47,18 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
         memberDao = app.getDaoSession().getMemberDao();
         Query<Member> query = memberDao.queryBuilder().build();
         new LoadFromDbTask<>(query, this).execute();
+        comparator = Member.BY_LAST_ONLINE;
     }
 
     @Override
-    public MemberVH onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MemberVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                 .listitem_member, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(MemberVH holder, int position) {
-        holder.setMember(members.get(position));
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ((MemberVH)holder).setMember(members.get(position));
     }
 
     @Override
@@ -67,11 +70,10 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
     public void onLoadTaskComplete(List<Member> data) {
         members.clear();
         members.addAll(data);
-        Collections.sort(members, Member.BY_LAST_ONLINE);
+        Collections.sort(members, comparator);
         notifyDataSetChanged();
         membersRef.addListenerForSingleValueEvent(this);
         membersRef.addChildEventListener(this);
-
     }
 
     public void addOrUpdate(Member newMember) {
@@ -118,7 +120,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
             if (member == null) continue;
             members.add(member);
         }
-        Collections.sort(members, Member.BY_LAST_ONLINE);
+        Collections.sort(members, comparator);
         notifyDataSetChanged();
         ignoreChildEvents = false;
     }

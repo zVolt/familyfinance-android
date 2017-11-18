@@ -1,5 +1,6 @@
 package io.github.zkhan93.familyfinance.adapters;
 
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,6 +24,7 @@ import java.util.ListIterator;
 
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.models.OtpDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
@@ -36,7 +38,8 @@ import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
 public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
         LoadFromDbTask
-                .Listener<Otp>, ValueEventListener, ChildEventListener, InsertTask.Listener<Otp> {
+                .Listener<Otp>, ValueEventListener, ChildEventListener, InsertTask.Listener<Otp>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String TAG = OtpListAdapter.class.getSimpleName();
     private ArrayList<Otp> otps;
     private Query otpRef;
@@ -234,6 +237,91 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Collections.sort(otps, Otp.BY_TIMESTAMP);
         notifyDataSetChanged();
         ignoreChildEvents = false;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(TAG, "hmm a preference has changed with key: " + key);
+        if (key != null && key.equals("filter_sms_by_member")) {
+            String memberId = sharedPreferences.getString(key, null);
+            filterByMember(memberId);
+        }
+    }
+
+    private ArrayList<Otp> _otps;
+    private boolean isfilterApplied;
+
+    private void filterByMember(String memberId) {
+        Log.d(TAG, "is see you want to filter by " + memberId);
+        if (memberId == null || memberId.isEmpty()) {
+            if (isfilterApplied &&
+                    _otps != null &&
+                    otps.size() > 0
+                    ) {
+                otps = _otps;
+                _otps = null;
+                isfilterApplied = false;
+                notifyDataSetChanged();
+            }
+            return;
+        }
+        if (_otps == null) {
+            _otps = new ArrayList<>();
+            _otps.addAll(otps);
+        } else {
+            otps = new ArrayList<>();
+            otps.addAll(_otps);
+        }
+        ListIterator<Otp> itr = otps.listIterator();
+        Otp otp;
+        while (itr.hasNext()) {
+            otp = itr.next();
+            if (!otp.getFromMemberId().equals(memberId)) {
+                itr.remove();
+                isfilterApplied = true;
+            }
+        }
+        if (isfilterApplied)
+            notifyDataSetChanged();
+    }
+
+    private boolean isSearchApplied;
+    private ArrayList<Otp> __otps;
+
+    public void filterByString(String text) {
+        Log.d(TAG, "is see you want to filter by " + text);
+        if ((text == null || text.isEmpty()) && isfilterApplied) {
+            otps = __otps;
+            __otps = null;
+            isSearchApplied = false;
+            notifyDataSetChanged();
+            return;
+        }
+        if (__otps == null) {
+            __otps = new ArrayList<>();
+            __otps.addAll(otps);
+        } else {
+            otps = new ArrayList<>();
+            otps.addAll(__otps);
+        }
+        ListIterator<Otp> itr = otps.listIterator();
+        Otp otp;
+        String name, content;
+        while (itr.hasNext()) {
+            otp = itr.next();
+            name = otp.getFrom().getName().toLowerCase();
+            content = otp.getContent().toLowerCase();
+            if (!name.contains(text) &&
+                    !text.contains(name) &&
+                    !content.contains(text) &&
+                    !text.contains(content)
+                    ) {
+                itr.remove();
+                isSearchApplied = true;
+            }
+        }
+        if (isSearchApplied)
+            notifyDataSetChanged();
     }
 
     public interface ItemInsertedListener {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_grey_50_24dp"
+        android:orderInCategory="60"
+        android:title="@string/action_switch_family"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="collapseActionView|ifRoom"/>
+    <item
+        android:id="@+id/action_filter"
+        android:icon="@drawable/ic_filter_list_green_50_24dp"
+        android:orderInCategory="70"
+        android:title="@string/action_filter_sms"
+        app:showAsAction="ifRoom"/>
+</menu>
