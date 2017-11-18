@@ -15,7 +15,7 @@
         android:layout_marginStart="50dp"
         android:layout_marginTop="4dp"
         android:maxWidth="150dp"
-        app:cardBackgroundColor="@color/md_green_100"
+        app:cardBackgroundColor="@color/md_light_green_200"
         app:cardCornerRadius="4dp"
         app:cardElevation="2dp">
 

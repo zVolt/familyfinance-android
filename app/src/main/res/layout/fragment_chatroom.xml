@@ -23,8 +23,19 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_margin="8dp"
-        android:gravity="center">
+        android:layout_margin="4dp"
+        android:layout_toStartOf="@+id/send"
+        android:background="@drawable/rect_round"
+        android:gravity="center"
+        android:padding="8dp">
+
+        <ImageButton
+            android:id="@+id/smily"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="bottom"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_tag_faces_grey_500_24dp"/>
 
         <EditText
             android:id="@+id/content"
@@ -33,15 +44,30 @@
             android:layout_gravity="bottom"
             android:layout_weight="1"
             android:background="@null"
-            android:maxLines="3"
-            tools:text="this is a multi line edit text that will grow once I start typing and will scroll alsonsdflskdgfsdlkghdskfg kdsfgh dsg sdkg jsdg fsdm fjsdg f"/>
+            android:hint="Type a message"
+            android:maxLines="5"
+            android:minHeight="36dp"
+            android:scrollIndicators="end"
+            android:scrollbars="vertical"
+            tools:text=""/>
 
         <ImageButton
-            android:id="@+id/send"
-            style="@style/Base.Widget.AppCompat.Button.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/md_teal_500"
-            android:src="@drawable/circle_orange"/>
+            android:id="@+id/attach"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="bottom"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_attach_file_grey_500_24dp"/>
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/send"
+        style="@style/Base.Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="4dp"
+        android:background="@drawable/circle_primary"
+        android:src="@drawable/ic_send_green_50_24dp"/>
 </RelativeLayout>

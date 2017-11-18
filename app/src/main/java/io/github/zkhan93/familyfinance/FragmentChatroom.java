@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,6 +46,11 @@ public class FragmentChatroom extends Fragment {
     EditText content;
     @BindView(R.id.send)
     ImageButton send;
+    @BindView(R.id.smily)
+    ImageButton smily;
+    @BindView(R.id.attach)
+    ImageButton attach;
+
 
     public FragmentChatroom() {
         // Required empty public constructor
@@ -110,15 +116,23 @@ public class FragmentChatroom extends Fragment {
         mListener = null;
     }
 
-    @OnClick(R.id.send)
+    @OnClick({R.id.send, R.id.attach, R.id.smily})
     public void onSend(View view) {
-        Message message = new Message();
-        message.setContent(content.getText().toString());
-        message.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        message.setSenderId(meId);
-        FirebaseDatabase.getInstance().getReference("chats").child(familyId).push().setValue
-                (message);
-        content.setText("");
+        switch (view.getId()) {
+            case R.id.send:
+                Message message = new Message();
+                message.setContent(content.getText().toString());
+                message.setTimestamp(Calendar.getInstance().getTimeInMillis());
+                message.setSenderId(meId);
+                FirebaseDatabase.getInstance().getReference("chats").child(familyId).push().setValue
+                        (message);
+                content.setText("");
+                break;
+            case R.id.smily:
+            case R.id.attach:
+                Toast.makeText(getContext(), "Will be available soon..", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     /**
