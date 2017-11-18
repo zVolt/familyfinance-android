@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -25,11 +24,9 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.Member;
-import io.github.zkhan93.familyfinance.util.Util;
 
 /**
  * Created by zeeshan on 7/7/17.
@@ -66,11 +63,16 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String url = dataSnapshot.getValue(String.class);
-                if (url != null)
-                    Glide.with(context).load(url).into(bank);
-                else
-                    Glide.with(context).load("http://via.placeholder" +
-                            ".com/200x200/f0f0f0/2c2c2c?text=" + dataSnapshot.getKey()).into(bank);
+                if (url == null)
+                    url = String.format("http://via.placeholder.com/200x200/f0f0f0/2c2c2c?text=%s",
+                            dataSnapshot.getKey());
+                Glide.with(context)
+                        .load(url)
+                        .apply(RequestOptions
+                                .circleCropTransform()
+                                .placeholder(R.drawable.ic_bank_grey_600_18dp))
+                        .into(bank);
+
             }
 
             @Override
@@ -98,8 +100,11 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         this.account = account;
         name.setText(account.getAccountHolder());
         accountNumber.setText(account.getAccountNumber());
-        FirebaseDatabase.getInstance().getReference("images").child("banks").child(account.getBank
-                ().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);
+        FirebaseDatabase.getInstance()
+                .getReference("images")
+                .child("banks")
+                .child(account.getBank().toUpperCase())
+                .addListenerForSingleValueEvent(bankImageLinkListener);
         ifsc.setText(account.getIfsc());
         balance.setText(NumberFormat.getCurrencyInstance().format(account.getBalance()));
 
@@ -107,8 +112,12 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
 
         if (_updatedBy != null && _updatedBy.getProfilePic() != null && !_updatedBy.getProfilePic
                 ().isEmpty())
-            Glide.with(context).load(_updatedBy.getProfilePic()).apply(RequestOptions
-                    .circleCropTransform()).into(updatedBy);
+            Glide.with(context)
+                    .load(_updatedBy.getProfilePic())
+                    .apply(RequestOptions
+                            .circleCropTransform()
+                            .placeholder(R.drawable.ic_person_grey_600_24dp))
+                    .into(updatedBy);
 
         Date _updatedOn = account.getUpdatedOn() == -1 ? null : new Date(account.getUpdatedOn());
         updatedOn.setText(_updatedOn == null ? "Never" : DateUtils.getRelativeTimeSpanString

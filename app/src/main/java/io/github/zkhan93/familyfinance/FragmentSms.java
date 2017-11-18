@@ -31,7 +31,6 @@ public class FragmentSms extends Fragment implements OtpListAdapter.ItemInserted
 
 
     private OnFragmentInteractionListener mListener;
-    private OtpListAdapter otpListAdapter;
     private String familyId;
 
     @BindView(R.id.list)
@@ -65,18 +64,12 @@ public class FragmentSms extends Fragment implements OtpListAdapter.ItemInserted
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
         ButterKnife.bind(this, rootView);
-        otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(), familyId, this);
+        OtpListAdapter otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(), familyId, this);
         otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         otpsList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         otpsList.scrollToPosition(0);

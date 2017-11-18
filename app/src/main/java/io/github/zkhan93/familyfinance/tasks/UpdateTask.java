@@ -2,7 +2,6 @@ package io.github.zkhan93.familyfinance.tasks;
 
 import android.os.AsyncTask;
 
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.DatabaseReference;
 
 import org.greenrobot.greendao.AbstractDao;

@@ -3,7 +3,6 @@ package io.github.zkhan93.familyfinance;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,10 +14,7 @@ import android.view.View;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import org.greenrobot.greendao.database.Database;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +36,6 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
     RecyclerView requestList;
 
     private String familyId;
-    private ReceiveRequestListAdapter receiveRequestListAdapter;
     private ProgressDialog progressDialog;
 
     @Override
@@ -52,18 +47,19 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         familyId = getIntent().getStringExtra("familyId");
-        receiveRequestListAdapter = new ReceiveRequestListAdapter((App) getApplication(),
-                familyId, this);
+        ReceiveRequestListAdapter receiveRequestListAdapter = new ReceiveRequestListAdapter((App) getApplication(),
+                familyId,
+                this);
         requestList.setLayoutManager(new LinearLayoutManager(this));
         requestList.setAdapter(receiveRequestListAdapter);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait..");
-        Log.d(TAG,"laddu");
+        Log.d(TAG, "laddu");
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;

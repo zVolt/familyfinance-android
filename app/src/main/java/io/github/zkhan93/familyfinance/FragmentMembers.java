@@ -1,12 +1,10 @@
 package io.github.zkhan93.familyfinance;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,9 +21,6 @@ import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
-import io.github.zkhan93.familyfinance.viewholders.MemberVH;
-
-import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
 
 /**
@@ -36,7 +31,7 @@ import static android.support.v4.content.ContextCompat.checkSelfPermission;
  * Use the {@link FragmentMembers#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentMembers extends Fragment implements MemberVH.ItemInteractionListener {
+public class FragmentMembers extends Fragment {
 
     public static final String TAG = FragmentMembers.class.getSimpleName();
     public static final int PERMISSION_REQUEST_CODE = 42;
@@ -46,7 +41,6 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
 
 
     private String familyId;
-    private String familyModeratorId;
 
     @BindView(R.id.list)
     RecyclerView membersList;
@@ -81,7 +75,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         if (getArguments() != null) {
             Bundle args = getArguments();
             familyId = args.getString(ARG_FAMILY_ID, null);
-            familyModeratorId = args.getString(ARG_FAMILY_MODERATOR_ID, null);
+//            familyModeratorId = args.getString(ARG_FAMILY_MODERATOR_ID, null);
         }
     }
 
@@ -91,8 +85,7 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_members, container, false);
         ButterKnife.bind(this, rootView);
-        memberListAdapter = new MemberListAdapter((App) getActivity().getApplication(), familyId,
-                this);
+        memberListAdapter = new MemberListAdapter((App) getActivity().getApplication(), familyId);
         membersList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         membersList.setAdapter(memberListAdapter);
@@ -189,12 +182,6 @@ public class FragmentMembers extends Fragment implements MemberVH.ItemInteractio
                 break;
         }
     }
-
-    @Override
-    public void remove(Member member) {
-        Log.d(TAG, "remove: " + member.toString());
-    }
-
 
     /**
      * This interface must be implemented by activities that contain this

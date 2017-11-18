@@ -3,9 +3,7 @@ package io.github.zkhan93.familyfinance.tasks;
 import android.os.AsyncTask;
 
 import org.greenrobot.greendao.AbstractDao;
-import org.greenrobot.greendao.Property;
 import org.greenrobot.greendao.query.Query;
-import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

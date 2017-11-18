@@ -59,13 +59,7 @@ public class MessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        StringBuilder strb = new StringBuilder();
         Map<String, String> data = remoteMessage.getData();
-
-        for (Map.Entry<String, String> me : data.entrySet()) {
-            strb.append(me.getKey()).append(": ").append(me.getValue()).append("\n");
-        }
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Log.d(TAG, "user not logged in");
@@ -129,7 +123,7 @@ public class MessagingService extends FirebaseMessagingService {
                 .bigText(data.get(KEYS.CONTENT));
 
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
+                new NotificationCompat.Builder(context, TAG)
                         .setSmallIcon(R.drawable.ic_stat_launcher)
                         .setContentTitle(title)
                         .setContentText(content)

@@ -34,17 +34,12 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
         .Listener<Member>, InsertTask.Listener<Member>, ChildEventListener, ValueEventListener {
     public static final String TAG = MemberListAdapter.class.getSimpleName();
     private List<Member> members;
-    private MemberVH.ItemInteractionListener itemInteractionListener;
-    private String familyId;
     private DatabaseReference membersRef;
     private boolean ignoreChildEvents;
     private MemberDao memberDao;
 
-    public MemberListAdapter(App app, String familyId, MemberVH.ItemInteractionListener
-            itemInteractionListener) {
-        this.familyId = familyId;
+    public MemberListAdapter(App app, String familyId) {
         this.members = new ArrayList<>();
-        this.itemInteractionListener = itemInteractionListener;
         membersRef = FirebaseDatabase.getInstance().getReference().child("members").child(familyId);
         ignoreChildEvents = true;
         memberDao = app.getDaoSession().getMemberDao();
@@ -55,7 +50,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberVH> implements
     @Override
     public MemberVH onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MemberVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_member, parent, false), itemInteractionListener);
+                .listitem_member, parent, false));
     }
 
     @Override

@@ -101,8 +101,12 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
         if (_updatedBy != null && _updatedBy.getProfilePic() != null && !_updatedBy.getProfilePic
                 ().isEmpty())
-            Glide.with(context).load(_updatedBy.getProfilePic()).apply(RequestOptions
-                    .circleCropTransform()).into(updatedBy);
+            Glide.with(context)
+                    .load(_updatedBy.getProfilePic())
+                    .apply(RequestOptions
+                            .circleCropTransform()
+                            .placeholder(R.drawable.ic_person_grey_600_24dp))
+                    .into(updatedBy);
 
         updatedOn.setText(DateUtils.getRelativeTimeSpanString(addonCard.getUpdatedOn()));
     }

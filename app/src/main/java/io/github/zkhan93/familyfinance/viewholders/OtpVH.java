@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -15,8 +14,6 @@ import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.Otp;
-import io.github.zkhan93.familyfinance.util.Constants;
-import io.github.zkhan93.familyfinance.util.Util;
 
 /**
  * Created by zeeshan on 7/7/17.
@@ -46,10 +43,12 @@ public class OtpVH extends RecyclerView.ViewHolder {
             url = from.getProfilePic();
         else
             url = "";//TOGO get gavatar of the email
-        Util.Log.d(TAG, "loading image %s", url);
-        Glide.with(receiver.getContext()).load(url).apply(RequestOptions
-                .circleCropTransform().override(LinearLayout.LayoutParams.MATCH_PARENT)).into
-                (receiver);
+        Glide.with(receiver.getContext())
+                .load(url)
+                .apply(RequestOptions
+                        .circleCropTransform()
+                        .placeholder(R.drawable.ic_person_grey_600_24dp))
+                .into(receiver);
         number.setText(otp.getNumber());
         content.setText(otp.getContent());
         timestamp.setText(DateUtils.getRelativeTimeSpanString(otp.getTimestamp()));

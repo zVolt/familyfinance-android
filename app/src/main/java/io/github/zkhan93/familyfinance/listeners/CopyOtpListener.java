@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import io.github.zkhan93.familyfinance.util.Util;

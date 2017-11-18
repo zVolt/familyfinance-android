@@ -46,8 +46,8 @@ public class DialogFragmentConfirm<T extends BaseModel> extends DialogFragment i
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(title);
-        builder.setPositiveButton(android.R.string.yes, this).setNegativeButton(android.R.string
-                .no, this);
+        builder.setPositiveButton(android.R.string.yes, this)
+                .setNegativeButton(android.R.string.no, this);
         return builder.create();
     }
 
@@ -55,7 +55,7 @@ public class DialogFragmentConfirm<T extends BaseModel> extends DialogFragment i
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
-                EventBus.getDefault().post(new DeleteConfirmedEvent<T>(item));
+                EventBus.getDefault().post(new DeleteConfirmedEvent<>(item));
                 break;
         }
     }

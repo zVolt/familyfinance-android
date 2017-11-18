@@ -2,7 +2,6 @@ package io.github.zkhan93.familyfinance.tasks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.wifi.hotspot2.pps.Credential;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;

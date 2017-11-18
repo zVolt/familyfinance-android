@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance.models;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -14,9 +13,6 @@ import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.util.Comparator;
-import java.util.Date;
-
-import io.github.zkhan93.familyfinance.events.BaseEvent;
 
 /**
  * Created by zeeshan on 7/7/17.
@@ -279,12 +275,10 @@ public class Account extends BaseModel {
     @Keep
     @Exclude
     public String getReadableContent() {
-        StringBuilder strb = new StringBuilder();
-        strb.append("Account Number: ").append(getAccountNumber()).append("\n");
-        strb.append("Name: ").append(getAccountHolder()).append("\n");
-        strb.append("IFSC: ").append(getIfsc()).append("\n");
-        strb.append("Bank: ").append(getBank()).append("\n");
-        return strb.toString();
+        return  "Account Number: " + getAccountNumber() + "\n" +
+                "Name: " + getAccountHolder() + "\n" +
+                "IFSC: " + getIfsc() + "\n" +
+                "Bank: " + getBank() + "\n";
     }
 
     @Generated(hash = 594599301)

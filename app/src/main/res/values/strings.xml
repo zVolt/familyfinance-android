@@ -52,8 +52,6 @@
     <string name="hint_family_id">Family Id</string>
     <string name="hint_phone_number">Phone Number</string>
 
-    <!--Main Activity specific-->
-    <string name="section_format">%d Section</string>
     <!-- Strings related to Settings -->
 
     <!--Contants-->

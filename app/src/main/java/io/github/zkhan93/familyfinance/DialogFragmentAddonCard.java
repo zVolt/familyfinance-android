@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.ParseException;
@@ -139,8 +140,9 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
         builder.setPositiveButton(R.string.create, this)
                 .setNegativeButton(android.R.string.cancel, this);
 
-        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_addoncard,
-                null);
+        View rootView = LayoutInflater
+                .from(getActivity())
+                .inflate(R.layout.dialog_add_addoncard,null);
         ButterKnife.bind(this, rootView);
         expiresOn.addTextChangedListener(expiresOnTextWatcher);
         if (addonCard != null) {
@@ -162,8 +164,9 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
             case DialogInterface.BUTTON_POSITIVE:
                 //TODO: validate values
                 AddonCard newAddonCard = new AddonCard();
-                newAddonCard.setUpdatedByMemberId(FirebaseAuth.getInstance
-                        ().getCurrentUser().getUid());
+                FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (fbUser != null)
+                newAddonCard.setUpdatedByMemberId(fbUser.getUid());
                 newAddonCard.setMainCardNumber(mainCardNumber);
                 newAddonCard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
 
@@ -172,14 +175,16 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
                 newAddonCard.setCvv(Integer.parseInt(cvv.getText().toString()));
                 newAddonCard.setPhoneNumber(phoneNumber.getText().toString());
                 try {
-                    newAddonCard.setExpiresOn(EXPIRE_ON.parse(expiresOn.getText().toString())
+                    newAddonCard.setExpiresOn(EXPIRE_ON
+                            .parse(expiresOn.getText().toString())
                             .getTime());
                 } catch (ParseException ex) {
                     newAddonCard.setExpiresOn(-1);
                 }
                 new InsertTask<>(((App) getActivity().getApplication())
                         .getDaoSession()
-                        .getAddonCardDao(), this).execute(newAddonCard);
+                        .getAddonCardDao(), this)
+                        .execute(newAddonCard);
                 break;
             default:
                 Log.d(TAG, "action not implemented/invalid action");
@@ -198,12 +203,19 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
             Map<String, Object> updates = new HashMap<>();
             updates.put(newAddonCcard.getNumber(), newAddonCcard);
             updates.put(addonCard.getNumber(), null);//delete old card
-            FirebaseDatabase.getInstance().getReference("ccards").child(familyId).child
-                    (mainCardNumber).child("addonCards").updateChildren
-                    (updates);
+            FirebaseDatabase.getInstance()
+                    .getReference("ccards")
+                    .child(familyId)
+                    .child(mainCardNumber)
+                    .child("addonCards")
+                    .updateChildren(updates);
         } else
-            FirebaseDatabase.getInstance().getReference("ccards").child(familyId).child
-                    (mainCardNumber).child("addonCards").child(newAddonCcard.getNumber()).setValue
-                    (newAddonCcard);
+            FirebaseDatabase.getInstance()
+                    .getReference("ccards")
+                    .child(familyId)
+                    .child(mainCardNumber)
+                    .child("addonCards")
+                    .child(newAddonCcard.getNumber())
+                    .setValue(newAddonCcard);
     }
 }

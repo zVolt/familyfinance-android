@@ -2,7 +2,6 @@ package io.github.zkhan93.familyfinance;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +18,7 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.ParseException;
@@ -204,8 +204,9 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
             case DialogInterface.BUTTON_POSITIVE:
                 //TODO: validate values
                 CCard newCcard = new CCard();
-                newCcard.setUpdatedByMemberId(FirebaseAuth.getInstance
-                        ().getCurrentUser().getUid());
+                FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (fbUser != null)
+                newCcard.setUpdatedByMemberId(fbUser.getUid());
                 newCcard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
                 newCcard.setBank(selectedBankId);
                 newCcard.setName(cardName.getText().toString());
@@ -222,7 +223,9 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
                 newCcard.setCvv(cvv.getText().toString());
                 newCcard.setPhoneNumber(phoneNumber.getText().toString());
                 try {
-                    newCcard.setExpireOn(EXPIRE_ON.parse(expiresOn.getText().toString()).getTime());
+                    newCcard.setExpireOn(EXPIRE_ON.
+                            parse(expiresOn.getText().toString())
+                            .getTime());
                 } catch (ParseException ex) {
                     newCcard.setExpireOn(-1);
                 }
@@ -230,7 +233,8 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
                 newCcard.setPassword(password.getText().toString());
                 new InsertTask<>(((App) getActivity().getApplication())
                         .getDaoSession()
-                        .getCCardDao(), this).execute(newCcard);
+                        .getCCardDao(), this)
+                        .execute(newCcard);
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
                 break;
@@ -250,11 +254,16 @@ public class DialogFragmentCcard extends DialogFragment implements InsertTask.Li
             Map<String, Object> updates = new HashMap<>();
             updates.put(newCcard.getNumber(), newCcard);
             updates.put(cCard.getNumber(), null);//delete old card
-            FirebaseDatabase.getInstance().getReference("ccards").child(familyId).updateChildren
-                    (updates);
+            FirebaseDatabase.getInstance()
+                    .getReference("ccards")
+                    .child(familyId)
+                    .updateChildren(updates);
         } else
-            FirebaseDatabase.getInstance().getReference("ccards").child(familyId).child
-                    (items.get(0).getNumber()).setValue(newCcard);
+            FirebaseDatabase.getInstance()
+                    .getReference("ccards")
+                    .child(familyId)
+                    .child(items.get(0).getNumber())
+                    .setValue(newCcard);
     }
 
 

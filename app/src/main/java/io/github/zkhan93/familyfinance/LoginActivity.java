@@ -60,8 +60,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     startMainActivity();
                 } else {
                     //writing to firebase failed for some reason
-                    Log.d(TAG, "failed write operation" + task.getException()
-                            .getLocalizedMessage());
+                    if (task != null && task.getException() != null)
+                        Log.d(TAG, "failed write operation" + task.getException()
+                                .getLocalizedMessage());
                 }
             }
         };
@@ -86,30 +87,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .build();
         if (mAuth.getCurrentUser() != null) {
             FirebaseUser user = mAuth.getCurrentUser();
+            if (user == null) return;
             // already signed in
-            Member member = new Member(user.getUid(), user.getDisplayName(), user
-                    .getEmail(), Calendar.getInstance().getTimeInMillis(), false, user
-                    .getPhotoUrl().toString());
+            String userPic = null;
+            if (user.getPhotoUrl() != null) {
+                userPic = user.getPhotoUrl().toString();
+            }
+            Member member = new Member(user.getUid(),
+                    user.getDisplayName(),
+                    user.getEmail(),
+                    Calendar.getInstance().getTimeInMillis(),
+                    false,
+                    userPic);
             ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
             Log.d(TAG, "already logged in");
             startMainActivity();
         } else {
-//            AuthUI.IdpConfig.Builder config = new AuthUI.IdpConfig.Builder(AuthUI
-// .GOOGLE_PROVIDER);
-//            GmailScopes.GMAIL_READONLY
-//            config.setPermissions(Collections.singletonList(GmailScopes.GMAIL_READONLY));
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
-//            startActivityForResult(
-//                    // Get an instance of AuthUI based on the default app
-//                    AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders
-//                            (Arrays.asList(
-//                                    config.build()
-//                            ))
-//                            .setLogo(R.mipmap.ic_launcher)
-//                            .setTosUrl("http://google.com")
-//                            .setTheme(R.style.AppTheme_NoActionBar)
-//                            .build(), RC_SIGN_IN);
         }
     }
 
@@ -136,12 +131,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             //TODO: check if I'm a member of this family if not then delete familyId from
             // preference and show Select Family Activity
             startActivity(new Intent(LoginActivity.this,
-                    MainActivity
-                            .class));
+                    MainActivity.class));
         } else {
             startActivity(new Intent(LoginActivity.this,
-                    SelectFamilyActivity
-                            .class));
+                    SelectFamilyActivity.class));
         }
         finish();
 
@@ -154,9 +147,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Util.Log.d(TAG, "signInWithCredential: success");
             FirebaseUser user = mAuth.getCurrentUser();
             if (user != null) {
-                Member member = new Member(user.getUid(), user.getDisplayName(), user
-                        .getEmail(), Calendar.getInstance().getTimeInMillis(), false, user
-                        .getPhotoUrl().toString());
+                String userPic = null;
+                if (user.getPhotoUrl() != null)
+                    userPic = user.getPhotoUrl().toString();
+                Member member = new Member(user.getUid(),
+                        user.getDisplayName(),
+                        user.getEmail(),
+                        Calendar.getInstance().getTimeInMillis(),
+                        false,
+                        userPic);
                 ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
                 Map<String, Object> updates = new HashMap<>();
                 String prefix = "users/" + user.getUid() + "/";
@@ -167,7 +166,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 updates.put(prefix + "smsEnabled", member.getSmsEnabled());
                 updates.put(prefix + "token", FirebaseInstanceId.getInstance().getToken());
                 updates.put(prefix + "serverAuth", account.getServerAuthCode());
-                FirebaseDatabase.getInstance().getReference().updateChildren(updates)
+                FirebaseDatabase.getInstance()
+                        .getReference()
+                        .updateChildren(updates)
                         .addOnCompleteListener(saveUserDataListener);
             } else {
                 // If sign in fails, display a message to the user.
@@ -180,7 +181,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             // cannot get user's data
             Util.Log.d(TAG, "onComplete: task failed");
         }
-        return;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

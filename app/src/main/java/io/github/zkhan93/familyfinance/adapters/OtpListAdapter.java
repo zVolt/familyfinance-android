@@ -1,7 +1,5 @@
 package io.github.zkhan93.familyfinance.adapters;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -41,7 +39,6 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 .Listener<Otp>, ValueEventListener, ChildEventListener, InsertTask.Listener<Otp> {
     public static final String TAG = OtpListAdapter.class.getSimpleName();
     private ArrayList<Otp> otps;
-    private String familyId;
     private Query otpRef;
     private OtpDao otpDao;
     private boolean ignoreChildEvents;
@@ -50,7 +47,6 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public OtpListAdapter(App app, String familyId, ItemInsertedListener itemInsertedListener) {
         this.itemInsertedListener = itemInsertedListener;
         this.otps = new ArrayList<>();
-        this.familyId = familyId;
         if (familyId == null)
             return;
         int noOfSms;

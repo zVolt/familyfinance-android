@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -48,7 +47,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     //private String mParam1;
     private String familyId;
-    private String cCardToDelete, addonCardToDelete;
     private OnFragmentInteractionListener mListener;
     private CCardListAdapter cCardListAdapter;
 
@@ -160,7 +158,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     @Override
     public void delete(CCard cCard) {
         Log.d(TAG, "delete: " + cCard.getNumber());
-        cCardToDelete = cCard.getNumber();
         String title = "You want to delete account " + cCard.getNumber();
         DialogFragmentConfirm<CCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
         Bundle bundle = new Bundle();
@@ -206,7 +203,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     @Override
     public void delete(AddonCard addonCard) {
         Log.d(TAG, "delete addon" + addonCard.getNumber());
-        addonCardToDelete = addonCard.getNumber();
         String title = "You want to delete Addon Card " + addonCard.getNumber();
         DialogFragmentConfirm<AddonCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
         Bundle bundle = new Bundle();

@@ -5,10 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,7 +22,7 @@ import io.github.zkhan93.familyfinance.models.Request;
 public class SendRequestVH extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public static String TAG = SendRequestVH.class.getSimpleName();
-    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM yy hh:mm a");
+    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM yy hh:mm a", Locale.US);
     @BindView(R.id.status)
     TextView status;
     @BindView(R.id.family_id)
@@ -50,8 +50,8 @@ public class SendRequestVH extends RecyclerView.ViewHolder implements View.OnCli
 
     public void setRequest(Request request) {
         this.request = request;
-        status.setText(request.getBlocked() ? "Blocked" : request.getApproved() ? "Approved" :
-                "Pending");
+        status.setText(request.getBlocked() ? "Blocked" :
+                request.getApproved() ? "Approved" : "Pending");
         familyId.setText(request.getFamilyId());
         timestamp.setText(DATE_FORMAT.format(new Date(request.getUpdatedOn())));
     }

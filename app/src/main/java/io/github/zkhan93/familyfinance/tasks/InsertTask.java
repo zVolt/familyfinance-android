@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance.tasks;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.greendao.AbstractDao;
@@ -11,9 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.zkhan93.familyfinance.events.InsertEvent;
-import io.github.zkhan93.familyfinance.models.Account;
-import io.github.zkhan93.familyfinance.models.MemberDao;
-import io.github.zkhan93.familyfinance.models.Otp;
 
 /**
  * Inserted a given object of type T into database and triggers a EventBus event woth the
@@ -65,7 +61,7 @@ public class InsertTask<D extends AbstractDao, T> extends AsyncTask<T, Void, Lis
         if(items==null)
             return;
         if (listenerWeakReference == null)
-            EventBus.getDefault().post(new InsertEvent<T>(items));
+            EventBus.getDefault().post(new InsertEvent<>(items));
         else {
             Listener<T> listener = listenerWeakReference.get();
             if (listener != null)

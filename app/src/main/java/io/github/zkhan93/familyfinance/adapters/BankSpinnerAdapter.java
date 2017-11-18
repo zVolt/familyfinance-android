@@ -45,11 +45,6 @@ public class BankSpinnerAdapter extends BaseAdapter implements ValueEventListene
     }
 
     @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        return super.getDropDownView(position, convertView, parent);
-    }
-
-    @Override
     public int getCount() {
         return bankSpinnerItems.size();
     }

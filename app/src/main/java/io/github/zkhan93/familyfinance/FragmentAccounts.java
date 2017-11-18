@@ -50,7 +50,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     private OnFragmentInteractionListener mListener;
     private AccountListAdapter accountListAdapter;
-    private String accountToDelete;
     private Toast toast;
     @BindView(R.id.list)
     RecyclerView accountsList;
@@ -170,7 +169,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     @Override
     public void delete(Account account) {
-        accountToDelete = account.getAccountNumber();
         String title = "You want to delete account " + account.getAccountNumber();
         DialogFragmentConfirm<Account> dialogFragmentConfirm = new DialogFragmentConfirm<>();
         Bundle bundle = new Bundle();

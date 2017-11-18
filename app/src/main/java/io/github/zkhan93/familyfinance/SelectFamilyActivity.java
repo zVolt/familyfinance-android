@@ -75,7 +75,6 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     private DatabaseReference requestRef;
     private String familyId;
     private Member me;
-    private SendRequestListAdapter sendRequestListAdapter;
     private Toast toast;
     private ValueEventListener requestListener, familyMembersListListener;
     private int callbackCounter;
@@ -162,7 +161,8 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                     member.setId(ds.getKey());
                     members.add(member);
                 }
-                new InsertTask<MemberDao,Member>(memberDao, null).execute(members.toArray(new Member[members.size
+                new InsertTask<MemberDao, Member>(memberDao, null).execute(members.toArray(new
+                        Member[members.size
                         ()]));
                 taskStatus = taskStatus | 2;
                 if (callbackCounter == 0)
@@ -215,14 +215,22 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
                 finish();
                 return;
             }
-            me = new Member(user.getUid(), user.getDisplayName(), user.getEmail(),Calendar.getInstance().getTimeInMillis(), false, user
-                    .getPhotoUrl().toString());
+            String photoUrl = null;
+            if (user.getPhotoUrl() != null)
+                photoUrl = user.getPhotoUrl().toString();
+            me = new Member(user.getUid(),
+                    user.getDisplayName(),
+                    user.getEmail(),
+                    Calendar.getInstance().getTimeInMillis(),
+                    false,
+                    photoUrl);
             memberDao.insertOrReplace(me);
         }
         familyRef = FirebaseDatabase.getInstance().getReference("family");
         requestRef = FirebaseDatabase.getInstance().getReference("requests");
 
-        sendRequestListAdapter = new SendRequestListAdapter((App) getApplication(), me, this);
+        SendRequestListAdapter sendRequestListAdapter = new SendRequestListAdapter((App)
+                getApplication(), me, this);
         requestList.setLayoutManager(new LinearLayoutManager(this));
         requestList.setAdapter(sendRequestListAdapter);
 
@@ -382,7 +390,7 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         Log.d(TAG, "switching to: " + familyId + "/" + me.getId());
         if (showProgressBar) {
             progressDialog = ProgressDialog.show(this, null, String.format("Checking %s " +
-                        "details", familyId), true, false);
+                    "details", familyId), true, false);
         }
         if (familyId == null) {
             //if no active family is set then fail silently and let the user choose the family

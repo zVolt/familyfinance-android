@@ -10,7 +10,6 @@ import java.util.List;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.viewholders.AddonCardVH;
-import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
 /**
  * Created by zeeshan on 28/7/17.

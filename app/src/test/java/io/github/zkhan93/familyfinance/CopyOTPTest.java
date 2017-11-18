@@ -7,24 +7,19 @@ import android.util.Log;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
+import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 import io.github.zkhan93.familyfinance.listeners.CopyOtpListener;
 
-import static junit.framework.Assert.assertEquals;
-
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-@RunWith(ParameterizedRobolectricTestRunner.class)
+
 public class CopyOTPTest {
 
     private CopyOtpListener copyOtpListener;
@@ -33,10 +28,9 @@ public class CopyOTPTest {
     @Before
     public void setup() {
         copyOtpListener = new CopyOtpListener();
-        context = RuntimeEnvironment.application;
     }
 
-    @Parameters
+    @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {"this is OPT 1234", "1234"}, {"this is another oOTP 342334", "342334"}

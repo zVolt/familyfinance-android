@@ -9,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -33,9 +32,7 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.WatchRequest;
 import com.google.api.services.gmail.model.WatchResponse;
-import com.google.firebase.auth.FirebaseAuth;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,7 +42,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.EmailListAdapter;
 import io.github.zkhan93.familyfinance.callbacks.SubscribeEmailCallback;
-import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.util.Util;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -73,7 +69,6 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
     private String familyId;
     private EmailListAdapter emailListAdapter;
     GoogleAccountCredential mCredential;
-    private SharedPreferences sharedPreferences;
 
     @BindView(R.id.list)
     RecyclerView emailList;
@@ -101,8 +96,6 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getActivity().getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences
-                (getActivity().getApplicationContext());
     }
 
     @Nullable
@@ -211,11 +204,13 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
     private boolean isDeviceOnline() {
         ConnectivityManager connMgr =
                 (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        NetworkInfo networkInfo = null;
+        if (connMgr != null)
+            networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
 
-    private class EmailSubscribeTask extends AsyncTask<Void, Void, WatchResponse> {
+    private static class EmailSubscribeTask extends AsyncTask<Void, Void, WatchResponse> {
         private final String TAG = io.github.zkhan93.familyfinance.tasks.EmailSubscribeTask.class
                 .getSimpleName();
         private SharedPreferences sharedPreferences;
@@ -228,7 +223,7 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
                     transport, jsonFactory, credential)
                     .setApplicationName("Family Finance")
                     .build();
-            Log.d(TAG, "selectedAccountName: " + mCredential.getSelectedAccountName());
+            Log.d(TAG, "selectedAccountName: " + credential.getSelectedAccountName());
         }
 
         @Override
@@ -344,7 +339,7 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
         private android.accounts.Account account;
 
         GetTokenTask(Context context, android.accounts.Account account) {
-            contextWeakReference = new WeakReference<Context>(context);
+            contextWeakReference = new WeakReference<>(context);
             this.account = account;
         }
 

@@ -37,13 +37,11 @@ public class AddonCard extends BaseModel implements Parcelable {
 
     @Exclude
     public String getReadableContent() {
-        StringBuilder strb = new StringBuilder();
-        strb.append("Card Holder: ").append(name).append("\n")
-                .append("Number: ").append(number).append("\n")
-                .append("CVV: ").append(cvv).append("\n")
-                .append("Expire On (MM/YY): ").append(CCard.EXPIRE_ON.format(new Date(expiresOn)))
-                .append("\n");
-        return strb.toString();
+        return "Card Holder: " + name + "\n" +
+                "Number: " + number + "\n" +
+                "CVV: " + cvv + "\n" +
+                "Expire On (MM/YY): " + CCard.EXPIRE_ON.format(new Date(expiresOn)) +
+                "\n";
     }
 
     @Override

@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.greendao.query.DeleteQuery;
-import org.greenrobot.greendao.query.Query;
 
 import io.github.zkhan93.familyfinance.events.DeleteEvent;
 import io.github.zkhan93.familyfinance.models.BaseModel;

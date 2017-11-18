@@ -9,11 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
@@ -38,7 +38,6 @@ public class FragmentChatroom extends Fragment {
 
     private String familyId, meId;
     private OnFragmentInteractionListener mListener;
-    private MessageListAdapter messageListAdapter;
 
     @BindView(R.id.list)
     RecyclerView messages;
@@ -72,7 +71,9 @@ public class FragmentChatroom extends Fragment {
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID);
         }
-        meId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null)
+            meId = fbUser.getUid();
     }
 
     @Override
@@ -82,7 +83,8 @@ public class FragmentChatroom extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_chatroom, container, false);
         ButterKnife.bind(this, rootView);
         messages.setLayoutManager(new LinearLayoutManager(getActivity()));
-        messageListAdapter = new MessageListAdapter(getActivity().getApplicationContext(),
+        MessageListAdapter messageListAdapter = new MessageListAdapter(getActivity()
+                .getApplicationContext(),
                 familyId);
         messages.setAdapter(messageListAdapter);
         return rootView;
@@ -99,7 +101,6 @@ public class FragmentChatroom extends Fragment {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
-        } else {
         }
     }
 

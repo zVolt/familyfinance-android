@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +24,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -57,7 +57,6 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
     private CCard cCard;
     private String familyId;
-    private AddonCardListAdapter addonCardListAdapter;
     private DatabaseReference cardRef;
     private Map<String, Object> updateMap;
     private ValueEventListener bankImageLinkListener;
@@ -173,7 +172,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
                 addonTitle.setVisibility(View.VISIBLE);
                 addonCards.setLayoutManager(new LinearLayoutManager(getContext(),
                         LinearLayoutManager.HORIZONTAL, false));
-                addonCardListAdapter = new AddonCardListAdapter(null);
+                AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(null);
                 addonCards.setAdapter(addonCardListAdapter);
                 addonCardListAdapter.setItems(cCard.getAddonCards());
             } else {
@@ -227,8 +226,9 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
             remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit() -
                     newValue));
             updateMap.put("consumedLimit", newValue);
-            updateMap.put("updatedByMemberId", FirebaseAuth.getInstance().getCurrentUser()
-                    .getUid());
+            FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (fbUser != null)
+            updateMap.put("updatedByMemberId", fbUser.getUid());
             updateMap.put("updatedOn", Calendar.getInstance().getTimeInMillis());
             cardRef.updateChildren(updateMap);
         }

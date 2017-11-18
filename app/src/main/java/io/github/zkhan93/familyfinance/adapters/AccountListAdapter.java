@@ -28,7 +28,6 @@ import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.events.InsertEvent;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.AccountDao;
-import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
@@ -46,7 +45,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private ArrayList<Account> accounts;
     private AccountVH.ItemInteractionListener itemInteractionListener;
     private DatabaseReference accountsRef;
-    private String familyId;
     private AccountDao accountDao;
     /**
      * Ignore OnChildAdded() calls if its value is true else add/update the new item received
@@ -60,7 +58,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         accountDao = app.getDaoSession().getAccountDao();
         this.accounts = new ArrayList<>();
         ignoreChildEvents = true;
-        this.familyId = familyId;
         accountsRef = FirebaseDatabase.getInstance().getReference("accounts").child(familyId);
         Query<Account> query = accountDao.queryBuilder().orderDesc(AccountDao.Properties
                 .UpdatedOn).build();

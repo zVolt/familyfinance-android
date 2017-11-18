@@ -24,19 +24,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.adapters.AddonCardListAdapter;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.Member;
-import io.github.zkhan93.familyfinance.util.Constants;
 import io.github.zkhan93.familyfinance.util.Util;
 
 /**
@@ -88,11 +85,13 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String url = dataSnapshot.getValue(String.class);
-                if (url != null)
-                    Glide.with(context).load(url).into(bank);
-                else
-                    Glide.with(context).load("http://via.placeholder" +
-                            ".com/200x200/f0f0f0/2c2c2c?text=" + dataSnapshot.getKey()).into(bank);
+                if (url == null)
+                    url = String.format("http://via.placeholder" +
+                            ".com/200x200/f0f0f0/2c2c2c?text=%s", dataSnapshot.getKey());
+                Glide.with(context)
+                        .load(url)
+                        .apply(RequestOptions.placeholderOf(R.drawable.ic_bank_grey_600_18dp))
+                        .into(bank);
             }
 
             @Override
@@ -131,55 +130,61 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
         number.setText(cCard.getFormattedNumber('-', true));
 
-        date.setText(Util.getBillingCycleString(cCard.getBillingDay(), cCard.getPaymentDay(), "%s" +
-                " - %s"));
+        date.setText(Util.getBillingCycleString(cCard.getBillingDay(),
+                cCard.getPaymentDay(), "%s - %s"));
 
         cardholder.setText(cCard.getCardholder());
-        FirebaseDatabase.getInstance().getReference("images").child("banks").child(cCard.getBank
-                ().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);
+        FirebaseDatabase.getInstance().getReference("images")
+                .child("banks")
+                .child(cCard.getBank().toUpperCase())
+                .addListenerForSingleValueEvent(bankImageLinkListener);
 
         limit.setMax((int) cCard.getMaxLimit());
         limit.setProgress((int) cCard.getConsumedLimit());
         //set progress color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.25f)
-                limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R
-                        .color.md_red_500)));
+                limit.setProgressTintList(ColorStateList
+                        .valueOf(ContextCompat.getColor(context, R.color.md_red_500)));
             else if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.5f)
-                limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R
-                        .color.md_orange_500)));
+                limit.setProgressTintList(ColorStateList
+                        .valueOf(ContextCompat.getColor(context, R.color.md_orange_500)));
             else
-                limit.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R
-                        .color.md_green_500)));
+                limit.setProgressTintList(ColorStateList
+                        .valueOf(ContextCompat.getColor(context, R.color.md_green_500)));
         } else {
             int color;
             if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.25f)
-                color = ContextCompat.getColor(context, R
-                        .color.md_red_500);
+                color = ContextCompat.getColor(context, R.color.md_red_500);
             else if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.5f)
-                color = ContextCompat.getColor(context, R
-                        .color.md_orange_500);
+                color = ContextCompat.getColor(context, R.color.md_orange_500);
             else
-                color = ContextCompat.getColor(context, R
-                        .color.md_green_500);
-            limit.getProgressDrawable().setColorFilter(color, android.graphics.PorterDuff.Mode
-                    .SRC_IN);
+                color = ContextCompat.getColor(context, R.color.md_green_500);
+            limit.getProgressDrawable()
+                    .setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
         }
-        consumedLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getConsumedLimit()));
-        remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getRemainingLimit
-                ()));
+        consumedLimit.setText(NumberFormat.getCurrencyInstance()
+                .format(cCard.getConsumedLimit()));
+        remainingLimit.setText(NumberFormat.getCurrencyInstance()
+                .format(cCard.getRemainingLimit()));
 
         Member _updatedBy = cCard.getUpdatedBy();
 
-        if (_updatedBy != null && _updatedBy.getProfilePic() != null && !_updatedBy.getProfilePic
-                ().isEmpty())
-            Glide.with(context).load(_updatedBy.getProfilePic()).apply(RequestOptions
-                    .circleCropTransform()).into(updatedBy);
+        if (_updatedBy != null &&
+                _updatedBy.getProfilePic() != null &&
+                !_updatedBy.getProfilePic().isEmpty())
+            Glide.with(context)
+                    .load(_updatedBy.getProfilePic())
+                    .apply(RequestOptions
+                            .circleCropTransform()
+                            .placeholder(R.drawable.ic_person_grey_600_24dp))
+                    .into(updatedBy);
 
         if (cCard.getAddonCards() != null && cCard.getAddonCards().size() > 0) {
             addonCardListAdapter.setItems(cCard.getAddonCards());
             addonTitle.setVisibility(View.VISIBLE);
-            addonTitle.setText(String.format("%d Addon Cards", cCard.getAddonCards().size()));
+            addonTitle.setText(String
+                    .format(Locale.ENGLISH, "%d Addon Cards", cCard.getAddonCards().size()));
         } else {
             addonTitle.setVisibility(View.GONE);
         }
@@ -197,8 +202,9 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
                 popup.show();
                 break;
             case R.id.addons_title:
-                addonCards.setVisibility(addonCards.getVisibility() == View.VISIBLE ? View.GONE :
-                        View.VISIBLE);
+                addonCards.setVisibility(
+                        addonCards.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
+                );
                 break;
             default:
                 itemInteractionListener.onView(cCard);

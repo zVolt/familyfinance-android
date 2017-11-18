@@ -1,8 +1,5 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -16,7 +13,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,7 +27,7 @@ import io.github.zkhan93.familyfinance.models.Request;
 
 public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMenu
         .OnMenuItemClickListener {
-    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM hh:mm a");
+    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM hh:mm a", Locale.US);
     @BindView(R.id.avatar)
     ImageView avatar;
     @BindView(R.id.name)
@@ -64,8 +61,9 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
         if (request.getProfilePic() != null && request.getProfilePic().trim().length() > 0)
             Glide.with(avatar).load(request.getProfilePic()).apply(RequestOptions
                     .circleCropTransform()).into(avatar);
-        status.setText(request.getBlocked() ? " Blocked" : request.getApproved() ? "Approved" :
-                "Pending");
+        status.setText(
+                request.getBlocked() ? " Blocked" :
+                        request.getApproved() ? "Approved" : "Pending");
         timestamp.setText(DateUtils.getRelativeTimeSpanString(request.getUpdatedOn()));
     }
 

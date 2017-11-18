@@ -3,8 +3,6 @@ package io.github.zkhan93.familyfinance.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.zkhan93.familyfinance.models.Account;
-
 /**
  * Created by zeeshan on 13/7/17.
  */

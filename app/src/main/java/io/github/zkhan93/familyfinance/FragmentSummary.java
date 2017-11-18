@@ -75,7 +75,6 @@ public class FragmentSummary extends Fragment {
     private String familyId;
     private OnFragmentInteractionListener mListener;
     boolean ccLoaded, accountLoaded;
-    private DaoSession daoSession;
     private float amountTotal, amountConsumedCC, amountRemainingCC, amountAccount;
     private List<CCard> cCards;
     private List<Account> accounts;
@@ -237,7 +236,7 @@ public class FragmentSummary extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_summary, container, false);
         ButterKnife.bind(this, rootView);
-        daoSession = ((App) getActivity().getApplication()).getDaoSession();
+        DaoSession daoSession = ((App) getActivity().getApplication()).getDaoSession();
         if (savedInstanceState != null) {
             amountTotal = savedInstanceState.getFloat("amountTotal", amountTotal);
             amountAccount = savedInstanceState.getFloat("amountAccount", amountAccount);

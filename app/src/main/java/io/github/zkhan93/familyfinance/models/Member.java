@@ -1,18 +1,14 @@
 package io.github.zkhan93.familyfinance.models;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.ToMany;
 
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * Created by zeeshan on 7/7/17.

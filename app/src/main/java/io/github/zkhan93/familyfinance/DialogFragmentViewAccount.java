@@ -9,9 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,15 +31,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.models.Account;
-import io.github.zkhan93.familyfinance.models.CCard;
-import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
 
 /**
@@ -91,11 +86,13 @@ public class DialogFragmentViewAccount extends DialogFragment implements DialogI
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String url = dataSnapshot.getValue(String.class);
-                if (url != null)
-                    Glide.with(bank.getContext()).load(url).into(bank);
-                else
-                    Glide.with(bank.getContext()).load("http://via.placeholder" +
-                            ".com/200x200/f0f0f0/2c2c2c?text=" + dataSnapshot.getKey()).into(bank);
+                if (url == null)
+                    url = String.format("http://via.placeholder.com/200x200/f0f0f0/2c2c2c?text=%s",
+                            dataSnapshot.getKey());
+                Glide.with(bank.getContext())
+                        .load(url)
+                        .apply(RequestOptions.placeholderOf(R.drawable.ic_bank_grey_600_18dp))
+                        .into(bank);
             }
 
             @Override
@@ -140,8 +137,9 @@ public class DialogFragmentViewAccount extends DialogFragment implements DialogI
                 null);
         ButterKnife.bind(this, rootView);
         if (account != null) {
-            FirebaseDatabase.getInstance().getReference("images").child("banks").child(account.getBank
-                    ().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);
+            FirebaseDatabase.getInstance().getReference("images").child("banks").child(account
+                    .getBank
+                            ().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);
 
             accountHolder.setText(getDefaultNotSet(account.getAccountHolder()));
             accountNumber.setText(account.getAccountNumber());

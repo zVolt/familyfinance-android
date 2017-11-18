@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -12,9 +11,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.models.DaoSession;
 import io.github.zkhan93.familyfinance.models.Message;
 
 /**
@@ -47,8 +44,12 @@ public class MessageVH extends RecyclerView.ViewHolder {
         } else {
             header.setVisibility(View.VISIBLE);
             senderName.setText(message.getSender().getName());
-            Glide.with(senderAvatar.getContext()).load(message.getSender().getProfilePic()).apply(RequestOptions.circleCropTransform()).into
-                    (senderAvatar);
+            Glide.with(senderAvatar.getContext())
+                    .load(message.getSender().getProfilePic())
+                    .apply(RequestOptions
+                            .circleCropTransform()
+                            .placeholder(R.drawable.ic_person_grey_600_24dp))
+                    .into(senderAvatar);
         }
         content.setText(message.getContent());
         timestamp.setText(DateUtils.getRelativeTimeSpanString(timestamp.getContext(), message

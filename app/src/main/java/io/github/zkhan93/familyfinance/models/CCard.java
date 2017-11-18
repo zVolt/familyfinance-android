@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance.models;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.google.firebase.database.Exclude;
 
@@ -17,6 +16,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
@@ -26,7 +26,7 @@ import org.greenrobot.greendao.DaoException;
  */
 @Entity
 public class CCard extends BaseModel {
-    public static final SimpleDateFormat EXPIRE_ON = new SimpleDateFormat("mm/yy");
+    public static final SimpleDateFormat EXPIRE_ON = new SimpleDateFormat("mm/yy", Locale.US);
     @Id
     String number;
     String name, bank, cardholder, userid, password, cvv, phoneNumber, email;
@@ -77,14 +77,12 @@ public class CCard extends BaseModel {
 
     @Exclude
     public String getReadableContent() {
-        StringBuilder strb = new StringBuilder();
-        strb.append("Card Holder: ").append(cardholder).append("\n")
-                .append("Number: ").append(number).append("\n")
-                .append("CVV: ").append(cvv).append("\n")
-                .append("Expire On (MM/YY): ").append(EXPIRE_ON.format(new Date(expireOn)))
-                .append("\n")
-                .append("Remaining Limit: ").append(getRemainingLimit()).append("\n");
-        return strb.toString();
+        return "Card Holder: " + cardholder + "\n" +
+                "Number: " + number + "\n" +
+                "CVV: " + cvv + "\n" +
+                "Expire On (MM/YY): " + EXPIRE_ON.format(new Date(expireOn)) +
+                "\n" +
+                "Remaining Limit: " + getRemainingLimit() + "\n";
     }
 
     @Exclude

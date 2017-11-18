@@ -8,8 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
@@ -26,7 +25,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.Account;
-import io.github.zkhan93.familyfinance.models.AccountDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 
 /**
@@ -96,8 +94,8 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         builder.setPositiveButton(R.string.create, this)
                 .setNegativeButton(android.R.string.cancel, this);
 
-        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_account,
-                null);
+        View rootView = LayoutInflater.from(getActivity())
+                .inflate(R.layout.dialog_add_account, null);
         ButterKnife.bind(this, rootView);
         bank.setAdapter(bankSpinnerAdapter);
         bank.setOnItemSelectedListener(this);
@@ -123,11 +121,6 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
@@ -141,7 +134,9 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
 //                amount = balance.getText().toString().trim();
 //                if (amount.length() == 0) amount = "0";
 //                account.setBalance(Float.parseFloat(amount));
-                account.setUpdatedByMemberId(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (fbUser != null)
+                    account.setUpdatedByMemberId(fbUser.getUid());
                 account.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
                 new InsertTask<>(((App) getActivity().getApplication())
                         .getDaoSession()

@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
@@ -32,8 +31,6 @@ public class EmailListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         ChildEventListener, SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String TAG = EmailListAdapter.class.getSimpleName();
     private final static String PREF_KEY_SUBSCRIBED = "subscribed";
-    private String familyId;
-    private DatabaseReference emailRef;
     private List<Email> emails;
     private SharedPreferences sharedPreferences;
     private SubscribeEmailCallback subscribeEmailCallback;
@@ -41,9 +38,8 @@ public class EmailListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public EmailListAdapter(Context context, String familyId, SubscribeEmailCallback
             subscribeEmailCallback) {
-        this.familyId = familyId;
         emails = new ArrayList<>();
-        emailRef = FirebaseDatabase.getInstance().getReference("emails").child(familyId);
+        FirebaseDatabase.getInstance().getReference("emails").child(familyId).addChildEventListener(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         subscribed = sharedPreferences.getBoolean(PREF_KEY_SUBSCRIBED, false);
         this.subscribeEmailCallback = subscribeEmailCallback;

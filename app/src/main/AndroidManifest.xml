@@ -15,7 +15,7 @@
 
     <application
         android:name=".App"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
@@ -57,18 +57,25 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
-        <service android:name=".services.MessagingService">
+        <service
+            android:name=".services.MessagingService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
-        <service android:name=".services.InstanceIDService">
+        <service
+            android:name=".services.InstanceIDService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 
-        <receiver android:name=".listeners.SmsReceiver">
+        <receiver
+            android:name=".listeners.SmsReceiver"
+            android:permission="android.permission.BROADCAST_SMS"
+            >
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
             </intent-filter>
@@ -94,7 +101,9 @@
         </activity>
 
         <receiver
-            android:name=".listeners.CopyOtpListener">
+            android:name=".listeners.CopyOtpListener"
+            android:exported="false"
+            >
             <intent-filter>
                 <action android:name="io.github.zkhan93.familyfinance.listeners.CopyOtpListener.COPY_OTP"/>
             </intent-filter>

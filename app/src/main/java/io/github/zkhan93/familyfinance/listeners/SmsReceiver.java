@@ -35,8 +35,6 @@ import io.github.zkhan93.familyfinance.util.Util;
 
 public class SmsReceiver extends BroadcastReceiver {
     public static final String TAG = SmsReceiver.class.getSimpleName();
-    private List<Otp> otps;
-    private int numberOfsms = 0;
     private String extractedOtp;
 
     /**
@@ -53,8 +51,10 @@ public class SmsReceiver extends BroadcastReceiver {
         String activeFamilyId = PreferenceManager.getDefaultSharedPreferences(context).getString
                 ("activeFamilyId", null);
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (fbUser != null && activeFamilyId != null && intent.getAction().equals("android" +
-                ".provider.Telephony.SMS_RECEIVED")) {
+        if (fbUser != null &&
+                activeFamilyId != null &&
+                intent.getAction() != null &&
+                intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
             //you have 10 sec to finish the job
             handleWork(context, intent);
         } else {
@@ -127,7 +127,6 @@ public class SmsReceiver extends BroadcastReceiver {
         DatabaseReference otpRef = FirebaseDatabase.getInstance().getReference
                 ("otps").child(activeFamilyId);
         DatabaseReference newOtpRef;
-        numberOfsms = otps.size();
         Map<String, String> data = new HashMap<>();
         data.put(MessagingService.KEYS.FROM_NAME, fbUser.getDisplayName());
         for (Otp tmpOtp : otps) {
@@ -139,6 +138,6 @@ public class SmsReceiver extends BroadcastReceiver {
             data.put(MessagingService.KEYS.CONTENT, tmpOtp.getContent());
         }
         String strOtp = MessagingService.showNotification(context.getApplicationContext(), data);
-        MessagingService.copyToClipboard(context.getApplicationContext(),strOtp);
+        MessagingService.copyToClipboard(context.getApplicationContext(), strOtp);
     }
 }

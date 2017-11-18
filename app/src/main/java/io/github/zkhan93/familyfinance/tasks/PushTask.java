@@ -23,11 +23,9 @@ public class PushTask<T> extends AsyncTask<T, Void, Void> {
 
     public static final String TAG = PushTask.class.getSimpleName();
 
-    private String familyId;
     private DatabaseReference ref;
 
     public PushTask(String familyId) {
-        this.familyId = familyId;
         ref = FirebaseDatabase.getInstance().getReference("/families").child(familyId);
     }
 

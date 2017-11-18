@@ -48,7 +48,6 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private ArrayList<CCard> ccards;
     private CCardVH.ItemInteractionListener itemInteractionListener;
     private AddonCardVH.ItemInteractionListener addonCardInteractionListener;
-    private String familyId;
     private DatabaseReference ccardRef;
     private CCardDao cCardDao;
     private AddonCardDao addonCardDao;
@@ -62,7 +61,6 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.ccards = new ArrayList<>();
         this.itemInteractionListener = itemInteractionListener;
         this.addonCardInteractionListener = addonCardInteractionListener;
-        this.familyId = familyId;
         ccardRef = FirebaseDatabase.getInstance().getReference("ccards").child(familyId);
         ignoreChildEvent = true;
         Query<CCard> query = cCardDao.queryBuilder().orderDesc(CCardDao.Properties.UpdatedOn)

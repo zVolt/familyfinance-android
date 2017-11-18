@@ -25,20 +25,21 @@ public class EmptyVH extends RecyclerView.ViewHolder implements ValueEventListen
     @BindView(R.id.image)
     ImageView image;
 
-    private String url;
 
     public EmptyVH(View itemView,@NonNull String imageChild) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         Log.d(TAG, "empty VH created");
-        FirebaseDatabase.getInstance().getReference("images").child(imageChild)
+        FirebaseDatabase.getInstance()
+                .getReference("images")
+                .child(imageChild)
                 .addListenerForSingleValueEvent(this);
     }
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         if (dataSnapshot != null) {
-            url = dataSnapshot.getValue(String.class);
+            String url = dataSnapshot.getValue(String.class);
             Glide.with(image).load(url).into(image);
         }
     }

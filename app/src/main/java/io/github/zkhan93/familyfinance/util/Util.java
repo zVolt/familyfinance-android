@@ -25,7 +25,7 @@ public class Util {
     public static boolean isInternetConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context
                 .CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
+        return cm != null && cm.getActiveNetworkInfo() != null;
     }
 
     public static String extractOTPFromString(@NonNull Context context, @NonNull String messages) {

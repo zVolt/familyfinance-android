@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private ViewPager.OnPageChangeListener pageChangeListener;
     private int activePage;
@@ -202,10 +201,10 @@ public class MainActivity extends AppCompatActivity implements
         ButterKnife.bind(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter
+                (getSupportFragmentManager());
         // Set up the ViewPager with the sections adapter.
         hideFab();
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -262,12 +261,19 @@ public class MainActivity extends AppCompatActivity implements
         if (familyId == null || user == null) {
             startActivity(new Intent(this, SelectFamilyActivity.class));
             finish();
+            return;
         }
+        String photoUrl = null;
+        if (user.getPhotoUrl() != null)
+            photoUrl = user.getPhotoUrl().toString();
         me = ((App) getApplication()).getDaoSession().getMemberDao().load(user.getUid());
         if (me == null) {
-            me = new Member(user.getUid(), user.getDisplayName(), user.getEmail(), Calendar
-                    .getInstance().getTimeInMillis(), false, user
-                    .getPhotoUrl().toString());
+            me = new Member(user.getUid(),
+                    user.getDisplayName(),
+                    user.getEmail(),
+                    Calendar.getInstance().getTimeInMillis(),
+                    false,
+                    photoUrl);
             ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(me);
         }
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest
