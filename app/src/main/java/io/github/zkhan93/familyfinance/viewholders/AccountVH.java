@@ -69,7 +69,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
                 Glide.with(context)
                         .load(url)
                         .apply(RequestOptions
-                                .circleCropTransform()
+                                .centerInsideTransform()
                                 .placeholder(R.drawable.ic_bank_grey_600_18dp))
                         .into(bank);
 
