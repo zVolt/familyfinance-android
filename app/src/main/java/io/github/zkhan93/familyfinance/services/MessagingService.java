@@ -113,8 +113,10 @@ public class MessagingService extends FirebaseMessagingService {
         resultIntent.putExtra("FragmentPosition", MainActivity.PAGE_POSITION.SMS);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        String title = String.format("%s | %s | %s", otp, data
-                .get(KEYS.NUMBER), data.get(KEYS.FROM_NAME));
+
+        String title = otp != null ?
+                String.format("%s | %s | %s", otp, data.get(KEYS.NUMBER), data.get(KEYS.FROM_NAME)) :
+                String.format("%s | %s", data.get(KEYS.NUMBER), data.get(KEYS.FROM_NAME));
 
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat
                 .BigTextStyle()
