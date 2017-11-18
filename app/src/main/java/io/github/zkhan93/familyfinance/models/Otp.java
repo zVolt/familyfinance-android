@@ -30,7 +30,7 @@ public class Otp extends BaseModel{
     @ToOne(joinProperty = "fromMemberId")
     Member from;
     long timestamp;
-    private String fromMemberId;
+    String fromMemberId;
 
     @Keep
     public Otp(String id, String number, String content, Member from, long timestamp) {

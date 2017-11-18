@@ -40,7 +40,7 @@ public class MessagingService extends FirebaseMessagingService {
     public static final String TAG = MessagingService.class.getSimpleName();
     public static final int mNotificationId = 1001;
 
-    interface KEYS {
+    public interface KEYS {
         String FROM_EMAIL = "from_email";
         String NUMBER = "number";
         String TYPE = "type";
@@ -73,8 +73,8 @@ public class MessagingService extends FirebaseMessagingService {
         }
 
         if (data.get(KEYS.TYPE).equals(TYPE.OTP)) {
-            String otp = showNotification(data);
-            copyToClipboard(otp);
+            String otp = showNotification(getApplicationContext(), data);
+            copyToClipboard(getApplicationContext(), otp);
         } else if (data.get(KEYS.TYPE).equals(TYPE.PRESENCE))
             updatePresence(user);
     }
@@ -91,9 +91,10 @@ public class MessagingService extends FirebaseMessagingService {
                 ()).child("wasPresentOn").setValue(Calendar.getInstance().getTimeInMillis());
     }
 
-    private String showNotification(Map<String, String> data) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean showNotification = sharedPreferences.getBoolean(getString(R.string
+    public static String showNotification(Context context, Map<String, String> data) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
+                (context);
+        boolean showNotification = sharedPreferences.getBoolean(context.getString(R.string
                 .pref_key_notification), true);
         Set<String> keywords = sharedPreferences.getStringSet("keywords", new HashSet<String>());
         String content = data.get(KEYS.CONTENT);
@@ -101,33 +102,34 @@ public class MessagingService extends FirebaseMessagingService {
         boolean hasKeyword = Util.hasKeywords(content, keywords);
         String otp = "";
         if (hasKeyword)
-            otp = Util.extractOTPFromString(getApplicationContext(), content);
+            otp = Util.extractOTPFromString(context, content);
         //check notification for me setting
-        boolean onlyOtp = sharedPreferences.getBoolean(getString(R.string
+        boolean onlyOtp = sharedPreferences.getBoolean(context.getString(R.string
                 .pref_key_notification_only_otp), false);
         if ((!showNotification) || (onlyOtp && !hasKeyword))
             return otp;
-
-        String ringtone = sharedPreferences.getString(getString(R.string.pref_key_ringtone), null);
+        String ringtone = sharedPreferences.getString(context.getString(R.string
+                .pref_key_ringtone), null);
         Log.d(TAG, "ringtone setting: " + ringtone);
-        boolean vibrate = sharedPreferences.getBoolean(getString(R.string.pref_key_vibrate), false);
+        boolean vibrate = sharedPreferences.getBoolean(context.getString(R.string
+                .pref_key_vibrate), false);
         Log.d(TAG, "vibration setting: " + vibrate);
 
-        Intent resultIntent = new Intent(this, MainActivity.class);
+        Intent resultIntent = new Intent(context, MainActivity.class);
         resultIntent.putExtra("FragmentPosition", MainActivity.PAGE_POSITION.SMS);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        String title = String.format("%s | %s", data.get(KEYS.FROM_NAME), data
-                .get(KEYS.NUMBER));
+        String title = String.format("%s | %s | %s", otp, data
+                .get(KEYS.NUMBER), data.get(KEYS.FROM_NAME));
 
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat
                 .BigTextStyle()
-                .setBigContentTitle(data.get(KEYS.NUMBER))
+                .setBigContentTitle(title)
                 .setSummaryText(data.get(KEYS.FROM_NAME))
                 .bigText(data.get(KEYS.CONTENT));
 
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_stat_launcher)
                         .setContentTitle(title)
                         .setContentText(content)
@@ -136,7 +138,7 @@ public class MessagingService extends FirebaseMessagingService {
         if (otp != null && !otp.isEmpty()) {
             Intent copyIntent = new Intent(ACTION_COPY_OTP);
             copyIntent.putExtra("OTP", otp);
-            PendingIntent copyPendingIntent = PendingIntent.getBroadcast(this, 1, copyIntent,
+            PendingIntent copyPendingIntent = PendingIntent.getBroadcast(context, 1, copyIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             mBuilder.addAction(new NotificationCompat.Action(R.drawable
                     .ic_content_copy_grey_50_24dp, "Copy OTP", copyPendingIntent));
@@ -152,23 +154,25 @@ public class MessagingService extends FirebaseMessagingService {
 
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         // Builds the notification and issues it.
         if (mNotifyMgr != null)
             mNotifyMgr.notify(mNotificationId, mBuilder.build());
         return otp;
     }
 
-    private void copyToClipboard(String otp) {
-        boolean isCopyEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean
-                (getString(R.string.pref_key_copy), true);
-        if (!isCopyEnabled) return;
+    public static void copyToClipboard(Context context, String otp) {
+        boolean isCopyEnabled = PreferenceManager.getDefaultSharedPreferences(context).getBoolean
+                (context.getString(R.string.pref_key_copy), true);
+        if (!isCopyEnabled || otp == null) return;
         if (Looper.myLooper() == null) {
             Looper.prepare();
         }
-        String toastMessage = Util.copyToClipboard(getApplicationContext(), (ClipboardManager)
-                getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE), otp);
+        String toastMessage = null;
+        if (!otp.isEmpty())
+            toastMessage = Util.copyToClipboard(context, (ClipboardManager)
+                    context.getSystemService(Context.CLIPBOARD_SERVICE), otp);
         if (toastMessage == null || toastMessage.isEmpty()) toastMessage = "No OTP found";
-        Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show();
     }
 }

@@ -127,6 +127,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
         if (!found) {
             if (insertPosition == -1) insertPosition = 0;
+            otpDao.insertOrReplace(newOtp);
             otps.add(insertPosition, newOtp);
             notifyItemInserted(insertPosition);
             if (itemInsertedListener != null)
@@ -158,7 +159,8 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return;
         Otp otp = dataSnapshot.getValue(Otp.class);
         if (otp != null) {
-            otp.setFromMemberId(dataSnapshot.child("from").child("id").getValue(String.class));
+            if (otp.getFromMemberId() == null || otp.getFromMemberId().isEmpty())
+                otp.setFromMemberId(dataSnapshot.child("from").child("id").getValue(String.class));
             insertOrUpdate(otp);
         }
     }
@@ -169,7 +171,8 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return;
         Otp otp = dataSnapshot.getValue(Otp.class);
         if (otp != null) {
-            otp.setFromMemberId(dataSnapshot.child("from").child("id").getValue(String.class));
+            if (otp.getFromMemberId() == null || otp.getFromMemberId().isEmpty())
+                otp.setFromMemberId(dataSnapshot.child("from").child("id").getValue(String.class));
             insertOrUpdate(otp);
         }
     }
@@ -214,7 +217,8 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             otp = ds.getValue(Otp.class);
             if (otp != null) {
-                otp.setFromMemberId(ds.child("from").child("id").getValue(String.class));
+                if (otp.getFromMemberId() == null || otp.getFromMemberId().isEmpty())
+                    otp.setFromMemberId(ds.child("from").child("id").getValue(String.class));
                 otps.add(otp);
             }
         }

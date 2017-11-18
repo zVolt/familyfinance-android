@@ -174,9 +174,9 @@ public class MainActivity extends AppCompatActivity implements
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot == null || dataSnapshot.getChildrenCount() == 0) return;
                 StringBuilder lengths = new StringBuilder();
-                String length;
+                Long length;
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    length = ds.getValue(String.class);
+                    length = ds.getValue(Long.class);
                     if (length == null) continue;
                     lengths.append(length);
                     lengths.append(",");
@@ -235,8 +235,10 @@ public class MainActivity extends AppCompatActivity implements
         familyId = sharedPreferences.getString("activeFamilyId", null);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         compilePatternAfterNoOfCallback = 2;
-        ref.child("charsToIgnore").addListenerForSingleValueEvent
+        ref.child("otpChars").addListenerForSingleValueEvent
                 (otpCharsListener);
+        ref.child("otpLength").addListenerForSingleValueEvent
+                (otpLengthListener);
         ref.child("keywords").addListenerForSingleValueEvent
                 (keywordsListener);
         ref.child("family").child(familyId).child("moderator")

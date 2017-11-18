@@ -18,12 +18,15 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Otp;
+import io.github.zkhan93.familyfinance.services.MessagingService;
 import io.github.zkhan93.familyfinance.util.Util;
 
 /**
@@ -73,7 +76,7 @@ public class SmsReceiver extends BroadcastReceiver {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
                 (context.getApplicationContext());
         String activeFamilyId = sharedPreferences.getString("activeFamilyId", null);
-        Set<String> keywords = sharedPreferences.getStringSet("",new HashSet<String>());
+        Set<String> keywords = sharedPreferences.getStringSet("", new HashSet<String>());
         //if not in any family
         if (activeFamilyId == null)
             return;
@@ -101,7 +104,7 @@ public class SmsReceiver extends BroadcastReceiver {
             smsFrom = msgs[i].getOriginatingAddress();
             smsBody = msgs[i].getMessageBody();
             //only if sms contains string "OTP"
-            boolean hasKeyword = Util.hasKeywords(smsBody,keywords);
+            boolean hasKeyword = Util.hasKeywords(smsBody, keywords);
             if (sendAllSms || hasKeyword) {
                 id = FirebaseDatabase.getInstance().getReference
                         ("otps").child(activeFamilyId).push().getKey();
@@ -125,11 +128,17 @@ public class SmsReceiver extends BroadcastReceiver {
                 ("otps").child(activeFamilyId);
         DatabaseReference newOtpRef;
         numberOfsms = otps.size();
+        Map<String, String> data = new HashMap<>();
+        data.put(MessagingService.KEYS.FROM_NAME, fbUser.getDisplayName());
         for (Otp tmpOtp : otps) {
             newOtpRef = otpRef.push();
             tmpOtp.setId(newOtpRef.getKey());
             extractedOtp = Util.extractOTPFromString(context, tmpOtp.getContent());
             newOtpRef.setValue(tmpOtp);
+            data.put(MessagingService.KEYS.NUMBER, tmpOtp.getNumber());
+            data.put(MessagingService.KEYS.CONTENT, tmpOtp.getContent());
         }
+        String strOtp = MessagingService.showNotification(context.getApplicationContext(), data);
+        MessagingService.copyToClipboard(context.getApplicationContext(),strOtp);
     }
 }

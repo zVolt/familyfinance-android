@@ -32,11 +32,12 @@ public class Util {
         if (pattern == null)
             readOtpRegexValuesAndCompilePattern(context);
         String otp = null;
-        otp = null;
+        String tmp;
         Matcher match = pattern.matcher(messages);
         while (match.find()) {
-            if (otp == null || otp.length() <= match.group(1).length())
-                otp = match.group(1);
+            tmp = match.group(1);
+            if (tmp != null && !tmp.endsWith(".") && (otp == null || otp.length() <= tmp.length()))
+                otp = tmp;
         }
         return otp;
     }
@@ -56,15 +57,16 @@ public class Util {
     }
 
     private static void compilePattern(String acceptedChars, String[] lengths) {
+        // \b([0-9]{4}\.?|[0-9]{8}\.?|[0-9]{6}\.?)\b
         StringBuilder strb = new StringBuilder();
-        strb.append("[^%1$s](");
+        strb.append("\\b(");
         for (String len : lengths) {
             strb.append("[%1$s]{");
             strb.append(len);
-            strb.append("}|");
+            strb.append("}\\.?|");
         }
         strb.deleteCharAt(strb.length() - 1);
-        strb.append(")[^%1$s]");
+        strb.append(")\\b");
         pattern = Pattern.compile(String.format(strb.toString(), acceptedChars));
     }
 
