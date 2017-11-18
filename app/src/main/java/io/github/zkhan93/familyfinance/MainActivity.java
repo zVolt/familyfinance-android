@@ -455,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public int getCount() {
-            return PAGE_POSITION.class.getDeclaredFields().length - 1;
+            return 6;
         }
 
         @Override

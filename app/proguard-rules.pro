@@ -75,3 +75,4 @@ public static java.lang.String TABLENAME;
 -dontnote
 -dontwarn com.google.errorprone.**
 -dontwarn com.google.common.**
+-keep class android.support.v7.widget.SearchView { *; }
