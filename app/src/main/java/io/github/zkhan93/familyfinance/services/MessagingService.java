@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -30,7 +31,8 @@ import io.github.zkhan93.familyfinance.MainActivity;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.util.Util;
 
-import static io.github.zkhan93.familyfinance.listeners.CopyOtpListener.ACTION_COPY_OTP;
+import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener.ACTION_CLAIM_OTP;
+import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener.ACTION_COPY_OTP;
 
 /**
  * Created by zeeshan on 13/7/17.
@@ -50,6 +52,9 @@ public class MessagingService extends FirebaseMessagingService {
         String FROM_PROFILE_PIC = "from_profilePic";
         String CONTENT = "content";
         String FROM_MEMBER_ID = "fromMemberId";
+        String ID = "id";
+        String FAMILY_ID = "familyId";
+        String ME_ID = "meId";
     }
 
     interface TYPE {
@@ -67,6 +72,7 @@ public class MessagingService extends FirebaseMessagingService {
         }
 
         if (data.get(KEYS.TYPE).equals(TYPE.OTP)) {
+            data.put(KEYS.ME_ID,user.getUid());
             String otp = showNotification(getApplicationContext(), data);
             copyToClipboard(getApplicationContext(), otp);
         } else if (data.get(KEYS.TYPE).equals(TYPE.PRESENCE))
@@ -114,8 +120,9 @@ public class MessagingService extends FirebaseMessagingService {
         PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        String title = otp != null ?
-                String.format("%s | %s | %s", otp, data.get(KEYS.NUMBER), data.get(KEYS.FROM_NAME)) :
+        String title = otp != null && !otp.isEmpty() ?
+                String.format("%s | %s | %s", otp, data.get(KEYS.NUMBER), data.get(KEYS
+                        .FROM_NAME)) :
                 String.format("%s | %s", data.get(KEYS.NUMBER), data.get(KEYS.FROM_NAME));
 
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat
@@ -136,8 +143,18 @@ public class MessagingService extends FirebaseMessagingService {
             copyIntent.putExtra("OTP", otp);
             PendingIntent copyPendingIntent = PendingIntent.getBroadcast(context, 1, copyIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent claimIntent = new Intent(ACTION_CLAIM_OTP);
+            Bundle bundle = new Bundle();
+            bundle.putString("otpId", data.get(KEYS.ID));
+            bundle.putString("familyId", data.get(KEYS.FAMILY_ID));
+            bundle.putString("meId", data.get(KEYS.ME_ID));
+            claimIntent.putExtras(bundle);
+            PendingIntent claimPendingIntent = PendingIntent.getBroadcast(context, 2, claimIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
             mBuilder.addAction(new NotificationCompat.Action(R.drawable
                     .ic_content_copy_grey_50_24dp, "Copy OTP", copyPendingIntent));
+            mBuilder.addAction(new NotificationCompat.Action(R.drawable
+                    .ic_content_copy_grey_50_24dp, "Claim", claimPendingIntent));
         }
         mBuilder.setContentIntent(resultPendingIntent);
         //set fake vibration to enable heads Up in API 21+

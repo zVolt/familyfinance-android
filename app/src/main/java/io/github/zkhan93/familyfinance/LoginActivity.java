@@ -74,6 +74,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         btnLogin.setOnClickListener(this);
+        btnLogin.setSize(SignInButton.SIZE_WIDE);
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions
                 .DEFAULT_SIGN_IN)

@@ -182,7 +182,6 @@
             android:layout_alignStart="@+id/limit"
             android:layout_below="@+id/limit"
             android:gravity="center_horizontal"
-            android:textIsSelectable="true"
             tools:text="25$"/>
 
         <TextView
@@ -194,7 +193,6 @@
             android:layout_alignTop="@id/consumed_limit"
             android:layout_gravity="end"
             android:gravity="end"
-            android:textIsSelectable="true"
             tools:text="100$"/>
 
 

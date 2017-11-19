@@ -129,12 +129,15 @@ public class SmsReceiver extends BroadcastReceiver {
         DatabaseReference newOtpRef;
         Map<String, String> data = new HashMap<>();
         data.put(MessagingService.KEYS.FROM_NAME, fbUser.getDisplayName());
+        data.put(MessagingService.KEYS.FAMILY_ID, activeFamilyId);
+        data.put(MessagingService.KEYS.ME_ID, mePk);
         for (Otp tmpOtp : otps) {
             newOtpRef = otpRef.push();
             tmpOtp.setId(newOtpRef.getKey());
             extractedOtp = Util.extractOTPFromString(context, tmpOtp.getContent());
             newOtpRef.setValue(tmpOtp);
             data.put(MessagingService.KEYS.NUMBER, tmpOtp.getNumber());
+            data.put(MessagingService.KEYS.ID, newOtpRef.getKey());
             data.put(MessagingService.KEYS.CONTENT, tmpOtp.getContent());
         }
         String strOtp = MessagingService.showNotification(context.getApplicationContext(), data);

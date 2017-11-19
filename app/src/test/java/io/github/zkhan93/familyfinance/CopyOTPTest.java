@@ -6,13 +6,12 @@ import android.util.Log;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-import io.github.zkhan93.familyfinance.listeners.CopyOtpListener;
+import io.github.zkhan93.familyfinance.listeners.NotificationActionsListener;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -22,12 +21,12 @@ import io.github.zkhan93.familyfinance.listeners.CopyOtpListener;
 
 public class CopyOTPTest {
 
-    private CopyOtpListener copyOtpListener;
+    private NotificationActionsListener notificationActionsListener;
     private Context context;
 
     @Before
     public void setup() {
-        copyOtpListener = new CopyOtpListener();
+        notificationActionsListener = new NotificationActionsListener();
     }
 
     @Parameterized.Parameters
@@ -50,7 +49,7 @@ public class CopyOTPTest {
         Log.d("test", String.format("%s", message));
         Intent intent = new Intent();
         intent.putExtra("OTP", message);
-        copyOtpListener.onReceive(context, intent);
-//        assertEquals(otp, copyOtpListener.otp);
+        notificationActionsListener.onReceive(context, intent);
+//        assertEquals(otp, notificationActionsListener.otp);
     }
 }

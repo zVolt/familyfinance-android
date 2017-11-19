@@ -55,7 +55,6 @@
             android:layout_below="@+id/account_holder"
             android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
-            android:textIsSelectable="true"
             tools:text="25$"/>
 
         <SeekBar

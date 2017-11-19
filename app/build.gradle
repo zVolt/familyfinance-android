@@ -89,6 +89,6 @@ dependencies {
 
 }
 greendao {
-    schemaVersion 29
+    schemaVersion 31
 }
 apply plugin: 'com.google.gms.google-services'

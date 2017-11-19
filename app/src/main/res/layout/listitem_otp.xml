@@ -38,6 +38,18 @@
             tools:text="+91 8738914923"/>
 
         <TextView
+            android:id="@+id/claim"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/square_grey_200"
+            android:drawablePadding="4dp"
+            android:drawableStart="@drawable/googleg_standard_color_18"
+            android:padding="2dp"
+            android:text="Claimed"/>
+
+        <TextView
             android:id="@+id/timestamp"
             style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="match_parent"
