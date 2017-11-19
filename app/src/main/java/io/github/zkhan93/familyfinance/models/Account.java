@@ -167,7 +167,8 @@ public class Account extends BaseModel {
     /**
      * To-one relationship, resolved on first access.
      */
-    @Generated(hash = 142537439)
+    @Exclude
+    @Keep
     public Member getUpdatedBy() {
         String __key = this.updatedByMemberId;
         if (updatedBy__resolvedKey == null || updatedBy__resolvedKey != __key) {
@@ -189,7 +190,8 @@ public class Account extends BaseModel {
     /**
      * called by internal mechanisms, do not call yourself.
      */
-    @Generated(hash = 2009088111)
+    @Exclude
+    @Keep
     public void setUpdatedBy(Member updatedBy) {
         synchronized (this) {
             this.updatedBy = updatedBy;

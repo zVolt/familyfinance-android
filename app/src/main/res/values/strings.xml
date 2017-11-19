@@ -54,11 +54,14 @@
     <string name="hint_balance">Balance</string>
     <string name="hint_family_id">Family Id</string>
     <string name="hint_phone_number">Phone Number</string>
+    <string name="hint_email">Email</string>
 
     <!-- Strings related to Settings -->
 
     <!--Contants-->
     <string name="rs">\u20B9</string>
+    <string name="more">Show more</string>
+    <string name="less">Show less</string>
     <string name="clear">clear</string>
     <string name="add">Add</string>
     <string name="subscribe">Allow read emails</string>
@@ -74,7 +77,7 @@
     <string name="copy_message"> %1$s copied</string>
     <string name="no_otp_found">Oops! cannot find OTP</string>
     <string name="error_clipboard"> %1$s cannot copy to clipboard</string>
-
+    <string name="select_bank">Select Bank</string>
     <!--Category title-->
     <string name="pref_header_general">General</string>
     <string name="pref_header_notifications">Notifications</string>

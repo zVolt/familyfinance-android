@@ -84,7 +84,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         .pref_key_allsms),
                 false);
         SmsMessage[] msgs;
-        String smsFrom, smsBody;
+        String smsFrom = "", smsBody = "";
         Otp otp;
         Object[] pdus;
 
@@ -102,27 +102,27 @@ public class SmsReceiver extends BroadcastReceiver {
             else
                 msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
             smsFrom = msgs[i].getOriginatingAddress();
-            smsBody = msgs[i].getMessageBody();
-            //only if sms contains string "OTP"
-            boolean hasKeyword = Util.hasKeywords(smsBody, keywords);
-            if (sendAllSms || hasKeyword) {
-                id = FirebaseDatabase.getInstance().getReference
-                        ("otps").child(activeFamilyId).push().getKey();
-                otp = new Otp();
-                otp.setFromMemberId(mePk);
-                otp.setContent(smsBody);
-                otp.setNumber(smsFrom);
-                otp.setTimestamp(Calendar.getInstance().getTimeInMillis());
-                otp.setId(id);
-                if (hasKeyword) {
-                    extractedOtp = Util.extractOTPFromString(context, otp.getContent());
-                    if (extractedOtp != null)
-                        otp.setContent(String.format("%s: %s", extractedOtp, otp.getContent()));
-                }
-                otps.add(otp);
-            } else {
-                Log.d(TAG, "Not sharing an SMS");
+            smsBody += msgs[i].getMessageBody();
+        }
+        //only if sms contains string "OTP"
+        boolean hasKeyword = Util.hasKeywords(smsBody, keywords);
+        if (!smsFrom.isEmpty() && (sendAllSms || hasKeyword)) {
+            id = FirebaseDatabase.getInstance().getReference
+                    ("otps").child(activeFamilyId).push().getKey();
+            otp = new Otp();
+            otp.setFromMemberId(mePk);
+            otp.setContent(smsBody);
+            otp.setNumber(smsFrom);
+            otp.setTimestamp(Calendar.getInstance().getTimeInMillis());
+            otp.setId(id);
+            if (hasKeyword) {
+                extractedOtp = Util.extractOTPFromString(context, otp.getContent());
+                if (extractedOtp != null)
+                    otp.setContent(String.format("%s: %s", extractedOtp, otp.getContent()));
             }
+            otps.add(otp);
+        } else {
+            Log.d(TAG, "Not sharing an SMS");
         }
         DatabaseReference otpRef = FirebaseDatabase.getInstance().getReference
                 ("otps").child(activeFamilyId);

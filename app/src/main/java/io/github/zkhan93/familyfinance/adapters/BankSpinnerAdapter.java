@@ -28,6 +28,7 @@ import io.github.zkhan93.familyfinance.util.Util;
 
 public class BankSpinnerAdapter extends BaseAdapter implements ValueEventListener {
     public static final String TAG = BankSpinnerAdapter.class.getSimpleName();
+    public static final String OTHER_BANK = "ZZZOTHER";
 
     private List<BankSpinnerItem> bankSpinnerItems;
     private LayoutInflater inflater;
@@ -71,8 +72,13 @@ public class BankSpinnerAdapter extends BaseAdapter implements ValueEventListene
         }
         viewHolder = (ViewHolder) convertView.getTag();
         BankSpinnerItem bankSpinnerItem = bankSpinnerItems.get(position);
+        if (bankSpinnerItem.getId().equals(OTHER_BANK)) {
+            viewHolder.logo.setVisibility(View.GONE);
+        } else {
+            viewHolder.logo.setVisibility(View.VISIBLE);
+            bankLogoRef.child(bankSpinnerItem.getId()).addListenerForSingleValueEvent(viewHolder);
+        }
         viewHolder.name.setText(bankSpinnerItem.getName());
-        bankLogoRef.child(bankSpinnerItem.getId()).addListenerForSingleValueEvent(viewHolder);
         return convertView;
     }
 
