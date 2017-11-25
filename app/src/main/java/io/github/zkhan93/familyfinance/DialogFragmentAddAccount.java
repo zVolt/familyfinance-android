@@ -189,7 +189,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
                 if (this.account != null) {
                     account.setAccountNumber(this.account.getAccountNumber());
                     account.setBalance(this.account.getBalance());
-                }else{
+                } else {
                     account.setAccountNumber(number);
                 }
                 account.setUserid(userid.getText().toString());
@@ -227,7 +227,16 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                performAction(view);
+            }
+        }, 200);
+    }
+
+    private void performAction(View view) {
         switch (view.getId()) {
             case R.id.more_btn:
                 boolean isVisible = moreFields.getVisibility() == View.VISIBLE;

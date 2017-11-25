@@ -5,7 +5,6 @@
     <string name="label_signin">Sign in</string>
 
 
-
     <!-- activity titles -->
     <string name="title_summary">Summary</string>
     <string name="title_emails">Emails</string>
@@ -21,6 +20,7 @@
     <string name="title_activity_pin">@string/app_name</string>
     <string name="title_chat_room">Chat Room</string>
     <string name="title_filter_sms">Show SMS only from</string>
+    <string name="title_billing_cycle">Billing Cycle</string>
 
     <!--Menu Titles-->
     <string name="action_settings">Settings</string>
@@ -40,7 +40,7 @@
     <string name="hint_account_holder_name">Account holder\'s name</string>
     <string name="hint_account_number">Account Number</string>
 
-    <string name="hint_ccard_name">Card Alias (Optional)</string>
+    <string name="hint_ccard_name">Card Alias</string>
     <string name="hint_ccard_holder_name">Card Holder\'s Name</string>
     <string name="hint_ccard_number">Card Number</string>
     <string name="hint_ccard_limit">Max Limit</string>

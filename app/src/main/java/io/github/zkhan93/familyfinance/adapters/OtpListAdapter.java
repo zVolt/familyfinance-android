@@ -61,8 +61,9 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             noOfSms = 50;
         }
         otpDao = app.getDaoSession().getOtpDao();
-        otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId).orderByChild
-                ("timestamp").limitToLast(noOfSms);
+        otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId);
+        otpRef.keepSynced(true);
+        otpRef = otpRef.orderByChild("timestamp").limitToLast(noOfSms);
         new LoadFromDbTask<>(app.getDaoSession().getOtpDao(), this).execute();
     }
 
