@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.github.zkhan93.familyfinance.adapters.BalanceByBankAdapter;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.DaoSession;
@@ -71,6 +73,9 @@ public class FragmentSummary extends Fragment {
     public View nextPayment2;
     @BindView(R.id.next_payment3)
     public View nextPayment3;
+
+    @BindView(R.id.balance_by_bank)
+    public RecyclerView balanceBybankList;
 
     private String familyId;
     private OnFragmentInteractionListener mListener;
@@ -252,6 +257,7 @@ public class FragmentSummary extends Fragment {
             grandTotal.setTextColor(ContextCompat.getColor(getActivity(), amountTotal >= 0 ?
                     R.color.md_green_400 : R.color.md_red_400));
         }
+        balanceBybankList.setAdapter(new BalanceByBankAdapter(familyId));
         return rootView;
     }
 

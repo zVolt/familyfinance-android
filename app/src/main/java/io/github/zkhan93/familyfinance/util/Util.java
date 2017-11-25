@@ -139,5 +139,8 @@ public class Util {
                 return true;
         return false;
     }
+    public String getBankLogonUrl(String bankId){
+        return String.format("https://firebasestorage.googleapis.com/v0/b/familyfinance-e8098.appspot.com/o/bank%2Fic_bank_%s.png?alt=media&token=fda916a0-bd18-4981-a263-578c6083fc74",bankId);
+    }
 }
 

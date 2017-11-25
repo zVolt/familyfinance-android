@@ -14,26 +14,20 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!--<com.github.mikephil.charting.charts.PieChart-->
-            <!--android:id="@+id/pichart"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="200dp"-->
-            <!--android:visibility="gone"/>-->
-
         <TextView
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="Total Balance"/>
+            android:text="Total Balance"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/grand_total"
-            android:visibility="gone"
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/md_green_400"
+            android:visibility="gone"
             tools:text="$300"/>
 
         <TextView
@@ -42,14 +36,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/title_accounts"
+            android:visibility="gone"
             tools:text="4 Accounts"/>
 
         <TextView
             android:id="@+id/account_total"
             style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            tools:text="500$"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/balance_by_bank"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="500$"/>
+            android:orientation="horizontal"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/listitem_balance"/>
 
         <TextView
             android:id="@+id/card_title"
