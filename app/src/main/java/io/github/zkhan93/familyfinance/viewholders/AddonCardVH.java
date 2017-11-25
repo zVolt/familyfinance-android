@@ -81,9 +81,6 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
             case R.id.action_edit:
                 itemInteractionListener.edit(addonCard);
                 return true;
-            case R.id.action_share:
-                itemInteractionListener.share(addonCard);
-                return true;
             default:
                 return false;
         }

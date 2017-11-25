@@ -32,8 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -207,7 +205,13 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
                     .OnLoadCompleteListener() {
                 @Override
                 public void onLoadComplete() {
-                    bank.setSelection(bankSpinnerAdapter.getPosition(selectedBankId));
+                    int position = bankSpinnerAdapter.getPosition(selectedBankId);
+                    if (position == -1) {
+                        bank.setSelection(bankSpinnerAdapter.getPosition(BankSpinnerAdapter
+                                .OTHER_BANK));
+                        otherBank.setText(selectedBankId);
+                    } else
+                        bank.setSelection(position);
                 }
             });
             number.setText(cCard.getNumber());

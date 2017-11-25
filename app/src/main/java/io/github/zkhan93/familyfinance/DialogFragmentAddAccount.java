@@ -34,6 +34,8 @@ import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 
+import static io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter.OTHER_BANK;
+
 
 /**
  * Created by zeeshan on 12/7/17.
@@ -137,7 +139,12 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
                     .OnLoadCompleteListener() {
                 @Override
                 public void onLoadComplete() {
-                    bank.setSelection(bankSpinnerAdapter.getPosition(selectedBankId));
+                    int position = bankSpinnerAdapter.getPosition(selectedBankId);
+                    if (position == -1) {
+                        bank.setSelection(bankSpinnerAdapter.getPosition(OTHER_BANK));
+                        otherBank.setText(selectedBankId);
+                    } else
+                        bank.setSelection(position);
                 }
             });
             userid.setText(account.getUserid());
@@ -172,7 +179,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
             case DialogInterface.BUTTON_POSITIVE:
                 String number, name, bank;
                 name = accountHolder.getText().toString();
-                bank = selectedBankId.equals(BankSpinnerAdapter.OTHER_BANK) ? otherBank.getText()
+                bank = selectedBankId.equals(OTHER_BANK) ? otherBank.getText()
                         .toString() : selectedBankId;
                 number = this.number.getText().toString();
                 //skip creating new account if accout number is not present
@@ -214,7 +221,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
         selectedBankId = bankSpinnerAdapter.getBankId(position);
-        if (selectedBankId.equals(BankSpinnerAdapter.OTHER_BANK)) {
+        if (selectedBankId.equals(OTHER_BANK)) {
             otherBankTil.setVisibility(View.VISIBLE);
         } else {
             otherBankTil.setVisibility(View.GONE);

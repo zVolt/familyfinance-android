@@ -223,9 +223,6 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
             case R.id.action_edit:
                 itemInteractionListener.edit(cCard);
                 return true;
-            case R.id.action_share:
-                itemInteractionListener.share(cCard);
-                return true;
             case R.id.action_add_addoncard:
                 itemInteractionListener.addAddonCard(cCard);
             default:

@@ -148,9 +148,6 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
             case R.id.action_edit:
                 itemInteractionListener.edit(account);
                 return true;
-            case R.id.action_share:
-                itemInteractionListener.share(account);
-                return true;
             default:
                 return false;
         }

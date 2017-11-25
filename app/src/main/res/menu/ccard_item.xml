@@ -16,12 +16,6 @@
         android:title="@string/action_edit"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_share"
-        android:icon="@drawable/ic_share_grey_50_24dp"
-        android:orderInCategory="30"
-        android:title="@string/action_share"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/action_add_addoncard"
         android:orderInCategory="40"
         android:title="@string/action_add_addoncard"
