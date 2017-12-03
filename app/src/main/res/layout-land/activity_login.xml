@@ -1,4 +1,4 @@
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,18 +6,16 @@
     android:layout_height="match_parent"
     android:background="@color/md_teal_300"
     android:gravity="center"
-    android:orientation="vertical"
+    android:orientation="horizontal"
+    android:padding="16dp"
     tools:context="io.github.zkhan93.familyfinance.LoginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.6"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:gravity="center"
-        android:orientation="vertical"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:paddingTop="16dp">
+        android:orientation="vertical">
 
         <ImageView
             android:layout_width="match_parent"
@@ -39,16 +37,6 @@
 
         <include layout="@layout/progress_layout"/>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.4"
-        android:background="@color/md_teal_400"
-        android:gravity="center"
-        android:paddingBottom="48dp">
-
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"
             android:layout_width="wrap_content"
@@ -57,4 +45,4 @@
             app:buttonSize="wide"
             />
     </LinearLayout>
-</LinearLayout>
+</ScrollView>

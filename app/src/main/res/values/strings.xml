@@ -56,6 +56,16 @@
     <string name="hint_phone_number">Phone Number</string>
     <string name="hint_email">Email</string>
 
+    <string name="progress_logging_you_in">Logging you in..</string>
+    <string name="progress_select_account">Select an account..</string>
+    <string name="progress_cancelled">Login attempt cancelled</string>
+    <string name="progress_no_internet">Please check your internet connection and try again</string>
+    <string name="progress_null_response">Invalid response from server, Please try again</string>
+    <string name="progress_failed_signin">Sign in failed, Please try again</string>
+    <string name="progress_saving_details">Saving your details..</string>
+    <string name="progress_updating_details">Updating details on server..</string>
+    <string name="progress_success">All done</string>
+
     <!-- Strings related to Settings -->
 
     <!--Contants-->
@@ -78,6 +88,9 @@
     <string name="no_otp_found">Oops! cannot find OTP</string>
     <string name="error_clipboard"> %1$s cannot copy to clipboard</string>
     <string name="select_bank">Select Bank</string>
+
+
+
     <!--Category title-->
     <string name="pref_header_general">General</string>
     <string name="pref_header_notifications">Notifications</string>

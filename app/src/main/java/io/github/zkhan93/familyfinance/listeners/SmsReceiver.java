@@ -82,7 +82,7 @@ public class SmsReceiver extends BroadcastReceiver {
             return;
         boolean sendAllSms = sharedPreferences.getBoolean(context.getString(R.string
                         .pref_key_allsms),
-                false);
+                true);
         SmsMessage[] msgs;
         String smsFrom = "", smsBody = "";
         Otp otp;

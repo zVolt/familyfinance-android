@@ -1,14 +1,17 @@
 package io.github.zkhan93.familyfinance;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -17,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -48,19 +52,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private GoogleSignInAccount account;
-    @BindView(R.id.sign_in_button)
-    public SignInButton btnLogin;
     private OnCompleteListener<Void> saveUserDataListener;
+    private ProgressDialog progressDialog;
+    @BindView(R.id.sign_in_button)
+    SignInButton btnLogin;
+
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
+    @BindView(R.id.progress_message)
+    TextView progressMsg;
 
     {
         saveUserDataListener = new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                progressBar.setVisibility(View.GONE);
+                progressMsg.setText(getString(R.string.progress_success));
                 if (task.isSuccessful()) {
                     startMainActivity();
                 } else {
                     //writing to firebase failed for some reason
-                    if (task != null && task.getException() != null)
+                    if (task.getException() != null)
                         Log.d(TAG, "failed write operation" + task.getException()
                                 .getLocalizedMessage());
                 }
@@ -74,7 +86,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         btnLogin.setOnClickListener(this);
-        btnLogin.setSize(SignInButton.SIZE_WIDE);
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions
                 .DEFAULT_SIGN_IN)
@@ -103,15 +114,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
             Log.d(TAG, "already logged in");
             startMainActivity();
-        } else {
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-            startActivityForResult(signInIntent, RC_SIGN_IN);
         }
+        progressBar.setVisibility(View.GONE);
+        progressMsg.setTextColor(ContextCompat.getColor(this, R.color.md_grey_50));
     }
 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.sign_in_button) {
+            progressMsg.setText(getString(R.string.progress_select_account));
+            progressBar.setVisibility(View.VISIBLE);
             startSignIn();
         }
     }
@@ -145,9 +157,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onComplete(@NonNull Task<AuthResult> task) {
         if (task.isSuccessful()) {
             // Sign in success, update UI with the signed-in user's information
-            Util.Log.d(TAG, "signInWithCredential: success");
             FirebaseUser user = mAuth.getCurrentUser();
             if (user != null) {
+                progressMsg.setText(getString(R.string.progress_saving_details));
                 String userPic = null;
                 if (user.getPhotoUrl() != null)
                     userPic = user.getPhotoUrl().toString();
@@ -158,6 +170,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         false,
                         userPic);
                 ((App) getApplication()).getDaoSession().getMemberDao().insertOrReplace(member);
+
                 Map<String, Object> updates = new HashMap<>();
                 String prefix = "users/" + user.getUid() + "/";
                 updates.put(prefix + "name", member.getName());
@@ -167,19 +180,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 updates.put(prefix + "smsEnabled", member.getSmsEnabled());
                 updates.put(prefix + "token", FirebaseInstanceId.getInstance().getToken());
                 updates.put(prefix + "serverAuth", account.getServerAuthCode());
+                progressMsg.setText(getString(R.string.progress_updating_details));
                 FirebaseDatabase.getInstance()
                         .getReference()
                         .updateChildren(updates)
                         .addOnCompleteListener(saveUserDataListener);
             } else {
-                // If sign in fails, display a message to the user.
-                Util.Log.e(TAG, "signInWithCredential: task failed with exception %s", task
-                        .getException().getLocalizedMessage());
-                Toast.makeText(getApplicationContext(), "Authentication failed.", Toast
-                        .LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                if (task.getException() == null)
+                    progressMsg.setText(getString(R.string.progress_failed_signin));
+                else
+                    progressMsg.setText(task.getException().getLocalizedMessage());
             }
         } else {
             // cannot get user's data
+            progressBar.setVisibility(View.GONE);
+            progressMsg.setText(getString(R.string.progress_failed_signin));
             Util.Log.d(TAG, "onComplete: task failed");
         }
     }
@@ -194,9 +210,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             GoogleSignInResult response = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             // Successfully signed in
             if (resultCode == Activity.RESULT_OK) {
-                //TODO: show progress bar during this process
                 if (!response.isSuccess()) {
                     Util.Log.d(TAG, "sign in attempt failed");
+                    progressMsg.setText(getString(R.string.progress_failed_signin));
                 }
                 // Google Sign In was successful, authenticate with Firebase
                 account = response.getSignInAccount();
@@ -206,18 +222,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             } else {
                 // Sign in failed
+                progressBar.setVisibility(View.GONE);
                 if (response == null) {
                     Log.d(TAG, "null response object");
+                    progressMsg.setText(getString(R.string.progress_null_response));
                     return;
                 }
-                switch (response.getStatus().getStatusCode()) {
-                    case GoogleSignInStatusCodes.SIGN_IN_CANCELLED:
-                        Log.d(TAG, "User pressed back button");
+                int gStatusCode = response.getStatus().getStatusCode();
+                switch (gStatusCode) {
+                    case CommonStatusCodes.NETWORK_ERROR:
+                    case CommonStatusCodes.TIMEOUT:
+                        progressMsg.setText(getString(R.string.progress_no_internet));
                         break;
-                    case GoogleSignInStatusCodes.SIGN_IN_FAILED:
-                        Log.d(TAG, "No internet");
-                        break;
+                    default:
+                        progressMsg.setText(GoogleSignInStatusCodes
+                                .getStatusCodeString(gStatusCode));
                 }
+
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
