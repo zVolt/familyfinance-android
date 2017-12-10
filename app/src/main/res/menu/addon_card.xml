@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    
     <item
         android:id="@+id/action_edit"
         android:icon="@drawable/ic_mode_edit_grey_50_24dp"
@@ -9,9 +8,9 @@
         android:title="@string/action_edit"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_add_addoncard"
+        android:id="@+id/action_share"
         android:orderInCategory="40"
-        android:title="@string/action_add_addoncard"
+        android:title="@string/action_share"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_delete"

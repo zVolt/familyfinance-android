@@ -63,8 +63,9 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
         popup = new PopupMenu(itemView.getContext(), menu);
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
-        inflater.inflate(R.menu.ccard_item, popup.getMenu());
-        popup.getMenu().findItem(R.id.action_add_addoncard).setVisible(false);
+        inflater.inflate(R.menu.addon_card, popup.getMenu());
+        updatedBy.setVisibility(View.GONE);
+        updatedOn.setVisibility(View.GONE);
     }
 
     @OnClick(R.id.menu)
@@ -76,10 +77,16 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-                itemInteractionListener.delete(addonCard);
+                if (itemInteractionListener != null)
+                    itemInteractionListener.delete(addonCard);
                 return true;
             case R.id.action_edit:
-                itemInteractionListener.edit(addonCard);
+                if (itemInteractionListener != null)
+                    itemInteractionListener.edit(addonCard);
+                return true;
+            case R.id.action_share:
+                if (itemInteractionListener != null)
+                    itemInteractionListener.share(addonCard);
                 return true;
             default:
                 return false;
@@ -90,7 +97,7 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
     public void setAddonCard(AddonCard addonCard) {
         this.addonCard = addonCard;
         name.setText(addonCard.getName());
-        number.setText(addonCard.getNumber());
+        number.setText(addonCard.getFormattedNumber(' '));
         mobNumber.setText(addonCard.getPhoneNumber());
         expiresOn.setText(CCard.EXPIRE_ON.format(new Date(addonCard.getExpiresOn())));
         cvv.setText(String.valueOf(addonCard.getCvv()));

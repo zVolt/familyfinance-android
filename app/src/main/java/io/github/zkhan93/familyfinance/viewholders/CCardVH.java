@@ -3,6 +3,7 @@ package io.github.zkhan93.familyfinance.viewholders;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -67,8 +68,6 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
     TextView consumedLimit;
     @BindView(R.id.expires_on)
     TextView expiresOn;
-    @BindView(R.id.addon_cards)
-    RecyclerView addonCards;
     @BindView(R.id.addons_title)
     TextView addonTitle;
 
@@ -77,7 +76,6 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
     private PopupMenu popup;
     private ItemInteractionListener itemInteractionListener;
     private CCard cCard;
-    private AddonCardListAdapter addonCardListAdapter;
     private ValueEventListener bankImageLinkListener;
 
     {
@@ -101,8 +99,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
         };
     }
 
-    public CCardVH(View itemView, ItemInteractionListener itemInteractionListener, AddonCardVH
-            .ItemInteractionListener addonCardInteractionListener) {
+    public CCardVH(View itemView, @NonNull ItemInteractionListener itemInteractionListener) {
         super(itemView);
         this.itemInteractionListener = itemInteractionListener;
         context = itemView.getContext();
@@ -117,18 +114,13 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
         inflater.inflate(R.menu.ccard_item, popup.getMenu());
-
-        addonCardListAdapter = new AddonCardListAdapter(addonCardInteractionListener);
-        addonCards.setAdapter(addonCardListAdapter);
-        addonCards.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager
-                .HORIZONTAL, true));
     }
 
 
     public void setCCard(CCard cCard) {
         this.cCard = cCard;
 
-        number.setText(cCard.getFormattedNumber('-', true));
+        number.setText(cCard.getFormattedNumber(' ', true));
 
         date.setText(Util.getBillingCycleString(cCard.getBillingDay(),
                 cCard.getPaymentDay(), "%s - %s"));
@@ -181,7 +173,6 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
                     .into(updatedBy);
 
         if (cCard.getAddonCards() != null && cCard.getAddonCards().size() > 0) {
-            addonCardListAdapter.setItems(cCard.getAddonCards());
             addonTitle.setVisibility(View.VISIBLE);
             addonTitle.setText(String
                     .format(Locale.ENGLISH, "%d Addon Cards", cCard.getAddonCards().size()));
@@ -201,11 +192,6 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
             case R.id.menu:
                 popup.show();
                 break;
-            case R.id.addons_title:
-                addonCards.setVisibility(
-                        addonCards.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
-                );
-                break;
             default:
                 itemInteractionListener.onView(cCard);
         }
@@ -214,9 +200,6 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_copy:
-                itemInteractionListener.copy(cCard);
-                return true;
             case R.id.action_delete:
                 itemInteractionListener.delete(cCard);
                 return true;
@@ -231,11 +214,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
     }
 
     public interface ItemInteractionListener {
-        void copy(CCard cCard);
 
         void delete(CCard cCard);
-
-        void share(CCard cCard);
 
         void edit(CCard cCard);
 

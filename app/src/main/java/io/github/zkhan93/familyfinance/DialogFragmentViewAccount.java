@@ -200,6 +200,7 @@ public class DialogFragmentViewAccount extends DialogFragment implements DialogI
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int newValue, boolean b) {
+        newValue = (newValue/100)*100;
         balance.setText(NumberFormat.getCurrencyInstance().format(newValue));
         updateMap.put("balance", newValue);
         updateMap.put("updatedByMemberId", firebaseUser.getUid());

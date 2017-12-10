@@ -91,7 +91,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         popup = new PopupMenu(itemView.getContext(), menu);
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
-        inflater.inflate(R.menu.ccard_item, popup.getMenu());
+        inflater.inflate(R.menu.account_menu, popup.getMenu());
         itemView.setOnClickListener(this);
         menu.setOnClickListener(this);
     }
@@ -139,9 +139,6 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_copy:
-                itemInteractionListener.copy(account);
-                return true;
             case R.id.action_delete:
                 itemInteractionListener.delete(account);
                 return true;
@@ -154,11 +151,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
     }
 
     public interface ItemInteractionListener {
-        void copy(Account account);
-
         void delete(Account account);
-
-        void share(Account account);
 
         void edit(Account account);
 

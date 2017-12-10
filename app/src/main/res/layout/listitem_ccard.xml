@@ -151,19 +151,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/date"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/addon_cards"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:visibility="gone"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addons_title"
-            tools:layout_height="110dp"
-            tools:listitem="@layout/listitem_addon_card"
-            tools:visibility="visible"/>
-
         <TextView
             android:id="@+id/tv3"
             style="@style/TextAppearance.AppCompat.Caption"
@@ -193,7 +180,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addon_cards"
+            app:layout_constraintTop_toBottomOf="@+id/expires_on"
             tools:text="7 minutes ago"/>
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

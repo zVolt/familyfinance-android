@@ -31,7 +31,6 @@ import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
-import io.github.zkhan93.familyfinance.viewholders.AddonCardVH;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
@@ -47,20 +46,17 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public static final String TAG = CCardListAdapter.class.getSimpleName();
     private ArrayList<CCard> ccards;
     private CCardVH.ItemInteractionListener itemInteractionListener;
-    private AddonCardVH.ItemInteractionListener addonCardInteractionListener;
     private DatabaseReference ccardRef;
     private CCardDao cCardDao;
     private AddonCardDao addonCardDao;
     private boolean ignoreChildEvent;
 
     public CCardListAdapter(App app, String familyId, CCardVH.ItemInteractionListener
-            itemInteractionListener, AddonCardVH.ItemInteractionListener
-                                    addonCardInteractionListener) {
+            itemInteractionListener) {
         cCardDao = app.getDaoSession().getCCardDao();
         addonCardDao = app.getDaoSession().getAddonCardDao();
         this.ccards = new ArrayList<>();
         this.itemInteractionListener = itemInteractionListener;
-        this.addonCardInteractionListener = addonCardInteractionListener;
         ccardRef = FirebaseDatabase.getInstance().getReference("ccards").child(familyId);
         ignoreChildEvent = true;
         Query<CCard> query = cCardDao.queryBuilder().orderDesc(CCardDao.Properties.UpdatedOn)
@@ -78,8 +74,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     .listitem_footer, parent, false));
         else
             return new CCardVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                    .listitem_ccard, parent, false), itemInteractionListener,
-                    addonCardInteractionListener);
+                    .listitem_ccard, parent, false), itemInteractionListener);
     }
 
     @Override

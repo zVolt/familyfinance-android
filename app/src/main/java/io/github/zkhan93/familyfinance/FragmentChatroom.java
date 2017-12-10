@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.adapters.MessageListAdapter;
 import io.github.zkhan93.familyfinance.models.Message;
+import io.github.zkhan93.familyfinance.util.Util;
 
 
 /**
@@ -34,11 +35,13 @@ import io.github.zkhan93.familyfinance.models.Message;
  * Use the {@link FragmentChatroom#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentChatroom extends Fragment {
+public class FragmentChatroom extends Fragment implements MessageListAdapter.MessageListener {
+    public static final String TAG = FragmentChatroom.class.getSimpleName();
     private static final String ARG_FAMILY_ID = "familyId";
 
     private String familyId, meId;
     private OnFragmentInteractionListener mListener;
+    private int unreadMessageStartPosition, unreadMessageCount;
 
     @BindView(R.id.list)
     RecyclerView messages;
@@ -50,7 +53,8 @@ public class FragmentChatroom extends Fragment {
     ImageButton smily;
     @BindView(R.id.attach)
     ImageButton attach;
-
+    @BindView(R.id.new_message)
+    ImageButton newMessage;
 
     public FragmentChatroom() {
         // Required empty public constructor
@@ -91,8 +95,9 @@ public class FragmentChatroom extends Fragment {
         messages.setLayoutManager(new LinearLayoutManager(getActivity()));
         MessageListAdapter messageListAdapter = new MessageListAdapter(getActivity()
                 .getApplicationContext(),
-                familyId);
+                familyId, this);
         messages.setAdapter(messageListAdapter);
+        newMessage.setVisibility(View.GONE);
         return rootView;
     }
 
@@ -120,8 +125,13 @@ public class FragmentChatroom extends Fragment {
     public void onSend(View view) {
         switch (view.getId()) {
             case R.id.send:
+                String strContent = content.getText().toString().trim();
+                if (strContent.isEmpty()) {
+                    content.setText("");
+                    return;
+                }
                 Message message = new Message();
-                message.setContent(content.getText().toString());
+                message.setContent(strContent);
                 message.setTimestamp(Calendar.getInstance().getTimeInMillis());
                 message.setSenderId(meId);
                 FirebaseDatabase.getInstance().getReference("chats").child(familyId).push().setValue
@@ -147,5 +157,31 @@ public class FragmentChatroom extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onNewMessage(int position) {
+        Util.Log.d(TAG, "%d %d", ((LinearLayoutManager) messages.getLayoutManager())
+                .findLastCompletelyVisibleItemPosition(), position);
+        if (((LinearLayoutManager) messages.getLayoutManager())
+                .findLastCompletelyVisibleItemPosition() != position - 2) {
+            //if last visible item is not at position-1
+            if (unreadMessageStartPosition == -1) unreadMessageStartPosition = position;
+            else unreadMessageCount += 1;
+            showUnreadView();
+        } else
+            messages.smoothScrollToPosition(position);
+    }
+
+    private void showUnreadView() {
+        newMessage.setVisibility(View.VISIBLE);
+    }
+
+    @OnClick(R.id.new_message)
+    void onClick(View view) {
+        if (unreadMessageStartPosition != 0)
+            messages.smoothScrollToPosition(unreadMessageStartPosition);
+        newMessage.setVisibility(View.GONE);
+        unreadMessageStartPosition = -1;
     }
 }

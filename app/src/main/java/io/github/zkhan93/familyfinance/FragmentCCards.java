@@ -38,7 +38,7 @@ import io.github.zkhan93.familyfinance.viewholders.CCardVH;
  * create an instance of this fragment.
  */
 public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionListener,
-        AddonCardVH.ItemInteractionListener, SearchView.OnQueryTextListener {
+        SearchView.OnQueryTextListener {
 
     public static final String TAG = FragmentCCards.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,7 +87,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         View rootView = inflater.inflate(R.layout.fragment_ccards, container, false);
         ButterKnife.bind(this, rootView);
         cCardListAdapter = new CCardListAdapter((App) getActivity().getApplication(), familyId,
-                FragmentCCards.this, this);
+                FragmentCCards.this);
         ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);
         setHasOptionsMenu(true);
@@ -150,12 +150,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     }
 
     @Override
-    public void copy(CCard cCard) {
-        //TODO Copy the card data into clipboard
-        Log.d(TAG, "copy: ");
-    }
-
-    @Override
     public void delete(CCard cCard) {
         Log.d(TAG, "delete: " + cCard.getNumber());
         String title = "You want to delete account " + cCard.getNumber();
@@ -166,17 +160,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         dialogFragmentConfirm.setArguments(bundle);
         dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
                 DialogFragmentConfirm.TAG);
-    }
-
-    @Override
-    public void share(CCard cCard) {
-        Log.d(TAG, "share: " + cCard.getNumber());
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, cCard.getReadableContent());
-        sendIntent.setType("text/plain");
-        startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string
-                .action_share)));
     }
 
     @Override
@@ -198,38 +181,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         Log.d(TAG, "addAddonCard: " + cCard.getNumber());
         DialogFragmentAddonCard.newInstance(familyId, cCard.getNumber()).show(getFragmentManager(),
                 DialogFragmentAddonCard.TAG);
-    }
-
-    @Override
-    public void delete(AddonCard addonCard) {
-        Log.d(TAG, "delete addon" + addonCard.getNumber());
-        String title = "You want to delete Addon Card " + addonCard.getNumber();
-        DialogFragmentConfirm<AddonCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
-        Bundle bundle = new Bundle();
-        bundle.putString(DialogFragmentConfirm.ARG_TITLE, title);
-        bundle.putParcelable(DialogFragmentConfirm.ARG_ITEM, addonCard);
-        dialogFragmentConfirm.setArguments(bundle);
-        dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
-                DialogFragmentConfirm.TAG);
-    }
-
-    @Override
-    public void edit(AddonCard addonCard) {
-        Log.d(TAG, "edit addon" + addonCard.getNumber());
-        DialogFragmentAddonCard.newInstance(familyId, addonCard.getMainCardNumber(), addonCard)
-                .show(getFragmentManager(),
-                        DialogFragmentAddonCard.TAG);
-    }
-
-    @Override
-    public void share(AddonCard addonCard) {
-        Log.d(TAG, "share addon" + addonCard.getNumber());
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, addonCard.getReadableContent());
-        sendIntent.setType("text/plain");
-        startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string
-                .action_share)));
     }
 
     /**

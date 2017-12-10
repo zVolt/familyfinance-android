@@ -40,8 +40,10 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.AddonCardListAdapter;
+import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.util.Util;
+import io.github.zkhan93.familyfinance.viewholders.AddonCardVH;
 
 import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
 
@@ -50,7 +52,7 @@ import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
  */
 
 public class DialogFragmentViewCard extends DialogFragment implements DialogInterface
-        .OnClickListener, SeekBar.OnSeekBarChangeListener {
+        .OnClickListener, SeekBar.OnSeekBarChangeListener, AddonCardVH.ItemInteractionListener {
     public static final String TAG = DialogFragmentAddAccount.class.getSimpleName();
     public static final String ARG_CARD = "card";
     public static final String ARG_FAMILY_ID = "familyId";
@@ -150,7 +152,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
             FirebaseDatabase.getInstance().getReference("images").child("banks").child(cCard
                     .getBank().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);
             cardHolder.setText(getDefaultNotSet(cCard.getCardholder()));
-            cardNumber.setText(cCard.getFormattedNumber('-'));
+            cardNumber.setText(cCard.getFormattedNumber(' '));
             consumedLimit.setText(NumberFormat.getCurrencyInstance().format(cCard
                     .getConsumedLimit()));
             remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard
@@ -172,7 +174,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
                 addonTitle.setVisibility(View.VISIBLE);
                 addonCards.setLayoutManager(new LinearLayoutManager(getContext(),
                         LinearLayoutManager.HORIZONTAL, false));
-                AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(null);
+                AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(this);
                 addonCards.setAdapter(addonCardListAdapter);
                 addonCardListAdapter.setItems(cCard.getAddonCards());
             } else {
@@ -219,6 +221,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int newValue, boolean b) {
+        newValue = (newValue/100)*100;
         Util.Log.d(TAG, "%d %d %s", seekBar.getProgress(), newValue, String.valueOf(b));
         //skip initial trigger
         if (newValue != cCard.getConsumedLimit()) {
@@ -250,5 +253,37 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
             return "Not Set";
         }
         return value;
+    }
+
+    @Override
+    public void delete(AddonCard addonCard) {
+        Log.d(TAG, "delete addon" + addonCard.getNumber());
+        String title = "You want to delete Addon Card " + addonCard.getNumber();
+        DialogFragmentConfirm<AddonCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
+        Bundle bundle = new Bundle();
+        bundle.putString(DialogFragmentConfirm.ARG_TITLE, title);
+        bundle.putParcelable(DialogFragmentConfirm.ARG_ITEM, addonCard);
+        dialogFragmentConfirm.setArguments(bundle);
+        dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
+                DialogFragmentConfirm.TAG);
+    }
+
+    @Override
+    public void edit(AddonCard addonCard) {
+        Log.d(TAG, "edit addon" + addonCard.getNumber());
+        DialogFragmentAddonCard.newInstance(familyId, addonCard.getMainCardNumber(), addonCard)
+                .show(getFragmentManager(),
+                        DialogFragmentAddonCard.TAG);
+    }
+
+    @Override
+    public void share(AddonCard addonCard) {
+        Log.d(TAG, "share addon" + addonCard.getNumber());
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, addonCard.getReadableContent());
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string
+                .action_share)));
     }
 }

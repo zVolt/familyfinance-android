@@ -17,6 +17,23 @@
         android:layout_alignParentTop="true"
         tools:listitem="@layout/listitem_chat_text_send"/>
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <ImageButton
+        android:id="@+id/new_message"
+        style="@style/Base.Widget.AppCompat.ActionButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignBottom="@id/list"
+        android:layout_alignEnd="@id/list"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/circle_primary"
+        android:padding="4dp"
+        android:src="@drawable/ic_keyboard_arrow_down_grey_50_18dp"
+        />
+
     <LinearLayout
         android:id="@+id/ll1"
         android:layout_width="match_parent"

@@ -161,11 +161,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
                 (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(this);
     }
-    @Override
-    public void copy(Account account) {
-        //TODO Copy the Account data into clipboard
-        Log.d(TAG, "copy: " + account.toString());
-    }
 
     @Override
     public void delete(Account account) {
@@ -177,17 +172,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         dialogFragmentConfirm.setArguments(bundle);
         dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
                 DialogFragmentConfirm.TAG);
-    }
-
-    @Override
-    public void share(Account account) {
-        Log.d(TAG, "share: " + account.toString());
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, account.getReadableContent());
-        sendIntent.setType("text/plain");
-        startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string
-                .action_share)));
     }
 
     @Override

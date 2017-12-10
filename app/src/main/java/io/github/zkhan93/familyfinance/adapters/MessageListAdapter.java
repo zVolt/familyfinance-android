@@ -36,14 +36,20 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageVH> implemen
     private String meId;
     private String familyId;
     private MessageDao messageDao;
+    private MessageListener messageListener;
 
-    public MessageListAdapter(Context context, String familyId) {
+    public MessageListAdapter(Context context, String familyId, MessageListener messageListener) {
         messageList = new ArrayList<>();
         meId = FirebaseAuth.getInstance().getUid();
         this.familyId = familyId;
         FirebaseDatabase.getInstance().getReference("chats").child(familyId).orderByChild
                 ("timestamp").addChildEventListener(this);
         messageDao = ((App) context.getApplicationContext()).getDaoSession().getMessageDao();
+        this.messageListener = messageListener;
+    }
+
+    public MessageListAdapter(Context context, String familyId) {
+        this(context, familyId, null);
     }
 
     @Override
@@ -85,6 +91,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageVH> implemen
         messageDao.insertOrReplace(message);
         messageList.add(message);
         notifyItemInserted(messageList.size());
+        if (messageListener != null) messageListener.onNewMessage(messageList.size());
     }
 
     @Override
@@ -125,5 +132,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageVH> implemen
     interface ITEM_TYPE {
         int SENDING = 1;
         int RECEIVING = 0;
+    }
+
+    public interface MessageListener {
+        void onNewMessage(int position);
     }
 }
