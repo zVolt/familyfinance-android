@@ -33,7 +33,7 @@ import io.github.zkhan93.familyfinance.models.Member;
  */
 
 public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
-        .OnMenuItemClickListener, View.OnClickListener {
+        .OnMenuItemClickListener, View.OnClickListener, View.OnLongClickListener {
     public static final String TAG = AccountVH.class.getSimpleName();
     @BindView(R.id.account_holder)
     TextView name;
@@ -93,6 +93,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         popup.setOnMenuItemClickListener(this);
         inflater.inflate(R.menu.account_menu, popup.getMenu());
         itemView.setOnClickListener(this);
+        itemView.setOnLongClickListener(this);
         menu.setOnClickListener(this);
     }
 
@@ -137,6 +138,15 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
     }
 
     @Override
+    public boolean onLongClick(View view) {
+        if (itemInteractionListener != null) {
+            itemInteractionListener.onLongPress(account);
+            return true;
+        } else
+            return false;
+    }
+
+    @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
@@ -157,5 +167,6 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
 
         void view(Account account);
 
+        void onLongPress(Account account);
     }
 }

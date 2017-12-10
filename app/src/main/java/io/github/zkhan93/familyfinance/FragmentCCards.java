@@ -25,6 +25,7 @@ import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.AddonCardVH;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
@@ -141,17 +142,11 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                Log.d(TAG, "search something bro");
-                break;
-        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void delete(CCard cCard) {
-        Log.d(TAG, "delete: " + cCard.getNumber());
         String title = "You want to delete account " + cCard.getNumber();
         DialogFragmentConfirm<CCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
         Bundle bundle = new Bundle();
@@ -164,23 +159,25 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void edit(CCard cCard) {
-        Log.d(TAG, "edit: " + cCard.getNumber());
         DialogFragmentCcard.newInstance(familyId, cCard).show(getFragmentManager(),
                 DialogFragmentCcard.TAG);
     }
 
     @Override
     public void onView(CCard cCard) {
-        Log.d(TAG, "view: " + cCard.getNumber());
         DialogFragmentViewCard.newInstance(cCard, familyId).show(getFragmentManager(),
                 DialogFragmentCcard.TAG);
     }
 
     @Override
     public void addAddonCard(CCard cCard) {
-        Log.d(TAG, "addAddonCard: " + cCard.getNumber());
         DialogFragmentAddonCard.newInstance(familyId, cCard.getNumber()).show(getFragmentManager(),
                 DialogFragmentAddonCard.TAG);
+    }
+
+    @Override
+    public void onLongPress(CCard cCard) {
+        Util.quickCopy(getActivity().getApplicationContext(), cCard);
     }
 
     /**

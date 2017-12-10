@@ -194,6 +194,22 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        cCard.refresh();
+        if (cCard.getAddonCards().size() > 0) {
+            addonTitle.setVisibility(View.VISIBLE);
+            addonCards.setLayoutManager(new LinearLayoutManager(getContext(),
+                    LinearLayoutManager.HORIZONTAL, false));
+            AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(this);
+            addonCards.setAdapter(addonCardListAdapter);
+            addonCardListAdapter.setItems(cCard.getAddonCards());
+        } else {
+            addonTitle.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onClick(DialogInterface dialogInterface, int whichButton) {
         switch (whichButton) {
             case DialogInterface.BUTTON_NEGATIVE:
@@ -285,5 +301,10 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string
                 .action_share)));
+    }
+
+    @Override
+    public void onLongPress(AddonCard addonCard) {
+        Util.quickCopy(getActivity().getApplicationContext(),addonCard);
     }
 }

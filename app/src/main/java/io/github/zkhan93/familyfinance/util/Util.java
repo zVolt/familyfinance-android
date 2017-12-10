@@ -1,19 +1,34 @@
 package io.github.zkhan93.familyfinance.util;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.listeners.ClearNotificationRecevier;
+import io.github.zkhan93.familyfinance.models.Account;
+import io.github.zkhan93.familyfinance.models.AddonCard;
+import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.services.MessagingService;
 
 /**
  * Created by zeeshan on 15/7/17.
@@ -139,8 +154,121 @@ public class Util {
                 return true;
         return false;
     }
-    public String getBankLogonUrl(String bankId){
-        return String.format("https://firebasestorage.googleapis.com/v0/b/familyfinance-e8098.appspot.com/o/bank%2Fic_bank_%s.png?alt=media&token=fda916a0-bd18-4981-a263-578c6083fc74",bankId);
+
+    public static void quickCopy(@NonNull Context context, @NonNull Account account) {
+        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context
+                .CLIPBOARD_SERVICE);
+        StringBuilder strb = new StringBuilder();
+        if (clipboardManager != null) {
+            ClipData clip = ClipData.newPlainText("account number", account.getAccountNumber());
+            clipboardManager.setPrimaryClip(clip);
+            Toast.makeText(context, "Account number copied to clipboard", Toast.LENGTH_SHORT)
+                    .show();
+        } else {
+            strb.append(String.valueOf(account.getAccountNumber()));
+            strb.append('\n');
+        }
+        strb.append("Name: ");
+        strb.append(account.getAccountHolder());
+        strb.append('\n');
+        strb.append("IFSC: ");
+        strb.append(account.getIfsc());
+        showSimpleNotification(context, "Account details", strb.toString());
+    }
+
+    public static void quickCopy(@NonNull Context context, @NonNull AddonCard addonCard) {
+        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context
+                .CLIPBOARD_SERVICE);
+        StringBuilder strb = new StringBuilder();
+        if (clipboardManager != null) {
+            ClipData clip = ClipData.newPlainText("account number", addonCard.getNumber());
+            clipboardManager.setPrimaryClip(clip);
+            Toast.makeText(context, "Card number copied to clipboard", Toast.LENGTH_SHORT).show();
+        } else {
+            strb.append(String.valueOf(addonCard.getNumber()));
+            strb.append('\n');
+        }
+        strb.append("Expiry: ");
+        strb.append(CCard.EXPIRE_ON.format(new Date(addonCard.getExpiresOn())));
+        strb.append('\n');
+        strb.append("CVV: ");
+        strb.append(String.valueOf(addonCard.getCvv()));
+        showSimpleNotification(context, "Card details", strb.toString());
+    }
+
+    public static void quickCopy(@NonNull Context context, @NonNull CCard cCard) {
+        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context
+                .CLIPBOARD_SERVICE);
+        StringBuilder strb = new StringBuilder();
+        if (clipboardManager != null) {
+            ClipData clip = ClipData.newPlainText("account number", cCard.getNumber());
+            clipboardManager.setPrimaryClip(clip);
+            Toast.makeText(context, "Card number copied to clipboard", Toast.LENGTH_SHORT).show();
+        } else {
+            strb.append(String.valueOf(cCard.getNumber()));
+            strb.append('\n');
+        }
+        strb.append("Expiry: ");
+        strb.append(CCard.EXPIRE_ON.format(new Date(cCard.getExpireOn())));
+        strb.append('\n');
+        strb.append("CVV: ");
+        strb.append(String.valueOf(cCard.getCvv()));
+        showSimpleNotification(context, "Card details", strb.toString());
+    }
+
+    private static void showSimpleNotification(@NonNull Context context, String title, String
+            content) {
+        String summary = buildSummary(content);
+        NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat
+                .BigTextStyle()
+                .setBigContentTitle(title)
+                .setSummaryText(summary)
+                .bigText(content);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context, TAG)
+                        .setSmallIcon(R.drawable.ic_stat_launcher)
+                        .setContentTitle(title)
+                        .setContentText(content)
+                        .setSound(RingtoneManager.getDefaultUri(Notification.DEFAULT_SOUND))
+                        .setVibrate(new long[]{500, 1000})
+                        .setStyle(bigTextStyle)
+                        .setPriority(Notification.PRIORITY_HIGH);
+        NotificationManager mNotifyMgr =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // Builds the notification and issues it.
+        if (mNotifyMgr != null)
+            mNotifyMgr.notify(COPY_NOTIFICATION_ID, mBuilder.build());
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            Intent intent = new Intent(context, ClearNotificationRecevier.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+                    ClearNotificationRecevier.REQUEST_CLEAR_NOTIFICATION,
+                    intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            alarmManager.cancel(pendingIntent);
+            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 30000, pendingIntent);
+        }
+    }
+
+    public static int COPY_NOTIFICATION_ID = 1005;
+
+    private static String buildSummary(String content) {
+        if (content == null) return null;
+        StringBuilder strb = new StringBuilder();
+        String[] segs = content.split("[:\\n]");
+        if (segs.length > 1)
+            for (int i = 1; i < segs.length; i += 2) {
+                if (!segs[i].trim().isEmpty()) {
+                    strb.append(segs[i]);
+                    strb.append(", ");
+                }
+            }
+        else
+            strb.append(content);
+        if (strb.length() >= 2 && strb.charAt(strb.length() - 1) == ' ')
+            strb.delete(strb.length() - 2, strb.length() - 1);
+        return strb.toString();
     }
 }
 

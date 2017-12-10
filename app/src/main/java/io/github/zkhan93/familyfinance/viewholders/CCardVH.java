@@ -42,7 +42,7 @@ import io.github.zkhan93.familyfinance.util.Util;
  */
 
 public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
-        .OnMenuItemClickListener, View.OnClickListener {
+        .OnMenuItemClickListener, View.OnClickListener, View.OnLongClickListener {
 
     public static final String TAG = CCardVH.class.getSimpleName();
 
@@ -108,6 +108,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
         popup = new PopupMenu(itemView.getContext(), menu);
         itemView.setOnClickListener(this);
+        itemView.setOnLongClickListener(this);
+
         menu.setOnClickListener(this);
         addonTitle.setOnClickListener(this);
 
@@ -198,6 +200,15 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
     }
 
     @Override
+    public boolean onLongClick(View view) {
+        if(itemInteractionListener!=null) {
+            itemInteractionListener.onLongPress(cCard);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
@@ -222,6 +233,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
         void addAddonCard(CCard cCard);
 
         void onView(CCard cCard);
+
+        void onLongPress(CCard cCard);
 
     }
 }

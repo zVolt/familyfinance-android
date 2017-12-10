@@ -29,7 +29,7 @@ import io.github.zkhan93.familyfinance.models.Member;
  */
 
 public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
-        .OnMenuItemClickListener {
+        .OnMenuItemClickListener, View.OnLongClickListener {
 
     public static String TAG = AddonCard.class.getSimpleName();
 
@@ -59,6 +59,7 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
         super(itemView);
         context = itemView.getContext();
         ButterKnife.bind(this, itemView);
+        itemView.setOnLongClickListener(this);
         this.itemInteractionListener = itemInteractionListener;
         popup = new PopupMenu(itemView.getContext(), menu);
         MenuInflater inflater = popup.getMenuInflater();
@@ -71,6 +72,15 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
     @OnClick(R.id.menu)
     void onClick(View view) {
         popup.show();
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        if (itemInteractionListener != null) {
+            itemInteractionListener.onLongPress(addonCard);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -121,5 +131,7 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
         void edit(AddonCard addonCard);
 
         void share(AddonCard addonCard);
+
+        void onLongPress(AddonCard addonCard);
     }
 }

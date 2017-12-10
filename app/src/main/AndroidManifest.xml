@@ -108,6 +108,10 @@
                 <action android:name="NotificationActionsListener.CLAIM_OTP"/>
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".listeners.ClearNotificationRecevier"
+            android:exported="false">
+        </receiver>
 
     </application>
 

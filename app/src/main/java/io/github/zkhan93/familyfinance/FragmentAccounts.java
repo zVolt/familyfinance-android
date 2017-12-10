@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.Account;
+import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 
 
@@ -185,6 +186,11 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     public void view(Account account) {
         DialogFragmentViewAccount.newInstance(account, familyId).show(getFragmentManager(),
                 DialogFragmentAddAccount.TAG);
+    }
+
+    @Override
+    public void onLongPress(Account account) {
+        Util.quickCopy(getActivity().getApplicationContext(),account);
     }
 
     /**
