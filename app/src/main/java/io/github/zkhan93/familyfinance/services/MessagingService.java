@@ -27,17 +27,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.MainActivity;
 import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
 
-import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener.ACTION_CLAIM_OTP;
+import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener
+        .ACTION_CLAIM_OTP;
 import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener.ACTION_COPY_OTP;
 
 /**
  * Created by zeeshan on 13/7/17.
  */
-
 public class MessagingService extends FirebaseMessagingService {
     public static final String TAG = MessagingService.class.getSimpleName();
     public static final int mNotificationId = 1001;
@@ -72,7 +74,13 @@ public class MessagingService extends FirebaseMessagingService {
         }
 
         if (data.get(KEYS.TYPE).equals(TYPE.OTP)) {
-            data.put(KEYS.ME_ID,user.getUid());
+            String fromMemberId = data.get(KEYS.FROM_MEMBER_ID);
+            if (fromMemberId == null || fromMemberId.isEmpty()) return;
+            Member from = ((App) getApplication()).getDaoSession().getMemberDao().load
+                    (fromMemberId);
+            if (from == null) return;
+            data.put(KEYS.FROM_NAME, from.getName());
+            data.put(KEYS.ME_ID, user.getUid());
             String otp = showNotification(getApplicationContext(), data);
             copyToClipboard(getApplicationContext(), otp);
         } else if (data.get(KEYS.TYPE).equals(TYPE.PRESENCE))
@@ -157,6 +165,7 @@ public class MessagingService extends FirebaseMessagingService {
                     .ic_content_copy_grey_50_24dp, "Claim", claimPendingIntent));
         }
         mBuilder.setContentIntent(resultPendingIntent);
+
         //set fake vibration to enable heads Up in API 21+
         if (Build.VERSION.SDK_INT >= 21) mBuilder.setVibrate(new long[0]);
 
@@ -168,6 +177,7 @@ public class MessagingService extends FirebaseMessagingService {
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr =
                 (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
         // Builds the notification and issues it.
         if (mNotifyMgr != null)
             mNotifyMgr.notify(mNotificationId, mBuilder.build());

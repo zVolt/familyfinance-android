@@ -23,7 +23,7 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class FragmentSetting extends PreferenceFragment implements Preference
-        .OnPreferenceClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
+        .OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String TAG = FragmentSetting.class.getSimpleName();
     private SharedPreferences sharedPreferences;
@@ -143,13 +143,7 @@ public class FragmentSetting extends PreferenceFragment implements Preference
         // updated to reflect the new value, per the Android Design
         // guidelines.
 
-        Preference pinPreference = findPreference(getString(R.string.pref_key_pin));
-        pinPreference.setOnPreferenceClickListener(this);
-        ((SwitchPreference) pinPreference).setChecked(sharedPreferences.getBoolean(getString
-                        (R.string.pref_key_pin),
-                false));
 
-        bindPreferenceSummaryToValue(pinPreference);
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_copy)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_notification)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string
@@ -159,7 +153,13 @@ public class FragmentSetting extends PreferenceFragment implements Preference
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_autolock)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_allsms)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_no_of_sms)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_pin)));
 
+        Preference pinPreference = findPreference(getString(R.string.pref_key_pin));
+        pinPreference.setOnPreferenceChangeListener(this);
+        ((SwitchPreference) pinPreference).setChecked(sharedPreferences.getBoolean(getString
+                        (R.string.pref_key_pin),
+                false));
         Log.d(TAG, "setting all set");
     }
 
@@ -176,6 +176,7 @@ public class FragmentSetting extends PreferenceFragment implements Preference
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .unregisterOnSharedPreferenceChangeListener(this);
         findPreference(getString(R.string.pref_key_pin)).setOnPreferenceClickListener(null);
+        Log.d(TAG, "listener removed");
     }
 
     @Override
@@ -189,9 +190,19 @@ public class FragmentSetting extends PreferenceFragment implements Preference
     }
 
     @Override
-    public boolean onPreferenceClick(Preference preference) {
+    public boolean onPreferenceChange(Preference preference, Object o) {
+        Log.d(TAG, "this is value: " + o.toString());
+        return false;
+    }
+
+
+    public boolean onPreferenceChanged(Preference preference) {
         Log.d(TAG, "preferenceClick" + preference.getKey());
         if (preference.getKey().equals(getString(R.string.pref_key_pin))) {
+            sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+                    PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getBoolean(preference.getKey(), false));
             if (((SwitchPreference) preference).isChecked()) {
                 Log.d(TAG, "set new PIN");
                 startActivityForResult(new Intent(PinActivity.ACTIONS.SET_PIN, null,

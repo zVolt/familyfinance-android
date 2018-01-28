@@ -64,7 +64,7 @@ public class BankSpinnerAdapter extends BaseAdapter implements ValueEventListene
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         ViewHolder viewHolder = null;
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.spinneritem_bank, viewGroup, false);
+            convertView = inflater.inflate(R.layout.spinneritem, viewGroup, false);
             viewHolder = new ViewHolder();
             viewHolder.logo = convertView.findViewById(R.id.logo);
             viewHolder.name = convertView.findViewById(R.id.name);

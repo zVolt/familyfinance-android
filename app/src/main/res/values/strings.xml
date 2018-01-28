@@ -21,6 +21,9 @@
     <string name="title_chat_room">Chat Room</string>
     <string name="title_filter_sms">Show SMS only from</string>
     <string name="title_billing_cycle">Billing Cycle</string>
+    <string name="title_credentials">Credentials</string>
+    <string name="title_credentials_create">Create Credentials</string>
+    <string name="title_credentials_update">Update Credentials</string>
 
     <!--Menu Titles-->
     <string name="action_settings">Settings</string>
@@ -55,6 +58,8 @@
     <string name="hint_family_id">Family Id</string>
     <string name="hint_phone_number">Phone Number</string>
     <string name="hint_email">Email</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_description">Description</string>
 
     <string name="progress_logging_you_in">Logging you in..</string>
     <string name="progress_select_account">Select an account..</string>
@@ -88,7 +93,7 @@
     <string name="no_otp_found">Oops! cannot find OTP</string>
     <string name="error_clipboard"> %1$s cannot copy to clipboard</string>
     <string name="select_bank">Select Bank</string>
-
+    <string name="delete">Delete</string>
 
 
     <!--Category title-->
@@ -155,6 +160,9 @@
 
 
     <string name="web_client_id" translatable="false">683400004161-nq55dgjn8ubrmt1mjcg79gfnuckui6fe.apps.googleusercontent.com</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

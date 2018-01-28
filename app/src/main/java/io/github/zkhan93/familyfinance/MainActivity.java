@@ -120,6 +120,9 @@ public class MainActivity extends AppCompatActivity implements
                     case PAGE_POSITION.CHAT_ROOM:
                         hideFab();
                         break;
+                    case PAGE_POSITION.CREDENTIALS:
+                        showFab();
+                        break;
                 }
             }
 
@@ -144,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d(TAG, "onCancelled: " + databaseError.getMessage());
             }
         };
         keywordsListener = new ValueEventListener() {
@@ -392,8 +395,11 @@ public class MainActivity extends AppCompatActivity implements
                         intent.putExtra("familyId", familyId);
                         startActivity(intent);
                         break;
+                    case PAGE_POSITION.CREDENTIALS:
+                        DialogFragmentCredential.getInstance(null,familyId)
+                                .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
                     default:
-
+                        break;
                 }
 
                 break;
@@ -446,6 +452,9 @@ public class MainActivity extends AppCompatActivity implements
                 case PAGE_POSITION.CHAT_ROOM:
                     fragment = FragmentChatroom.newInstance(familyId);
                     break;
+                case PAGE_POSITION.CREDENTIALS:
+                    fragment = FragmentCredentials.newInstance(familyId);
+                    break;
                 default: //0 or other
                     fragment = FragmentSummary.newInstance(familyId);
                     break;
@@ -455,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public int getCount() {
-            return 6;
+            return 7;
         }
 
         @Override
@@ -475,6 +484,8 @@ public class MainActivity extends AppCompatActivity implements
                     return getString(R.string.title_emails);
                 case PAGE_POSITION.CHAT_ROOM:
                     return getString(R.string.title_chat_room);
+                case PAGE_POSITION.CREDENTIALS:
+                    return getString(R.string.title_credentials);
             }
             return null;
         }
@@ -486,10 +497,11 @@ public class MainActivity extends AppCompatActivity implements
         int SUMMARY = 0;
         int ACCOUNTS = 1;
         int CCARDS = 2;
-        int SMS = 3;
-        int CHAT_ROOM = 4;
-        int MEMBERS = 5;
-        int EMAILS = 6;
+        int CREDENTIALS = 3;
+        int SMS = 4;
+        int CHAT_ROOM = 5;
+        int MEMBERS = 6;
+        int EMAILS = 7;
     }
 
     private boolean verified = false;

@@ -140,6 +140,7 @@ public class SmsReceiver extends BroadcastReceiver {
             data.put(MessagingService.KEYS.ID, newOtpRef.getKey());
             data.put(MessagingService.KEYS.CONTENT, tmpOtp.getContent());
         }
+        //TODO: Show internet not there notification
         String strOtp = MessagingService.showNotification(context.getApplicationContext(), data);
         MessagingService.copyToClipboard(context.getApplicationContext(), strOtp);
     }

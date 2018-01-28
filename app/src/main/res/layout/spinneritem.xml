@@ -14,7 +14,7 @@
         android:id="@+id/logo"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        app:srcCompat="@drawable/ic_bank_sbi"/>
+        app:srcCompat="@drawable/circle_orange"/>
 
     <TextView
         android:id="@+id/name"
@@ -23,5 +23,5 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textColor="@color/textPrimary"
-        tools:text="State Bank of India"/>
+        tools:text="This is a spinner Item"/>
 </LinearLayout>
