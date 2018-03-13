@@ -148,8 +148,8 @@
             style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/tv5"
+            android:layout_below="@+id/userid"
+            android:layout_marginTop="8dp"
             android:text="Password"/>
 
         <TextView
@@ -157,7 +157,7 @@
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/tv6"
+            android:layout_alignStart="@+id/tv6"
             android:layout_below="@+id/tv6"
             tools:text="P@ssw0rd!"/>
 
@@ -166,7 +166,7 @@
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/userid"
+            android:layout_below="@+id/password"
             android:layout_marginTop="8dp"
             android:indeterminate="false"
             android:progressTint="@color/colorPrimary"

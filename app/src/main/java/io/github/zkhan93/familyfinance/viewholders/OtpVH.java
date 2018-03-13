@@ -1,8 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -13,12 +11,18 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.Otp;
+import io.github.zkhan93.familyfinance.util.Util;
 
 /**
  * Created by zeeshan on 7/7/17.
@@ -38,17 +42,71 @@ public class OtpVH extends RecyclerView.ViewHolder {
     @BindView(R.id.claim)
     TextView claim;
 
-    public OtpVH(View itemView) {
+    private DatabaseReference fromRef;
+    private ValueEventListener senderValueListener;
+    private ValueEventListener claimerValueListener;
+    private int asyncCallCount;
+    private Member from, claimedBy;
+    private Otp otp;
+
+    {
+        senderValueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                asyncCallCount--;
+                if (dataSnapshot == null || !dataSnapshot.exists()) return;
+                from = dataSnapshot.getValue(Member.class);
+                checkIfDataFetchComplete();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Util.Log.d(TAG, "onCancelled: %s", databaseError.getMessage());
+                asyncCallCount--;
+                checkIfDataFetchComplete();
+            }
+        };
+
+        claimerValueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                asyncCallCount--;
+                if (dataSnapshot == null || !dataSnapshot.exists()) return;
+                claimedBy = dataSnapshot.getValue(Member.class);
+                checkIfDataFetchComplete();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Util.Log.d(TAG, "onCancelled: %s", databaseError.getMessage());
+                asyncCallCount--;
+                checkIfDataFetchComplete();
+            }
+        };
+    }
+
+    public OtpVH(View itemView, String familyId) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }
 
     public void setOtp(Otp otp) {
-        Member from = otp.getFrom();
+        this.otp = otp;
+        checkIfDataFetchComplete();
+//        asyncCallCount = 1;
+//        fromRef.child(otp.getId()).addListenerForSingleValueEvent(senderValueListener);
+//        if (otp.getClaimedByMemberId() == null || otp.getClaimedByMemberId().isEmpty()) return;
+//        asyncCallCount++;
+//        fromRef.child(otp.getClaimedByMemberId()).addListenerForSingleValueEvent
+//                (claimerValueListener);
+    }
+
+    private void checkIfDataFetchComplete() {
+//        if (asyncCallCount > 0) return;
         String url;
+        from = otp.getFrom();
         if (from != null && from.getProfilePic() != null) {
             url = from.getProfilePic();
-
             Glide.with(receiver.getContext())
                     .load(url)
                     .apply(RequestOptions
@@ -56,8 +114,8 @@ public class OtpVH extends RecyclerView.ViewHolder {
                             .placeholder(R.drawable.ic_person_grey_600_24dp))
                     .into(receiver);
         }
-        Member claimedBy = otp.getClaimedby();
-        if (claimedBy != null && claimedBy.getProfilePic()!=null) {
+        claimedBy = otp.getClaimedby();
+        if (claimedBy != null && claimedBy.getProfilePic() != null) {
             claim.setVisibility(View.VISIBLE);
             url = claimedBy.getProfilePic();
             Glide.with(claim.getContext())
@@ -65,13 +123,15 @@ public class OtpVH extends RecyclerView.ViewHolder {
                     .apply(RequestOptions.circleCropTransform())
                     .into(new SimpleTarget<Drawable>(50, 50) {
                         @Override
-                        public void onResourceReady(Drawable drawable, Transition<? super Drawable>
+                        public void onResourceReady(Drawable drawable, Transition<? super
+                                Drawable>
                                 transition) {
-                            claim.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null,
+                            claim.setCompoundDrawablesWithIntrinsicBounds(drawable, null,
+                                    null,
                                     null);
                         }
                     });
-        }else{
+        } else {
             claim.setVisibility(View.GONE);
         }
 

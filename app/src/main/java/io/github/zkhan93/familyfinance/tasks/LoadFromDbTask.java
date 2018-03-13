@@ -9,8 +9,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.zkhan93.familyfinance.models.OtpDao;
-
 /**
  * Created by zeeshan on 10/7/17.
  */
@@ -46,8 +44,8 @@ public class LoadFromDbTask<D extends AbstractDao<T, ?>, T>
         List<T> data = new ArrayList<>();
         if (dao == null)
             return data;
-        if (dao instanceof OtpDao)
-            data = dao.queryBuilder().orderDesc(OtpDao.Properties.Timestamp).list();
+//        if (dao instanceof OtpDao)
+//            data = dao.queryBuilder().orderDesc(OtpDao.Properties.Timestamp).list();
         else
             data = dao.loadAll();
         return data;

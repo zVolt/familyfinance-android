@@ -20,9 +20,8 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
-import io.github.zkhan93.familyfinance.models.Member;
+import io.github.zkhan93.familyfinance.util.InfiniteScrollListener;
 import io.github.zkhan93.familyfinance.util.Util;
-import io.github.zkhan93.familyfinance.viewholders.FilterSMSMemberVH;
 
 
 /**
@@ -33,7 +32,7 @@ import io.github.zkhan93.familyfinance.viewholders.FilterSMSMemberVH;
  * Use the {@link FragmentSms#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentSms extends Fragment implements OtpListAdapter.ItemInsertedListener,
+public class FragmentSms extends Fragment implements
         SearchView.OnQueryTextListener {
     public static final String TAG = FragmentSms.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -43,9 +42,19 @@ public class FragmentSms extends Fragment implements OtpListAdapter.ItemInserted
     private OnFragmentInteractionListener mListener;
     private String familyId;
     private OtpListAdapter otpListAdapter;
+    private InfiniteScrollListener infiniteScrollListener;
 
     @BindView(R.id.list)
     RecyclerView otpsList;
+
+    {
+        infiniteScrollListener = new InfiniteScrollListener(10) {
+            @Override
+            public boolean onLoadMore(int totalItemsCount) {
+                return otpListAdapter.loadNextPage();
+            }
+        };
+    }
 
     public FragmentSms() {
         // Required empty public constructor
@@ -81,14 +90,28 @@ public class FragmentSms extends Fragment implements OtpListAdapter.ItemInserted
         View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
         ButterKnife.bind(this, rootView);
         otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(),
-                familyId, this);
+                familyId, null);
         otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         otpsList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration
                 .VERTICAL));
-        otpsList.scrollToPosition(0);
         otpsList.setAdapter(otpListAdapter);
+
         setHasOptionsMenu(true);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Util.Log.d(TAG,"added IS");
+        otpsList.addOnScrollListener(infiniteScrollListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Util.Log.d(TAG,"removed IS");
+        otpsList.removeOnScrollListener(infiniteScrollListener);
     }
 
     @Override
@@ -132,12 +155,6 @@ public class FragmentSms extends Fragment implements OtpListAdapter.ItemInserted
 
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -177,9 +194,4 @@ public class FragmentSms extends Fragment implements OtpListAdapter.ItemInserted
 
     }
 
-    @Override
-    public void onItemAdded(int position) {
-        if (otpsList != null)
-            otpsList.smoothScrollToPosition(position);
-    }
 }

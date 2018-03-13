@@ -405,7 +405,6 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         daoSession.getRequestDao().queryBuilder().where(RequestDao.Properties.UserId.notEq(me
                 .getId())).buildDelete().executeDeleteWithoutDetachingEntities();
         daoSession.deleteAll(CCard.class);
-        daoSession.deleteAll(Otp.class);
         daoSession.deleteAll(Account.class);
         callbackCounter = 2;
         FirebaseDatabase.getInstance().getReference("members").child(familyId)

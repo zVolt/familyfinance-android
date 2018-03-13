@@ -20,29 +20,47 @@ import org.greenrobot.greendao.DaoException;
  * Created by zeeshan on 7/7/17.
  */
 @IgnoreExtraProperties
-@Entity
-public class Otp extends BaseModel{
+public class Otp extends BaseModel {
     @Id
     String id;
     String number, content;
-    @Exclude
-    @ToOne(joinProperty = "fromMemberId")
-    Member from;
     long timestamp;
-    String fromMemberId;
+
     @Exclude
-    @ToOne(joinProperty = "claimedByMemberId")
+    Member from;
+    String fromMemberId;
+
+    @Exclude
     Member claimedby;
     String claimedByMemberId;
 
+    public Otp() {
+    }
 
-    @Keep
-    public Otp(String id, String number, String content, Member from, long timestamp) {
+    public Otp(String id, String number, String content, long timestamp, String
+            fromMemberId, String claimedByMemberId) {
         this.id = id;
         this.number = number;
         this.content = content;
-        this.from = from;
         this.timestamp = timestamp;
+        this.fromMemberId = fromMemberId;
+        this.claimedByMemberId = claimedByMemberId;
+    }
+    @Exclude
+    public Member getFrom() {
+        return from;
+    }
+    @Exclude
+    public void setFrom(Member from) {
+        this.from = from;
+    }
+    @Exclude
+    public Member getClaimedby() {
+        return claimedby;
+    }
+    @Exclude
+    public void setClaimedby(Member claimedby) {
+        this.claimedby = claimedby;
     }
 
     public String getId() {
@@ -119,118 +137,6 @@ public class Otp extends BaseModel{
         this.fromMemberId = fromMemberId;
     }
 
-    /**
-     * To-one relationship, resolved on first access.
-     */
-    @Exclude
-    @Keep
-    public Member getFrom() {
-        String __key = this.fromMemberId;
-        if (from__resolvedKey == null || from__resolvedKey != __key) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            MemberDao targetDao = daoSession.getMemberDao();
-            Member fromNew = targetDao.load(__key);
-            synchronized (this) {
-                from = fromNew;
-                from__resolvedKey = __key;
-            }
-        }
-        return from;
-    }
-
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
-    @Exclude
-    @Keep
-    public void setFrom(Member from) {
-        synchronized (this) {
-            this.from = from;
-            fromMemberId = from == null ? null : from.getId();
-            from__resolvedKey = fromMemberId;
-        }
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
-
-    /** To-one relationship, resolved on first access. */
-    @Exclude
-    @Keep
-    public Member getClaimedby() {
-        String __key = this.claimedByMemberId;
-        if (claimedby__resolvedKey == null || claimedby__resolvedKey != __key) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            MemberDao targetDao = daoSession.getMemberDao();
-            Member claimedbyNew = targetDao.load(__key);
-            synchronized (this) {
-                claimedby = claimedbyNew;
-                claimedby__resolvedKey = __key;
-            }
-        }
-        return claimedby;
-    }
-
-    /** called by internal mechanisms, do not call yourself. */
-    @Exclude
-    @Keep
-    public void setClaimedby(Member claimedby) {
-        synchronized (this) {
-            this.claimedby = claimedby;
-            claimedByMemberId = claimedby == null ? null : claimedby.getId();
-            claimedby__resolvedKey = claimedByMemberId;
-        }
-    }
-
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1776113371)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getOtpDao() : null;
-    }
-
-    public Otp() {
-    }
-
     protected Otp(Parcel in) {
         this.id = in.readString();
         this.number = in.readString();
@@ -239,16 +145,6 @@ public class Otp extends BaseModel{
         this.timestamp = in.readLong();
     }
 
-    @Generated(hash = 1345610764)
-    public Otp(String id, String number, String content, long timestamp, String fromMemberId,
-            String claimedByMemberId) {
-        this.id = id;
-        this.number = number;
-        this.content = content;
-        this.timestamp = timestamp;
-        this.fromMemberId = fromMemberId;
-        this.claimedByMemberId = claimedByMemberId;
-    }
 
     public static final Parcelable.Creator<Otp> CREATOR = new Parcelable.Creator<Otp>() {
         @Override
@@ -267,18 +163,4 @@ public class Otp extends BaseModel{
             return Long.compare(o2.getTimestamp(), o1.getTimestamp());
         }
     };
-    /**
-     * Used to resolve relations
-     */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-    /**
-     * Used for active entity operations.
-     */
-    @Generated(hash = 567553970)
-    private transient OtpDao myDao;
-    @Generated(hash = 126835137)
-    private transient String from__resolvedKey;
-    @Generated(hash = 1047900694)
-    private transient String claimedby__resolvedKey;
 }

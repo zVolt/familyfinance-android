@@ -160,7 +160,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
             limit.setMax((int) cCard.getMaxLimit());
             limit.setProgress((int) cCard.getConsumedLimit());
             billingCycle.setText(Util.getBillingCycleString(cCard.getBillingDay(), cCard
-                    .getBillingDay(), "%s - %s"));
+                    .getPaymentDay(), "%s - %s"));
             expiresOn.setText(getDefaultNotSet(EXPIRE_ON.format(new Date(cCard.getExpireOn()))));
             cvv.setText(getDefaultNotSet(cCard.getCvv()));
             userid.setText(getDefaultNotSet(cCard.getUserid()));
