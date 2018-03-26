@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -38,12 +39,12 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String TAG = OtpListAdapter.class.getSimpleName();
     private ArrayList<Otp> otps;
-    private Query otpRef;
+    //    private Query otpRef;
     private boolean ignoreChildEvents;
     private ItemInsertedListener itemInsertedListener;
-    private int pageLoadSize = 40;
+    private int pageSize = 5;
     private int currentPage = -1;
-    private String familyId;
+    private String familyId, lastLoadedItem;
     private MemberDao memberDao;
     private boolean loading;
 
@@ -53,12 +54,13 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.otps = new ArrayList<>();
         if (familyId == null)
             return;
-        otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId);
-        ignoreChildEvents = true;
-        loading = true;
-        otpRef.orderByKey().limitToLast(pageLoadSize).addListenerForSingleValueEvent(this);
-//        otpRef.orderByKey().limitToLast(1).addChildEventListener(this);
         memberDao = app.getDaoSession().getMemberDao();
+
+        loadFirstPage();
+//        otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId);
+
+//        otpRef.orderByKey().limitToLast(1).addChildEventListener(this);
+
     }
 
     @Override
@@ -93,46 +95,111 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int EMPTY = 1;
     }
 
-    private void insertOrUpdate(Otp newOtp) {
-        ListIterator<Otp> itr = otps.listIterator();
-        int position = 0;
-        int insertPosition = -1;//invalid
-        boolean found = false;
-        Otp oldOtp;
-        while (itr.hasNext()) {
-            oldOtp = itr.next();
-            if (insertPosition == -1 && oldOtp.getTimestamp() <= newOtp.getTimestamp())
-                insertPosition = position;
-            if (oldOtp.getId().equals(newOtp.getId())) {
-                //already exist;
-                found = true;
-                break;
-            }
-            position++;
+    public boolean loadNextPage() {
+        if (loading) {
+            Log.d(TAG, "already loading currentSize:" + otps.size());
+            return false;
+        }
+        if (lastLoadedItem == null || lastLoadedItem.isEmpty()) {
+            Log.d(TAG, "lastLoadedItem is empty probably because loadFirstPage was not called or " +
+                    "not completed successfully");
+            otps.clear();
+            notifyDataSetChanged();
+            loadFirstPage();
+            return true;
+        }
+        Util.Log.d(TAG, "current page %s, items now %d after %d", currentPage,
+                otps.size(), otps.size() + pageSize);
+//        Util.Log.d(TAG, "endAt %s", otps.get(otps.size() - 1).getId());
+//        FirebaseDatabase.getInstance().getReference("otps")
+//                .child(familyId)
+//                .orderByKey()
+//                .endAt(otps.get(otps.size() - 1).getId())
+//                .limitToLast(pageSize + 1)
+//                .addListenerForSingleValueEvent(this);
+//        loading = true;
+        Query otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId)
+                .orderByKey().endAt(lastLoadedItem).limitToLast(pageSize + 1);
+        List<Otp> tmpOtps = new ArrayList<>();
+        loading = true;
+        otpRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Otp otp;
+                if (dataSnapshot.getChildrenCount() == 0)
+                    noMoreItems();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Log.d(TAG, ds.getKey());
+                    otp = ds.getValue(Otp.class);
 
-        }
-        if (!found) {
-            if (insertPosition == -1) insertPosition = 0;
-            otps.add(insertPosition, newOtp);
-            notifyItemInserted(insertPosition);
-            if (itemInsertedListener != null)
-                itemInsertedListener.onItemAdded(insertPosition);
-        }
+                    if (otp.getFromMemberId() == null || otp.getFromMemberId().isEmpty())
+                        otp.setFromMemberId(ds.child("from").child("id").getValue(String.class));
+                    otp.setId(ds.getKey());
+                    otp.setFrom(memberDao.load(otp.getFromMemberId()));
+                    if (otp.getClaimedByMemberId() != null && !otp.getClaimedByMemberId().isEmpty())
+                        otp.setClaimedby(memberDao.load(otp.getClaimedByMemberId()));
+                    tmpOtps.add(otp);
+                }
+                tmpOtps.remove(tmpOtps.size() - 1); // skip the last item since it was already
+                // loaded in previous page
+                lastLoadedItem = tmpOtps.get(0).getId();
+                Log.d(TAG, "LastItemLoaded: " + lastLoadedItem);
+                Collections.reverse(tmpOtps);
+                int lastSize = otps.size() - 1;
+                otps.addAll(tmpOtps);
+                notifyItemRangeInserted(lastSize, tmpOtps.size() - 1);
+                loading = false;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("cancelled loading");
+                loading = false;
+            }
+        });
+        return true;
     }
 
-    public boolean loadNextPage() {
-        if (loading) return false;
-        Util.Log.d(TAG, "current page %s, items now %d after %d", currentPage,
-                otps.size(), otps.size() + pageLoadSize);
-        Util.Log.d(TAG, "endAt %s", otps.get(otps.size() - 1).getId());
-        FirebaseDatabase.getInstance().getReference("otps")
-                .child(familyId)
-                .orderByKey()
-                .endAt(otps.get(otps.size() - 1).getId())
-                .limitToLast(pageLoadSize + 1)
-                .addListenerForSingleValueEvent(this);
+    private void noMoreItems() {
+        loading = false;
+    }
+
+    private void loadFirstPage() {
+        Query otpRef = FirebaseDatabase.getInstance().getReference("otps").child(familyId)
+                .orderByKey().limitToLast(pageSize);
+        List<Otp> tmpOtps = new ArrayList<>();
         loading = true;
-        return true;
+
+        otpRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Otp otp;
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Log.d(TAG, ds.getKey());
+                    otp = ds.getValue(Otp.class);
+
+                    if (otp.getFromMemberId() == null || otp.getFromMemberId().isEmpty())
+                        otp.setFromMemberId(ds.child("from").child("id").getValue(String.class));
+                    otp.setId(ds.getKey());
+                    otp.setFrom(memberDao.load(otp.getFromMemberId()));
+                    if (otp.getClaimedByMemberId() != null && !otp.getClaimedByMemberId().isEmpty())
+                        otp.setClaimedby(memberDao.load(otp.getClaimedByMemberId()));
+                    tmpOtps.add(otp);
+                }
+                lastLoadedItem = tmpOtps.get(0).getId();
+                Log.d(TAG, "LastItemLoaded: " + lastLoadedItem);
+                Collections.reverse(tmpOtps);
+                otps.addAll(tmpOtps);
+                notifyItemRangeInserted(0, tmpOtps.size() - 1);
+                loading = false;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("cancelled loading");
+                loading = false;
+            }
+        });
     }
 
     @Override
@@ -212,7 +279,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             startPos -= 1;
             otps.remove(startPos);
         }
-        Log.d(TAG, "strart pos" + startPos);
+        Log.d(TAG, "start pos" + startPos);
         int itemCount = 0;
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             otp = ds.getValue(Otp.class);
@@ -231,7 +298,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
         ignoreChildEvents = false;
         loading = false;
-        currentPage = otps.size() / pageLoadSize;
+        currentPage = otps.size() / pageSize;
         if (overridinglastItem) {
             itemCount -= 1;//did not updated the last item already in list
             startPos += 1;

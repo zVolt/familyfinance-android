@@ -1,14 +1,19 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
+
 android {
     compileSdkVersion 26
     buildToolsVersion '26.0.3'
+    compileOptions{
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
     defaultConfig {
         applicationId "io.github.zkhan93.familyfinance"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 8
-        versionName "1.8"
+        versionCode 9
+        versionName "1.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -26,7 +31,7 @@ android {
     }
     testOptions {
         unitTests {
-//            includeAndroidResources = true
+            includeAndroidResources = true
         }
     }
 
@@ -34,7 +39,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:26.1.0'
@@ -86,8 +91,12 @@ dependencies {
     }
 
     testCompile 'junit:junit:4.12'
-//    testCompile 'org.robolectric:robolectric:3.4.2'
+    testCompile "org.mockito:mockito-core:2.+"
 
+    // Android runner and rules support
+    androidTestCompile 'com.android.support.test:rules:1.0.1'
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
 }
 greendao {
     schemaVersion 33
