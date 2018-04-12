@@ -104,19 +104,19 @@ public class FragmentSms extends Fragment implements
     public void onResume() {
         super.onResume();
         Util.Log.d(TAG,"added IS");
-        otpsList.addOnScrollListener(infiniteScrollListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Util.Log.d(TAG,"removed IS");
-        otpsList.removeOnScrollListener(infiniteScrollListener);
     }
+
 
     @Override
     public void onStart() {
         super.onStart();
+        otpsList.addOnScrollListener(infiniteScrollListener);
         PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
                 .registerOnSharedPreferenceChangeListener(otpListAdapter);
     }
@@ -125,6 +125,7 @@ public class FragmentSms extends Fragment implements
     public void onStop() {
         Util.Log.d(TAG, "onStop");
         super.onStop();
+        otpsList.removeOnScrollListener(infiniteScrollListener);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
                 (getActivity().getApplicationContext());
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(otpListAdapter);

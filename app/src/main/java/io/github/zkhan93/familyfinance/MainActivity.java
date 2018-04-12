@@ -464,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public int getCount() {
-            return 7;
+            return 6;
         }
 
         @Override
@@ -499,9 +499,9 @@ public class MainActivity extends AppCompatActivity implements
         int CCARDS = 2;
         int CREDENTIALS = 3;
         int SMS = 4;
-        int CHAT_ROOM = 5;
-        int MEMBERS = 6;
-        int EMAILS = 7;
+        int MEMBERS = 5;
+        int EMAILS = 6;
+        int CHAT_ROOM = 7;
     }
 
     private boolean verified = false;

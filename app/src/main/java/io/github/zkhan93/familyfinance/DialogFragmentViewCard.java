@@ -286,7 +286,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
     @Override
     public void edit(AddonCard addonCard) {
-        Log.d(TAG, "edit addon" + addonCard.getNumber());
+        Log.d(TAG, "edit addon");
         DialogFragmentAddonCard.newInstance(familyId, addonCard.getMainCardNumber(), addonCard)
                 .show(getFragmentManager(),
                         DialogFragmentAddonCard.TAG);
@@ -294,7 +294,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
     @Override
     public void share(AddonCard addonCard) {
-        Log.d(TAG, "share addon" + addonCard.getNumber());
+        Log.d(TAG, "share addon");
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, addonCard.getReadableContent());

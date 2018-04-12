@@ -127,7 +127,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     strb.append(cw.type == TYPE.HEADER ? "HEADER" : "CHILD");
                     strb.append(", ");
                 }
-                Log.d(TAG, "state: " + strb.toString());
             }
         };
     }
@@ -284,7 +283,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         Credential credential;
-        Log.d(TAG, "onDataChanged " + dataSnapshot.toString());
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             credential = ds.getValue(Credential.class);
             if (credential == null) continue;
@@ -300,7 +298,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             Log.d(TAG, entry.getKey() + " " + entry.getValue().size() + " " + entry.getValue()
                     .toString());
         }
-//        credentialDao.saveInTx(credentials);
         notifyDataSetChanged();
         ignoreChildEvents = false;
 

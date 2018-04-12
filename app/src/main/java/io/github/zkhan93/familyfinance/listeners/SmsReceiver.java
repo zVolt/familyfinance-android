@@ -36,7 +36,6 @@ import io.github.zkhan93.familyfinance.util.Util;
 public class SmsReceiver extends BroadcastReceiver {
     public static final String TAG = SmsReceiver.class.getSimpleName();
     private String extractedOtp;
-
     /**
      * accourding to docs you have 10 sec to perform your job and the object will no longer be
      * active after it returns from this function
@@ -124,8 +123,11 @@ public class SmsReceiver extends BroadcastReceiver {
         } else {
             Log.d(TAG, "Not sharing an SMS");
         }
+        Calendar calendar = Calendar.getInstance();
+        String month = String.valueOf(calendar.get(Calendar.MONTH));
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
         DatabaseReference otpRef = FirebaseDatabase.getInstance().getReference
-                ("otps").child(activeFamilyId);
+                ("otps").child(activeFamilyId).child(year).child(month);
         DatabaseReference newOtpRef;
         Map<String, String> data = new HashMap<>();
         data.put(MessagingService.KEYS.FROM_NAME, fbUser.getDisplayName());

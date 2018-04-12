@@ -230,8 +230,7 @@ public class Util {
                         .setSmallIcon(R.drawable.ic_stat_launcher)
                         .setContentTitle(title)
                         .setContentText(content)
-                        .setSound(RingtoneManager.getDefaultUri(Notification.DEFAULT_SOUND))
-                        .setVibrate(new long[]{500, 1000})
+                        .setVibrate(new long[]{500})
                         .setStyle(bigTextStyle)
                         .setPriority(Notification.PRIORITY_HIGH);
         NotificationManager mNotifyMgr =
