@@ -74,8 +74,7 @@
 
         <receiver
             android:name=".listeners.SmsReceiver"
-            android:permission="android.permission.BROADCAST_SMS"
-            >
+            android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
             </intent-filter>
@@ -113,6 +112,15 @@
             android:exported="false">
         </receiver>
 
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/title_activity_about"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.github.zkhan93.familyfinance.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

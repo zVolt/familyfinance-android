@@ -37,6 +37,7 @@
     <string name="action_add_addoncard">Add Addon Card</string>
     <string name="action_remove">Remove</string>
     <string name="action_switch_family">Switch Family</string>
+    <string name="action_about">About</string>
 
     <!--hints -->
     <string name="hint_account_name">Account\'s Name</string>
@@ -153,16 +154,15 @@
 
 
     <!--PIN Activity related strings-->
-    <string name="enter_pin">Unlock Family Finance</string>
+    <string name="enter_pin">Enter PIN</string>
     <string name="cancel">Cancel</string>
-    <string name="confirm_pin">Confirm PIN for Family Finance</string>
-    <string name="set_pin">Set PIN to access Family Finance</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="set_pin">Set PIN lock</string>
 
 
     <string name="web_client_id" translatable="false">683400004161-nq55dgjn8ubrmt1mjcg79gfnuckui6fe.apps.googleusercontent.com</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="title_activity_about">About</string>
+    <string name="version">Version Info</string>
 
 </resources>

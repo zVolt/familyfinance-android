@@ -132,14 +132,16 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         otp.setClaimedby(memberDao.load(otp.getClaimedByMemberId()));
                     tmpOtps.add(otp);
                 }
-                tmpOtps.remove(tmpOtps.size() - 1); // skip the last item since it was already
-                // loaded in previous page
-                lastLoadedItem = tmpOtps.get(0).getId();
-                Log.d(TAG, "LastItemLoaded: " + lastLoadedItem);
-                Collections.reverse(tmpOtps);
-                int lastPosition = otps.size();
-                otps.addAll(tmpOtps);
-                notifyItemRangeInserted(lastPosition, otps.size() - 1);
+                if(tmpOtps.size()>0) {
+                    tmpOtps.remove(tmpOtps.size() - 1); // skip the last item since it was already
+                    // loaded in previous page
+                    lastLoadedItem = tmpOtps.get(0).getId();
+                    Log.d(TAG, "LastItemLoaded: " + lastLoadedItem);
+                    Collections.reverse(tmpOtps);
+                    int lastPosition = otps.size();
+                    otps.addAll(tmpOtps);
+                    notifyItemRangeInserted(lastPosition, otps.size() - 1);
+                }
                 loading = false;
             }
 
@@ -183,11 +185,13 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         otp.setClaimedby(memberDao.load(otp.getClaimedByMemberId()));
                     tmpOtps.add(otp);
                 }
-                lastLoadedItem = tmpOtps.get(0).getId();
-                Log.d(TAG, "LastItemLoaded: " + lastLoadedItem);
-                Collections.reverse(tmpOtps);
-                otps.addAll(tmpOtps);
-                notifyDataSetChanged();
+                if(tmpOtps.size()>0) {
+                    lastLoadedItem = tmpOtps.get(0).getId();
+                    Log.d(TAG, "LastItemLoaded: " + lastLoadedItem);
+                    Collections.reverse(tmpOtps);
+                    otps.addAll(tmpOtps);
+                    notifyDataSetChanged();
+                }
                 loading = false;
             }
 

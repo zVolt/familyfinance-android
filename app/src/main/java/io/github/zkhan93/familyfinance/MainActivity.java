@@ -370,8 +370,10 @@ public class MainActivity extends AppCompatActivity implements
                 startActivity(new Intent(this, SelectFamilyActivity.class));
                 finish();
                 return true;
+            case R.id.action_about:
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -189,21 +189,21 @@ public class FragmentSetting extends PreferenceFragment implements Preference
         return super.onOptionsItemSelected(item);
     }
 
+//    @Override
+//    public boolean onPreferenceChange(Preference preference, Object o) {
+//        Log.d(TAG, "this is value: " + o.toString());
+//        return false;
+//    }
+
     @Override
     public boolean onPreferenceChange(Preference preference, Object o) {
-        Log.d(TAG, "this is value: " + o.toString());
-        return false;
-    }
-
-
-    public boolean onPreferenceChanged(Preference preference) {
-        Log.d(TAG, "preferenceClick" + preference.getKey());
+        Log.d(TAG, "preferenceClick " + preference.getKey());
         if (preference.getKey().equals(getString(R.string.pref_key_pin))) {
             sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
                     PreferenceManager
                             .getDefaultSharedPreferences(preference.getContext())
                             .getBoolean(preference.getKey(), false));
-            if (((SwitchPreference) preference).isChecked()) {
+            if (!((SwitchPreference) preference).isChecked()) {
                 Log.d(TAG, "set new PIN");
                 startActivityForResult(new Intent(PinActivity.ACTIONS.SET_PIN, null,
                         getActivity(), PinActivity.class), REQUEST_CODE_SET_PIN);
