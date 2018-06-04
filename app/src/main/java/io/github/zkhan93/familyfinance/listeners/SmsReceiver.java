@@ -75,7 +75,7 @@ public class SmsReceiver extends BroadcastReceiver {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
                 (context.getApplicationContext());
         String activeFamilyId = sharedPreferences.getString("activeFamilyId", null);
-        Set<String> keywords = sharedPreferences.getStringSet("", new HashSet<String>());
+        Set<String> keywords = sharedPreferences.getStringSet("keywords", new HashSet<String>());
         //if not in any family
         if (activeFamilyId == null)
             return;
@@ -84,6 +84,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 true);
         SmsMessage[] msgs;
         String smsFrom = "", smsBody = "";
+        StringBuilder smsBodyBuilder = new StringBuilder();
         Otp otp;
         Object[] pdus;
 
@@ -101,8 +102,9 @@ public class SmsReceiver extends BroadcastReceiver {
             else
                 msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
             smsFrom = msgs[i].getOriginatingAddress();
-            smsBody += msgs[i].getMessageBody();
+            smsBodyBuilder.append(msgs[i].getMessageBody());
         }
+        smsBody = smsBodyBuilder.toString();
         //only if sms contains string "OTP"
         boolean hasKeyword = Util.hasKeywords(smsBody, keywords);
         if (!smsFrom.isEmpty() && (sendAllSms || hasKeyword)) {
