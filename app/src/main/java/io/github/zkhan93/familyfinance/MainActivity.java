@@ -115,14 +115,20 @@ public class MainActivity extends AppCompatActivity implements
                             showFab();
                         else hideFab();
                         break;
-                    case PAGE_POSITION.EMAILS:
-                        hideFab();
-                    case PAGE_POSITION.CHAT_ROOM:
-                        hideFab();
-                        break;
+//                    case PAGE_POSITION.EMAILS:
+//                        hideFab();
+//                    case PAGE_POSITION.CHAT_ROOM:
+//                        hideFab();
+//                        break;
                     case PAGE_POSITION.CREDENTIALS:
                         showFab();
                         break;
+                    case PAGE_POSITION.DCARDS:
+                        showFab();
+                        break;
+//                    case PAGE_POSITION.WALLETS:
+//                        showFab();
+//                        break;
                 }
             }
 
@@ -392,6 +398,14 @@ public class MainActivity extends AppCompatActivity implements
                         DialogFragmentCcard.newInstance(familyId).show(getSupportFragmentManager
                                 (), DialogFragmentCcard.TAG);
                         break;
+                    case PAGE_POSITION.DCARDS:
+                        DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
+                                (), DialogFragmentCcard.TAG);
+                        break;
+//                    case PAGE_POSITION.WALLETS:
+//                        DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
+//                                (), DialogFragmentCcard.TAG);
+//                        break;
                     case PAGE_POSITION.MEMBERS:
                         Intent intent = new Intent(this, AddMemberActivity.class);
                         intent.putExtra("familyId", familyId);
@@ -445,18 +459,24 @@ public class MainActivity extends AppCompatActivity implements
                 case PAGE_POSITION.SMS:
                     fragment = FragmentSms.newInstance(familyId);
                     break;
-                case PAGE_POSITION.EMAILS:
-                    fragment = FragmentEmails.newInstance(familyId);
-                    break;
+//                case PAGE_POSITION.EMAILS:
+//                    fragment = FragmentEmails.newInstance(familyId);
+//                    break;
                 case PAGE_POSITION.MEMBERS:
                     fragment = FragmentMembers.newInstance(familyId, familyModeratorId);
                     break;
-                case PAGE_POSITION.CHAT_ROOM:
-                    fragment = FragmentChatroom.newInstance(familyId);
-                    break;
+//                case PAGE_POSITION.CHAT_ROOM:
+//                    fragment = FragmentChatroom.newInstance(familyId);
+//                    break;
                 case PAGE_POSITION.CREDENTIALS:
                     fragment = FragmentCredentials.newInstance(familyId);
                     break;
+                case PAGE_POSITION.DCARDS:
+                    fragment = FragmentDCards.newInstance(familyId);
+                    break;
+//                case PAGE_POSITION.WALLETS:
+//                    fragment = FragmentWallets.newInstance(familyId);
+//                    break;
                 default: //0 or other
                     fragment = FragmentSummary.newInstance(familyId);
                     break;
@@ -466,7 +486,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public int getCount() {
-            return 6;
+            return PAGE_POSITION.class.getFields().length;
         }
 
         @Override
@@ -482,12 +502,16 @@ public class MainActivity extends AppCompatActivity implements
                     return getString(R.string.title_sms);
                 case PAGE_POSITION.MEMBERS:
                     return getString(R.string.title_members);
-                case PAGE_POSITION.EMAILS:
-                    return getString(R.string.title_emails);
-                case PAGE_POSITION.CHAT_ROOM:
-                    return getString(R.string.title_chat_room);
+//                case PAGE_POSITION.EMAILS:
+//                    return getString(R.string.title_emails);
+//                case PAGE_POSITION.CHAT_ROOM:
+//                    return getString(R.string.title_chat_room);
                 case PAGE_POSITION.CREDENTIALS:
                     return getString(R.string.title_credentials);
+                case PAGE_POSITION.DCARDS:
+                    return getString(R.string.title_dcards);
+//                case PAGE_POSITION.WALLETS:
+//                    return getString(R.string.title_wallets);
             }
             return null;
         }
@@ -497,13 +521,15 @@ public class MainActivity extends AppCompatActivity implements
 
     public interface PAGE_POSITION {
         int SUMMARY = 0;
-        int ACCOUNTS = 1;
-        int CCARDS = 2;
-        int CREDENTIALS = 3;
-        int SMS = 4;
-        int MEMBERS = 5;
-        int EMAILS = 6;
-        int CHAT_ROOM = 7;
+        int CCARDS = 1;
+        int SMS = 2;
+        int DCARDS = 3;
+//        int WALLETS = 4;
+        int CREDENTIALS = 4;
+        int ACCOUNTS = 5;
+//        int EMAILS = 7;
+        int MEMBERS = 6;
+//      int CHAT_ROOM = 9;
     }
 
     private boolean verified = false;

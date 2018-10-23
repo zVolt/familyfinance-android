@@ -151,7 +151,7 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE.HEADER) {
             return new CredentialTypeVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                    .listheader_credential, parent, false), groupClickListener);
+                    .listitem_header, parent, false), groupClickListener);
 
         } else if (viewType == TYPE.CHILD) {
             return new CredentialVH(LayoutInflater.from(parent.getContext()).inflate(R.layout

@@ -53,7 +53,7 @@ import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
 
 public class DialogFragmentViewCard extends DialogFragment implements DialogInterface
         .OnClickListener, SeekBar.OnSeekBarChangeListener, AddonCardVH.ItemInteractionListener {
-    public static final String TAG = DialogFragmentAddAccount.class.getSimpleName();
+    public static final String TAG = DialogFragmentViewCard.class.getSimpleName();
     public static final String ARG_CARD = "card";
     public static final String ARG_FAMILY_ID = "familyId";
 

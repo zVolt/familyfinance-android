@@ -40,10 +40,11 @@ import io.github.zkhan93.familyfinance.viewholders.FooterVH;
  */
 
 public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
-        LoadFromDbTask
-                .Listener<CCard>, InsertTask.Listener<BaseModel>, ChildEventListener,
-        ValueEventListener {
+        LoadFromDbTask.Listener<CCard>, InsertTask.Listener<BaseModel>,
+        ChildEventListener, ValueEventListener {
+
     public static final String TAG = CCardListAdapter.class.getSimpleName();
+
     private ArrayList<CCard> ccards;
     private CCardVH.ItemInteractionListener itemInteractionListener;
     private DatabaseReference ccardRef;

@@ -2,43 +2,51 @@ package io.github.zkhan93.familyfinance;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runners.Parameterized;
-
-import java.util.Arrays;
-import java.util.Collection;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import io.github.zkhan93.familyfinance.listeners.NotificationActionsListener;
+import io.github.zkhan93.familyfinance.util.Util;
+
+import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener.ACTION_COPY_OTP;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-
+@RunWith(MockitoJUnitRunner.class)
 public class CopyOTPTest {
 
     private NotificationActionsListener notificationActionsListener;
-    private Context context;
+
+    @Mock
+    Context mockContext;
+    @Mock
+    Util mockUtil;
 
     @Before
     public void setup() {
         notificationActionsListener = new NotificationActionsListener();
     }
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {"this is OPT 1234", "1234"}, {"this is another oOTP 342334", "342334"}
-        });
-    }
+//    @Parameterized.Parameters
+//    public static Collection<Object[]> data() {
+//        return Arrays.asList(new Object[][]{
+//                {"this is OPT 1234", "1234"}, {"this is another oOTP 342334", "342334"}
+//        });
+//    }
 
-    public CopyOTPTest(String message, String otp) {
-        this.message = message;
-        this.otp = otp;
+    public CopyOTPTest() {
+        this.message = "this is OPT 1234";
+        this.otp = "1234";
     }
 
     private String message;
@@ -46,10 +54,10 @@ public class CopyOTPTest {
 
     @Test
     public void otp_extract() {
-        Log.d("test", String.format("%s", message));
-        Intent intent = new Intent();
-        intent.putExtra("OTP", message);
-        notificationActionsListener.onReceive(context, intent);
-//        assertEquals(otp, notificationActionsListener.otp);
+        Intent mockIntent = mock(Intent.class);
+        when(mockIntent.getAction()).thenReturn(ACTION_COPY_OTP);
+        when(mockIntent.getStringExtra("OTP")).thenReturn(message);
+        when(mockUtil.copyToClipboard(any(), any(), any())).thenReturn("");
+        notificationActionsListener.onReceive(mockContext, mockIntent);
     }
 }
