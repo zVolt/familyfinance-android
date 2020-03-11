@@ -1,6 +1,6 @@
 package io.github.zkhan93.familyfinance.adapters;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -8,7 +8,6 @@ import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.viewholders.FilterSMSMemberVH;
-import io.github.zkhan93.familyfinance.viewholders.MemberVH;
 
 /**
  * Created by zeeshan on 11/19/17.

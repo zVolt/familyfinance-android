@@ -1,7 +1,7 @@
 package io.github.zkhan93.familyfinance.adapters;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,21 +9,14 @@ import android.view.ViewGroup;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-
-import java.util.List;
 
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.DCard;
 import io.github.zkhan93.familyfinance.models.DCardDao;
 import io.github.zkhan93.familyfinance.models.DaoSession;
-import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 import io.github.zkhan93.familyfinance.viewholders.DCardVH;
 import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
-import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 
 public class DCardListAdapter extends FirebaseRecyclerAdapter<DCard, RecyclerView.ViewHolder> {
     public static final String TAG = DCardListAdapter.class.getSimpleName();

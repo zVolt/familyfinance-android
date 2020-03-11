@@ -2,14 +2,13 @@ package io.github.zkhan93.familyfinance;
 
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import io.github.zkhan93.familyfinance.models.DCard;
 import io.github.zkhan93.familyfinance.models.Wallet;
 import io.github.zkhan93.familyfinance.viewholders.WalletVH;
 

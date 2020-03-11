@@ -1,6 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,7 +18,6 @@ import java.text.NumberFormat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.models.Member;
 
 /**
  * Created by zeeshan on 11/26/17.

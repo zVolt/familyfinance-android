@@ -1,8 +1,8 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.MenuInflater;
 import android.view.MenuItem;
