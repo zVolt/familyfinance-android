@@ -7,7 +7,6 @@
 /build
 /captures
 .externalNativeBuild
-gradle/
 .idea/
 app/google-services.json
 
