@@ -12,7 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -198,5 +198,12 @@ public class MessagingService extends FirebaseMessagingService {
             if (toastMessage == null || toastMessage.isEmpty()) toastMessage = "No OTP found";
             Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show();
         }
+    }
+    @Override
+    public void onNewToken(String newToken) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null)
+            FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid())
+                    .child("token").setValue(newToken);
     }
 }

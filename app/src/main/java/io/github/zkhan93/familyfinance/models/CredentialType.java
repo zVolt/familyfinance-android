@@ -2,7 +2,6 @@ package io.github.zkhan93.familyfinance.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntDef;
 
 import com.google.firebase.database.Exclude;
 

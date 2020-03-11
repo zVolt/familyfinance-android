@@ -1,6 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.ImageView;

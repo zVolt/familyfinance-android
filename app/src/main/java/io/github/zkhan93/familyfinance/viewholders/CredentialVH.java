@@ -1,11 +1,8 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.google.api.client.util.StringUtils;
 
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Credential;

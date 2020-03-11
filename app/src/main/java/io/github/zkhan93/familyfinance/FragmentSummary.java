@@ -2,9 +2,9 @@ package io.github.zkhan93.familyfinance;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -372,16 +372,18 @@ public class FragmentSummary extends Fragment {
         CCard cCard;
         String str;
         Collections.sort(cCards, CCard.BY_PAYMENT_DATE);
+        View view;
         for (int i = 0; i < views.length && i < cCards.size(); i++) {
             cCard = cCards.get(i);
-            txtView = ButterKnife.findById(views[i], R.id.amount);
+            view = views[i];
+            txtView = view.findViewById(R.id.amount);
             txtView.setText(NumberFormat.getCurrencyInstance().format(cCard
                     .getConsumedLimit()));
-            txtView = ButterKnife.findById(views[i], R.id.card_name);
+            txtView = view.findViewById(R.id.card_name);
 
             str = String.format("%s - %s", cCard.getCardholder(), cCard.getBank());
             txtView.setText(str);
-            txtView = ButterKnife.findById(views[i], R.id.date);
+            txtView = view .findViewById(R.id.date);
             txtView.setText(Constants.PAYMENT_DATE.format(cCard.getPaymentDate()));
             views[i].setVisibility(View.VISIBLE);
         }

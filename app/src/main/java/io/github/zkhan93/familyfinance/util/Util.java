@@ -9,12 +9,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -28,7 +27,6 @@ import io.github.zkhan93.familyfinance.listeners.ClearNotificationRecevier;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
-import io.github.zkhan93.familyfinance.services.MessagingService;
 
 /**
  * Created by zeeshan on 15/7/17.

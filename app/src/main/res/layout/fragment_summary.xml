@@ -1,4 +1,4 @@
-<android.support.v4.widget.NestedScrollView
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -47,13 +47,13 @@
             android:layout_gravity="center_horizontal"
             tools:text="500$"/>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/balance_by_bank"
             android:layout_width="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/listitem_balance"/>
 
         <TextView
@@ -137,5 +137,5 @@
             android:id="@+id/next_payment3"
             layout="@layout/listitem_next_payment"/>
     </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+</androidx.core.widget.NestedScrollView>
 
