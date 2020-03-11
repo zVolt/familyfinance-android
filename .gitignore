@@ -8,8 +8,6 @@
 /captures
 .externalNativeBuild
 gradle/
-gradlew
-gradlew.bat
 .idea/
 app/google-services.json
 
