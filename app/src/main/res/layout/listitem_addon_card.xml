@@ -129,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/updated_by"
             android:layout_marginEnd="4dp"
-            android:layout_toLeftOf="@id/updated_by"
+            android:layout_toStartOf="@id/updated_by"
             tools:text="5 minutes ago"/>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -11,8 +11,6 @@ import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
 import io.github.zkhan93.familyfinance.models.DaoSession;
 import io.github.zkhan93.familyfinance.models.MemberDao;
 
-import static org.mockito.Mockito.*;
-
 /**
  * Created by zeeshan on 25/3/18.
  */
