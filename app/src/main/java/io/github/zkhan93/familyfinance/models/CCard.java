@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
@@ -238,7 +239,7 @@ public class CCard extends BaseModel {
     @Keep
     public Member getUpdatedBy() {
         String __key = this.updatedByMemberId;
-        if (updatedBy__resolvedKey == null || updatedBy__resolvedKey != __key) {
+        if (updatedBy__resolvedKey == null || !Objects.equals(updatedBy__resolvedKey, __key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");

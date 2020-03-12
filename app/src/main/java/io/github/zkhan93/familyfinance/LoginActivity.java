@@ -5,23 +5,26 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -45,11 +48,11 @@ import io.github.zkhan93.familyfinance.util.Util;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener,
-        GoogleApiClient.OnConnectionFailedListener, OnCompleteListener<AuthResult> {
+        OnCompleteListener<AuthResult> {
 
     public static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 1005;
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private GoogleSignInAccount account;
     private OnCompleteListener<Void> saveUserDataListener;
@@ -93,13 +96,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .requestEmail()
                 .requestServerAuthCode(getString(R.string.web_client_id), false)
                 .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-        if (mAuth.getCurrentUser() != null) {
-            FirebaseUser user = mAuth.getCurrentUser();
-            if (user == null) return;
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        progressBar.setVisibility(View.GONE);
+        progressMsg.setTextColor(ContextCompat.getColor(this, R.color.md_grey_50));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
             // already signed in
             String userPic = null;
             if (user.getPhotoUrl() != null) {
@@ -115,8 +121,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Log.d(TAG, "already logged in");
             startMainActivity();
         }
-        progressBar.setVisibility(View.GONE);
-        progressMsg.setTextColor(ContextCompat.getColor(this, R.color.md_grey_50));
     }
 
     @Override
@@ -129,13 +133,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void startSignIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d(TAG, "connection failed");
     }
 
     private void startMainActivity() {
@@ -150,7 +149,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     SelectFamilyActivity.class));
         }
         finish();
-
     }
 
     @Override
@@ -210,16 +208,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             GoogleSignInResult response = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             // Successfully signed in
             if (resultCode == Activity.RESULT_OK) {
-                if (!response.isSuccess()) {
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                try {
+                    // Google Sign In was successful, authenticate with Firebase
+                    account = task.getResult(ApiException.class);
+                    if (account!=null) {
+
+                        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken()
+                                , null);
+                        mAuth.signInWithCredential(credential).addOnCompleteListener(this);
+                    }else{
+                        Util.Log.d(TAG, "sign in attempt failed");
+                        progressMsg.setText(getString(R.string.progress_failed_signin));
+                    }
+                } catch (ApiException e) {
                     Util.Log.d(TAG, "sign in attempt failed");
                     progressMsg.setText(getString(R.string.progress_failed_signin));
                 }
-                // Google Sign In was successful, authenticate with Firebase
-                account = response.getSignInAccount();
-                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken()
-                        , null);
-                mAuth.signInWithCredential(credential).addOnCompleteListener(this);
-
             } else {
                 // Sign in failed
                 progressBar.setVisibility(View.GONE);
@@ -238,7 +243,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         progressMsg.setText(GoogleSignInStatusCodes
                                 .getStatusCodeString(gStatusCode));
                 }
-
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
