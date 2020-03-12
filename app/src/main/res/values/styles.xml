@@ -1,9 +1,20 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar"></style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
-    <style name="AppTheme.Dark" parent="Theme.AppCompat.Light.DarkActionBar"></style>
+    <style name="AppTheme.Dark" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/md_blue_grey_900</item>
+        <item name="colorPrimaryDark">@color/md_black</item>
+        <item name="colorAccent">@color/md_grey_500</item>
+        <item name="android:background">@color/md_blue_grey_900</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -13,7 +24,9 @@
         <item name="colorControlHighlight">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.Login"></style>
+    <style name="AppTheme.NoActionBar.Login">
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
