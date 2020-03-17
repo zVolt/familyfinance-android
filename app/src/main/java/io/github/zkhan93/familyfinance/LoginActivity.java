@@ -153,6 +153,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onComplete(@NonNull Task<AuthResult> task) {
+        Util.Log.d(TAG, "onComplete: task called");
         if (task.isSuccessful()) {
             // Sign in success, update UI with the signed-in user's information
             FirebaseUser user = mAuth.getCurrentUser();
@@ -201,8 +202,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when
         // starting the sign in flow.
-        Util.Log.i(TAG, "onActivityResult: requestCode: %d resultCode: %d", requestCode,
-                resultCode);
+        Util.Log.i(TAG, "onActivityResult: requestCode: %b resultCode: %b", requestCode == RC_SIGN_IN,
+                resultCode==Activity.RESULT_OK);
         if (requestCode == RC_SIGN_IN) {
 //            IdpResponse response = IdpResponse.fromResultIntent(data);
             GoogleSignInResult response = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -227,6 +228,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
             } else {
                 // Sign in failed
+
                 progressBar.setVisibility(View.GONE);
                 if (response == null) {
                     Log.d(TAG, "null response object");
@@ -234,6 +236,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     return;
                 }
                 int gStatusCode = response.getStatus().getStatusCode();
+                Log.d(TAG, String.format("failed sign-in in response:(%d) %s",gStatusCode, response.toString()));
                 switch (gStatusCode) {
                     case CommonStatusCodes.NETWORK_ERROR:
                     case CommonStatusCodes.TIMEOUT:
