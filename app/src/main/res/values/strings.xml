@@ -59,7 +59,7 @@
     <string name="hint_bank">Bank Name</string>
     <string name="hint_ifsc">Branch IFSC Code</string>
     <string name="hint_balance">Balance</string>
-    <string name="hint_family_id">Family Id</string>
+    <string name="hint_family_id">Family ID</string>
     <string name="hint_phone_number">Phone Number</string>
     <string name="hint_email">Email</string>
     <string name="hint_username">Username</string>
@@ -98,7 +98,12 @@
     <string name="error_clipboard"> %1$s cannot copy to clipboard</string>
     <string name="select_bank">Select Bank</string>
     <string name="delete">Delete</string>
+    <string name="expiry_date">EXP</string>
+    <string name="cvv">CVV</string>
 
+    <!--    card types-->
+    <string name="card_type_primary">Primary Card</string>
+    <string name="card_type_addon">Add-on Card</string>
 
     <!--Category title-->
     <string name="pref_header_general">General</string>
@@ -144,31 +149,31 @@
     <string name="pref_key_no_of_sms">pref_key_no_of_sms</string>
 
 
+    <string name="enter_pin">Enter PIN</string>
+    <string name="cancel">Cancel</string>
+
+
+    <!--PIN Activity related strings-->
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="set_pin">Set PIN lock</string>
+    <string name="web_client_id" translatable="false">683400004161-nq55dgjn8ubrmt1mjcg79gfnuckui6fe.apps.googleusercontent.com</string>
+    <string name="title_activity_about">About</string>
+
+
+    <string name="version">Version Info</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string-array name="pref_autolock_values">
         <item>10</item>
         <item>60</item>
         <item>300</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
     <string-array name="pref_autolock_keys">
         <item>10 Seconds</item>
         <item>1 Minute</item>
         <item>5 Minutes</item>
     </string-array>
-
-
-    <!--PIN Activity related strings-->
-    <string name="enter_pin">Enter PIN</string>
-    <string name="cancel">Cancel</string>
-    <string name="confirm_pin">Confirm PIN</string>
-    <string name="set_pin">Set PIN lock</string>
-
-
-    <string name="web_client_id" translatable="false">683400004161-nq55dgjn8ubrmt1mjcg79gfnuckui6fe.apps.googleusercontent.com</string>
-
-    <string name="title_activity_about">About</string>
-    <string name="version">Version Info</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

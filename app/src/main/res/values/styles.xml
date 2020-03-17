@@ -33,4 +33,34 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 
+    <style name="AppTheme.Text" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:fontFamily">@font/main_font</item>
+        <item name="android:textSize">@dimen/text_size_md</item>
+    </style>
+
+    <style name="AppTheme.Text.Light" parent="AppTheme.Text">
+        <item name="android:textColor">@color/md_grey_100</item>
+    </style>
+    <style name="AppTheme.Text.Light.Small" parent="AppTheme.Text.Light">
+        <item name="android:textSize">@dimen/text_size_sm</item>
+    </style>
+    <style name="AppTheme.Text.Light.Large" parent="AppTheme.Text.Light">
+        <item name="android:textSize">@dimen/text_size_lg</item>
+    </style>
+
+    <style name="AppTheme.Text.Dark" parent="AppTheme.Text">
+        <item name="android:textColor">@color/md_grey_900</item>
+    </style>
+    <style name="AppTheme.Text.Dark.Small" parent="AppTheme.Text.Dark">
+        <item name="android:textSize">@dimen/text_size_sm</item>
+    </style>
+    <style name="AppTheme.Text.Dark.Large" parent="AppTheme.Text.Dark">
+        <item name="android:textSize">@dimen/text_size_lg</item>
+    </style>
+
+    <style name="AppTheme.Text.CardHeading" parent="AppTheme.Text.Light.Large">
+        <item name="android:fontFamily">@font/robotomono_light</item>
+        <item name="android:textSize">@dimen/text_size_xl</item>
+    </style>
+
 </resources>

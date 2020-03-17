@@ -221,5 +221,4 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     }
 
-
 }
