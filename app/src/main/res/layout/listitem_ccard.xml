@@ -24,6 +24,14 @@
         android:padding="@dimen/medium">
 
         <ImageView
+            android:id="@+id/bank_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_bank_sbi" />
+
+        <ImageView
             android:id="@+id/card_type"
             android:layout_width="36dp"
             android:layout_height="36dp"
@@ -36,35 +44,38 @@
             style="@style/AppTheme.Text.Light.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/card_type"
+            android:layout_marginStart="@dimen/small"
+            app:layout_constraintBottom_toBottomOf="@id/bank_icon"
+            app:layout_constraintStart_toEndOf="@id/bank_icon"
+            app:layout_constraintTop_toTopOf="@id/bank_icon"
             tools:text="State Bank of India" />
-
 
         <TextView
             android:id="@+id/number"
-            style="@style/AppTheme.Text.CardHeading"
+            style="@style/AppTheme.Text.Light.CardNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card_type"
+            app:layout_constraintTop_toBottomOf="@id/bank_icon"
             tools:text="**** **** **** 6778" />
 
         <TextView
             android:id="@+id/cardholder"
             style="@style/AppTheme.Text.Light"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/small"
+            android:textAllCaps="true"
+            app:layout_constraintEnd_toStartOf="@id/expires_on"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/number"
             tools:text="Zeeshan Khan" />
 
         <TextView
             android:id="@+id/tv_expires_on"
             style="@style/AppTheme.Text.Light.Small"
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/small"
@@ -77,7 +88,7 @@
             style="@style/AppTheme.Text.Light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/tv_expires_on"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_expires_on"
             tools:text="12/19" />
 

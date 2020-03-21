@@ -43,7 +43,7 @@ public class DCard extends BaseModel {
         int i;
         if (hideDigits) {
             for (i = 0; i < this.number.length() - 4; i++)
-                strb.append("X");
+                strb.append("*");
             strb.append(number.substring(number.length() - 4));
         } else
             strb.append(this.number);

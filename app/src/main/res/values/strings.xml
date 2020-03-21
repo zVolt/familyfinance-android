@@ -53,14 +53,14 @@
     <string name="hint_ccard_consumed">Consumed</string>
 
     <string name="hint_name">Name</string>
-    <string name="hint_userid">User Id</string>
+    <string name="userid">User ID</string>
     <string name="hint_pin">PIN</string>
-    <string name="hint_password">Password</string>
+    <string name="password">Password</string>
     <string name="hint_bank">Bank Name</string>
     <string name="hint_ifsc">Branch IFSC Code</string>
     <string name="hint_balance">Balance</string>
     <string name="hint_family_id">Family ID</string>
-    <string name="hint_phone_number">Phone Number</string>
+    <string name="phone_number">Phone Number</string>
     <string name="hint_email">Email</string>
     <string name="hint_username">Username</string>
     <string name="hint_description">Description</string>
@@ -100,6 +100,12 @@
     <string name="delete">Delete</string>
     <string name="expiry_date">EXP</string>
     <string name="cvv">CVV</string>
+    <string name="billing_date">Bill Date</string>
+    <string name="card_limit">Card Limit</string>
+    <string name="addon_cards">Add-on Cards</string>
+    <string name="card_type">Card Type</string>
+    <string name="card_information">Card Information</string>
+    <string name="recent_activities">Recent Activities</string>
 
     <!--    card types-->
     <string name="card_type_primary">Primary Card</string>

@@ -5,6 +5,8 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 29
     buildToolsVersion '28.0.3'
+    ndkVersion '20.0.5594570'
+
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8

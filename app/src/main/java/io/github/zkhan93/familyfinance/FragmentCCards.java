@@ -1,12 +1,9 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,6 +11,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -95,7 +97,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_ccard, menu);
+        inflater.inflate(R.menu.fragment_cards, menu);
         SearchView searchView =
                 (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(this);
@@ -163,8 +165,14 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void onView(CCard cCard) {
-        DialogFragmentViewCard.newInstance(cCard, familyId).show(getFragmentManager(),
-                DialogFragmentCcard.TAG);
+        Intent intent = new Intent(getContext(), CardDetailActivity.class);
+        Bundle content = new Bundle();
+        content.putParcelable("card", cCard);
+        content.putString("type", "credit");
+        intent.putExtras(content);
+        startActivity(intent);
+//        DialogFragmentViewCard.newInstance(cCard, familyId).show(getFragmentManager(),
+//                DialogFragmentCcard.TAG);
     }
 
     @Override

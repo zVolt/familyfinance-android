@@ -5,10 +5,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -19,6 +22,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -245,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements
         familyId = sharedPreferences.getString("activeFamilyId", null);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         compilePatternAfterNoOfCallback = 2;
+        //TODO: download the a json from https://gist.githubusercontent.com/zkhan93/500fc1fbcbd00724f8e856c6d0dac702/raw/card_brands.json as save it in preference as a string
         ref.child("otpChars").addListenerForSingleValueEvent
                 (otpCharsListener);
         ref.child("otpLength").addListenerForSingleValueEvent
@@ -414,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements
                         startActivity(intent);
                         break;
                     case PAGE_POSITION.CREDENTIALS:
-                        DialogFragmentCredential.getInstance(null,familyId)
+                        DialogFragmentCredential.getInstance(null, familyId)
                                 .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
                     default:
                         break;
@@ -526,10 +531,10 @@ public class MainActivity extends AppCompatActivity implements
         int CCARDS = 1;
         int SMS = 2;
         int DCARDS = 3;
-//        int WALLETS = 4;
+        //        int WALLETS = 4;
         int CREDENTIALS = 4;
         int ACCOUNTS = 5;
-//        int EMAILS = 7;
+        //        int EMAILS = 7;
         int MEMBERS = 6;
 //      int CHAT_ROOM = 9;
     }

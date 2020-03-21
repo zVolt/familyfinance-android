@@ -32,7 +32,7 @@ import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
-import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
+import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 
 /**
@@ -68,7 +68,7 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == ITEM_TYPE.EMPTY)
-            return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+            return new NoItemVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                     .listitem_empty, parent, false), "blankCCard");
         else if (viewType == ITEM_TYPE.FOOTER)
             return new FooterVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
@@ -348,26 +348,26 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    private ArrayList<CCard> _ccards;
+    private ArrayList<CCard> filteredCards;
 
     public void onSearch(String text) {
         //skip first blank call
-        if ((text == null || text.isEmpty()) && _ccards == null)
+        if ((text == null || text.isEmpty()) && filteredCards == null)
             return;
         //if search ended restore the backup
-        if (_ccards != null && (text == null || text.isEmpty())) {
-            ccards = _ccards;
-            _ccards = null;
+        if (filteredCards != null && (text == null || text.isEmpty())) {
+            ccards = filteredCards;
+            filteredCards = null;
             notifyDataSetChanged();
             return;
         }
         //first time take backup
-        if (_ccards == null) {
-            _ccards = new ArrayList<>();
-            _ccards.addAll(ccards);
+        if (filteredCards == null) {
+            filteredCards = new ArrayList<>();
+            filteredCards.addAll(ccards);
         } else { // from subsequent calls work on a copy
             ccards = new ArrayList<>();
-            ccards.addAll(_ccards);
+            ccards.addAll(filteredCards);
         }
 
         CCard cCard;

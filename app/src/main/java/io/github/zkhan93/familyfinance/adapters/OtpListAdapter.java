@@ -25,7 +25,7 @@ import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.MemberDao;
 import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.util.Util;
-import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
+import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
 import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
 /**
@@ -67,7 +67,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == ITEM_TYPE.EMPTY)
-            return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+            return new NoItemVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                     .listitem_empty, parent, false), "blankOTP");
         return new OtpVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                 .listitem_otp, parent, false), familyId);

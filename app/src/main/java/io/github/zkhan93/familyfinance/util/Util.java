@@ -9,15 +9,26 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+
 import android.widget.Toast;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.google.api.client.util.StringUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -266,6 +277,87 @@ public class Util {
         if (strb.length() >= 2 && strb.charAt(strb.length() - 1) == ' ')
             strb.delete(strb.length() - 2, strb.length() - 1);
         return strb.toString();
+    }
+
+    public static String getCardBrand(String number) {
+        String jsonString = "{\"american_express\":{\"34\":[\"15\"],\"37\":[\"15\"]},\"diners_club\":{\"36\":[\"14-19\"],\"300-305\":[\"16-19\"],\"3095\":[\"16-19\"],\"38-39\":[\"16-19\"]},\"rupay\":{\"60\":[\"16\"],\"6521\":[\"16\"],\"6522\":[\"16\"],\"6528\":[\"16\"]},\"jcb\":{\"3528-3589\":[\"16-19\"]},\"discover\":{\"6011\":[\"16-19\"],\"622126-622925\":[\"16-19\"],\"624000-626999\":[\"16-19\"],\"628200-628899\":[\"16-19\"],\"64\":[\"16-19\"],\"65\":[\"16-19\"]},\"dankort\":{\"5019\":[\"16\"]},\"maestro\":{\"6759\":[\"12-19\"],\"676770\":[\"12-19\"],\"676774\":[\"12-19\"],\"50\":[\"12-19\"],\"56-69\":[\"12-19\"]},\"mastercard\":{\"2221-2720\":[\"16\"],\"51-55\":[\"16\"]},\"unionpay\":{\"81\":[\"16\"]},\"visa\":{\"4\":[\"13-19\"]}}";
+        JSONObject brandMap = null;
+        try {
+            brandMap = new JSONObject(jsonString);
+        } catch (JSONException ex) {
+            Log.d(TAG, "could not parse string to JSON");
+            return null;
+        } finally {
+            if (brandMap == null) {
+                Log.d(TAG, "brandMap is None");
+                return null;
+            }
+        }
+        number = number.replaceAll("[- .]", "");
+        Log.d(TAG, String.format("number is %s", number));
+        char[] numArray = number.toCharArray();
+        if (Character.isDigit(numArray[0])) {
+            Log.d(TAG, String.format("first character is a digit"));
+            long firstSix = Long.parseLong(number.substring(0, 6));
+            Log.d(TAG, String.format("first six digits are %d", firstSix));
+            int cardNumberLength = number.length();
+            Iterator<String> brandNames = brandMap.keys();
+            while (brandNames.hasNext()) {
+                String brandName = brandNames.next();
+                Log.d(TAG, String.format("parsing for %s", brandName));
+                JSONObject branRegex = brandMap.optJSONObject(brandName);
+                Iterator<String> startingDigits = branRegex.keys();
+                while (startingDigits.hasNext()) {
+                    String startingDigit = startingDigits.next();
+                    Log.d(TAG, String.format("startingDigit should be %s", startingDigit));
+                    long rangeStart, rangeEnd;
+                    if (startingDigit.contains("-")) {
+                        String[] segs = startingDigit.split("-");
+                        segs[0] = String.format("%1$-6s", segs[0]).replace(' ', '0');
+                        segs[1] = String.format("%1$-6s", segs[1]).replace(' ', '9');
+                        rangeStart = Long.parseLong(segs[0]);
+                        rangeEnd = Long.parseLong(segs[1]);
+                    } else {
+                        rangeStart = Long.parseLong(String.format("%1$-6s", startingDigit).replace(' ', '0'));
+                        rangeEnd = Long.parseLong(String.format("%1$-6s", startingDigit).replace(' ', '9'));
+                    }
+                    Log.d(TAG, String.format("first 6 digits- start: %d end: %d", rangeStart, rangeEnd));
+                    boolean validPrefix = firstSix >= rangeStart && firstSix <= rangeEnd;
+                    if (validPrefix) {
+
+                        JSONArray lengths = branRegex.optJSONArray(startingDigit);
+                        for (int i = 0; i < lengths.length(); i++) {
+                            String length = lengths.optString(i);
+                            int lenRangeStart = 0;
+                            int lenRangeEnd = 0;
+                            if (length.contains("-")) {
+                                String[] segs = length.split("-");
+                                lenRangeStart = Integer.parseInt(segs[0]);
+                                lenRangeEnd = Integer.parseInt(segs[1]);
+                            } else {
+                                lenRangeStart = lenRangeEnd = Integer.parseInt(length);
+                            }
+                            boolean validLength = cardNumberLength >= lenRangeStart && cardNumberLength <= lenRangeEnd;
+                            if (validLength) {
+                                return brandName;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static int manipulateColor(int color, float factor) {
+        int a = Color.alpha(color);
+        int r = Math.round(Color.red(color) * factor);
+        int g = Math.round(Color.green(color) * factor);
+        int b = Math.round(Color.blue(color) * factor);
+        return Color.argb(a,
+                Math.min(r, 255),
+                Math.min(g, 255),
+                Math.min(b, 255));
     }
 }
 
