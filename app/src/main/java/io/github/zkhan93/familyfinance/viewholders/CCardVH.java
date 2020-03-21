@@ -3,17 +3,16 @@ package io.github.zkhan93.familyfinance.viewholders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -30,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.util.Util;
 
 /**
  * Created by zeeshan on 7/7/17.
@@ -38,6 +38,10 @@ import io.github.zkhan93.familyfinance.models.CCard;
 public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
     public static final String TAG = CCardVH.class.getSimpleName();
+
+
+    @BindView(R.id.bank_icon)
+    ImageView bankLogo;
 
     @BindView(R.id.card_type)
     ImageView cardType;
@@ -77,6 +81,10 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
                 if (url == null)
                     url = String.format("https://via.placeholder" +
                             ".com/200x200/f0f0f0/2c2c2c?text=%s", dataSnapshot.getKey());
+//                Glide.with(context)
+//                        .load(url)
+//                        .apply(RequestOptions.placeholderOf(R.drawable.ic_bank_grey_600_18dp))
+//                        .into(bankLogo);
                 Glide.with(context)
                         .asBitmap()
                         .load(url)
@@ -85,6 +93,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
                             @Override
                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                 createPaletteAsync(resource);
+                                bankLogo.setImageBitmap(resource);
                             }
 
                             @Override
@@ -128,14 +137,14 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
         itemView.setOnLongClickListener(this);
     }
 
-    public void createPaletteAsync(Bitmap bitmap) {
+    private void createPaletteAsync(Bitmap bitmap) {
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             public void onGenerated(Palette p) {
                 // Use generated instance
                 Palette.Swatch swatch = p.getVibrantSwatch();
                 if (swatch != null) {
                     Log.d(TAG, "swatch is NOT NULL");
-                    container.setBackgroundColor(swatch.getRgb());
+                    container.setBackgroundColor(Util.manipulateColor(swatch.getRgb(), 0.5f));
                 }
             }
         });
@@ -143,8 +152,11 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
 
     public void setCCard(CCard cCard) {
         this.cCard = cCard;
+        Log.d(TAG, String.format("card: %s => %s", cCard.getNumber(), Util.getCardBrand(cCard.getNumber())));
+
         number.setText(cCard.getFormattedNumber(' ', true));
         bankName.setText(cCard.getBank());
+
         if (cCard.getCardholder() == null || cCard.getCardholder().equals("")) {
             cardholder.setText("UNKNOWN");
         } else {
@@ -160,11 +172,13 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
                 .child(cCard.getBank().toUpperCase())
                 .addListenerForSingleValueEvent(bankNameListener);
 
-        String type = cCard.getType();
-        if (type != null)
+        String cardType = cCard.getType();
+        if (cardType == null)
+            cardType = Util.getCardBrand(cCard.getNumber());
+        if (cardType != null)
             FirebaseDatabase.getInstance().getReference("images")
                     .child("card_types")
-                    .child(type)
+                    .child(cardType.toUpperCase())
                     .addListenerForSingleValueEvent(cardTypeImageLinkListener);
 
         if (cCard.getExpireOn() == -1) {
@@ -175,8 +189,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
             tvExpiresOn.setVisibility(View.VISIBLE);
             expiresOn.setText(CCard.EXPIRE_ON.format(new Date(cCard.getExpireOn())));
         }
-
-        if (cCard.getCvv() == null || cCard.getCvv().equals("")) {
+        if (cCard.getCvv() == null || cCard.getCvv().isEmpty()) {
             cvv.setVisibility(View.GONE);
             tvCvv.setVisibility(View.GONE);
         } else {
@@ -215,7 +228,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
 
     }
 
-    public abstract class MyValueEventListener implements ValueEventListener {
+    public abstract static class MyValueEventListener implements ValueEventListener {
 
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {

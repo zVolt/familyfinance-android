@@ -6,12 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +14,13 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -79,10 +80,8 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
     TextView phoneNumber;
     @BindView(R.id.limit)
     SeekBar limit;
-    @BindView(R.id.consumed_limit)
-    TextView consumedLimit;
-    @BindView(R.id.remaining_limit)
-    TextView remainingLimit;
+    @BindView(R.id.card_limit)
+    TextView cardLimit;
     @BindView(R.id.updated_by)
     ImageView updateBy;
     @BindView(R.id.updated_on)
@@ -91,10 +90,8 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
     TextView userid;
     @BindView(R.id.password)
     TextView password;
-    @BindView(R.id.addons_title)
-    TextView addonTitle;
-    @BindView(R.id.addon_cards)
-    RecyclerView addonCards;
+    @BindView(R.id.cards)
+    RecyclerView cards;
 
     {
         bankImageLinkListener = new ValueEventListener() {
@@ -153,10 +150,8 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
                     .getBank().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);
             cardHolder.setText(getDefaultNotSet(cCard.getCardholder()));
             cardNumber.setText(cCard.getFormattedNumber(' '));
-            consumedLimit.setText(NumberFormat.getCurrencyInstance().format(cCard
-                    .getConsumedLimit()));
-            remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard
-                    .getRemainingLimit()));
+            cardLimit.setText(NumberFormat.getCurrencyInstance().format(cCard
+                    .getMaxLimit()));
             limit.setMax((int) cCard.getMaxLimit());
             limit.setProgress((int) cCard.getConsumedLimit());
             billingCycle.setText(Util.getBillingCycleString(cCard.getBillingDay(), cCard
@@ -170,16 +165,12 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
                     .circleCropTransform()).into(updateBy);
             updatedOn.setText(DateUtils.getRelativeTimeSpanString(getContext(), cCard
                     .getUpdatedOn(), true));
-            if (cCard.getAddonCards().size() > 0) {
-                addonTitle.setVisibility(View.VISIBLE);
-                addonCards.setLayoutManager(new LinearLayoutManager(getContext(),
-                        LinearLayoutManager.HORIZONTAL, false));
-                AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(this);
-                addonCards.setAdapter(addonCardListAdapter);
-                addonCardListAdapter.setItems(cCard.getAddonCards());
-            } else {
-                addonTitle.setVisibility(View.GONE);
-            }
+
+            cards.setLayoutManager(new LinearLayoutManager(getContext(),
+                    LinearLayoutManager.HORIZONTAL, false));
+            AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(this);
+            cards.setAdapter(addonCardListAdapter);
+            addonCardListAdapter.setItems(cCard.getAddonCards());
         }
         limit.setOnSeekBarChangeListener(this);
 
@@ -197,16 +188,13 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
     public void onResume() {
         super.onResume();
         cCard.refresh();
-        if (cCard.getAddonCards().size() > 0) {
-            addonTitle.setVisibility(View.VISIBLE);
-            addonCards.setLayoutManager(new LinearLayoutManager(getContext(),
-                    LinearLayoutManager.HORIZONTAL, false));
-            AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(this);
-            addonCards.setAdapter(addonCardListAdapter);
-            addonCardListAdapter.setItems(cCard.getAddonCards());
-        } else {
-            addonTitle.setVisibility(View.GONE);
-        }
+
+        cards.setLayoutManager(new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL, false));
+        AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(this);
+        cards.setAdapter(addonCardListAdapter);
+        addonCardListAdapter.setItems(cCard.getAddonCards());
+
     }
 
     @Override
@@ -237,20 +225,17 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int newValue, boolean b) {
-        newValue = (newValue/100)*100;
+
         Util.Log.d(TAG, "%d %d %s", seekBar.getProgress(), newValue, String.valueOf(b));
         //skip initial trigger
-        if (newValue != cCard.getConsumedLimit()) {
-            consumedLimit.setText(NumberFormat.getCurrencyInstance().format(newValue));
-            remainingLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit() -
-                    newValue));
-            updateMap.put("consumedLimit", newValue);
-            FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (fbUser != null)
+
+        cardLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit()));
+        updateMap.put("consumedLimit", newValue);
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null)
             updateMap.put("updatedByMemberId", fbUser.getUid());
-            updateMap.put("updatedOn", Calendar.getInstance().getTimeInMillis());
-            cardRef.updateChildren(updateMap);
-        }
+        updateMap.put("updatedOn", Calendar.getInstance().getTimeInMillis());
+        cardRef.updateChildren(updateMap);
 
     }
 
@@ -305,6 +290,6 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
     @Override
     public void onLongPress(AddonCard addonCard) {
-        Util.quickCopy(getActivity().getApplicationContext(),addonCard);
+        Util.quickCopy(getActivity().getApplicationContext(), addonCard);
     }
 }

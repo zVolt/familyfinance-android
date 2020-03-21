@@ -232,7 +232,7 @@
                     android:id="@+id/phone_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/hint_phone_number"
+                    android:hint="@string/phone_number"
                     android:inputType="text"
                     android:lines="1"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -245,7 +245,7 @@
                     android:id="@+id/userid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/hint_userid"
+                    android:hint="@string/userid"
                     android:inputType="text"
                     android:lines="1"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -258,7 +258,7 @@
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/hint_password"
+                    android:hint="@string/password"
                     android:inputType="text"
                     android:lines="1"/>
             </com.google.android.material.textfield.TextInputLayout>

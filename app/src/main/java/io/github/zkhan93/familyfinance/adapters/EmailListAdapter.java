@@ -20,7 +20,7 @@ import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.callbacks.SubscribeEmailCallback;
 import io.github.zkhan93.familyfinance.models.Email;
 import io.github.zkhan93.familyfinance.viewholders.EmailVH;
-import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
+import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
 import io.github.zkhan93.familyfinance.viewholders.SubscribeEmailVH;
 
 /**
@@ -50,7 +50,7 @@ public class EmailListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         Log.d(TAG, "itemType:" + viewType);
         switch (viewType) {
             case ITEM_TYPE.EMPTY:
-                return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+                return new NoItemVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                         .listitem_empty, parent, false), "blankEmail");
             case ITEM_TYPE.SUBSCRIBE:
                 return new SubscribeEmailVH(LayoutInflater.from(parent.getContext()).inflate(R

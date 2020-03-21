@@ -20,13 +20,13 @@ import io.github.zkhan93.familyfinance.R;
  * Created by zeeshan on 12/10/17.
  */
 
-public class EmptyVH extends RecyclerView.ViewHolder implements ValueEventListener {
-    public static final String TAG = EmptyVH.class.getSimpleName();
+public class NoItemVH extends RecyclerView.ViewHolder implements ValueEventListener {
+    public static final String TAG = NoItemVH.class.getSimpleName();
     @BindView(R.id.image)
     ImageView image;
 
 
-    public EmptyVH(View itemView,@NonNull String imageChild) {
+    public NoItemVH(View itemView, @NonNull String imageChild) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         Log.d(TAG, "empty VH created");
