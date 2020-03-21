@@ -49,7 +49,7 @@ android {
     }
     signingConfigs {
         debug {
-//            storeFile file('C:\\Users\\zkhan\\.android\\debug.keystore')
+            storeFile file('C:\\Users\\zkhan\\.android\\debug.keystore')
         }
     }
 

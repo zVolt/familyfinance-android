@@ -105,7 +105,7 @@
     <string name="addon_cards">Add-on Cards</string>
     <string name="card_type">Card Type</string>
     <string name="card_information">Card Information</string>
-    <string name="recent_activities">Recent Activities</string>
+    <string name="transaction_history">Transaction History</string>
 
     <!--    card types-->
     <string name="card_type_primary">Primary Card</string>
