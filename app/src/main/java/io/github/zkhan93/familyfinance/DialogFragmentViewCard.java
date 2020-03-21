@@ -168,9 +168,9 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
             cards.setLayoutManager(new LinearLayoutManager(getContext(),
                     LinearLayoutManager.HORIZONTAL, false));
-            AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(this);
+            AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(null, cards);
             cards.setAdapter(addonCardListAdapter);
-            addonCardListAdapter.setItems(cCard.getAddonCards());
+//            addonCardListAdapter.setItems(cCard.getAddonCards());
         }
         limit.setOnSeekBarChangeListener(this);
 
@@ -191,9 +191,9 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
         cards.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-        AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(this);
+        AddonCardListAdapter addonCardListAdapter = new AddonCardListAdapter(null, cards);
         cards.setAdapter(addonCardListAdapter);
-        addonCardListAdapter.setItems(cCard.getAddonCards());
+//        addonCardListAdapter.setItems(cCard.getAddonCards());
 
     }
 
