@@ -5,7 +5,12 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 29
     buildToolsVersion '28.0.3'
+<<<<<<< HEAD
     ndkVersion "22.1.7171670"
+=======
+    ndkVersion '21.0.6113669'
+
+>>>>>>> fix ndk version
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
