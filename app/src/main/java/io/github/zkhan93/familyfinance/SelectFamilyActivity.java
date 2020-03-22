@@ -379,7 +379,7 @@ public class SelectFamilyActivity extends AppCompatActivity {
     }
 
     private void startHomeActivity(){
-        startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
         finish();
     }
 
