@@ -34,45 +34,56 @@
 
 
     <style name="AppTheme.Text" parent="TextAppearance.AppCompat.Medium">
-        <item name="android:fontFamily">@font/main_font</item>
+        <item name="android:fontFamily">@font/open_sans_and_roboto_mono</item>
         <item name="android:textSize">@dimen/text_size_md</item>
     </style>
 
-    <style name="AppTheme.Text.Light" parent="AppTheme.Text">
-        <item name="android:textColor">@color/md_grey_100</item>
+    <style name="AppTheme.Text.Light" >
+        <item name="android:textColor">@color/textLight</item>
     </style>
-    <style name="AppTheme.Text.Light.Small" parent="AppTheme.Text.Light">
+    <style name="AppTheme.Text.Light.Small">
         <item name="android:textSize">@dimen/text_size_sm</item>
     </style>
-    <style name="AppTheme.Text.Light.Large" parent="AppTheme.Text.Light">
+    <style name="AppTheme.Text.Light.Large">
         <item name="android:textSize">@dimen/text_size_lg</item>
     </style>
-    <style name="AppTheme.Text.Light.CardNumber" parent="AppTheme.Text.Light">
+    <style name="AppTheme.Text.Light.CardNumber">
         <item name="android:fontFamily">@font/robotomono_light</item>
         <item name="android:textSize">@dimen/text_size_xl</item>
     </style>
 
-    <style name="AppTheme.Text.Dark" parent="AppTheme.Text">
-        <item name="android:textColor">@color/md_grey_900</item>
+    <style name="AppTheme.Text.Dark">
+        <item name="android:textColor">@color/textDark</item>
+        <item name="android:textColorHint">@color/md_grey_500</item>
     </style>
-    <style name="AppTheme.Text.Dark.Small" parent="AppTheme.Text.Dark">
+    <style name="AppTheme.Text.Dark.Small">
         <item name="android:textSize">@dimen/text_size_sm</item>
     </style>
-    <style name="AppTheme.Text.Dark.Large" parent="AppTheme.Text.Dark">
+    <style name="AppTheme.Text.Dark.Large">
         <item name="android:textSize">@dimen/text_size_lg</item>
     </style>
-    <style name="AppTheme.Text.Dark.CardNumber" parent="AppTheme.Text.Dark">
+    <style name="AppTheme.Text.Dark.CardNumber">
         <item name="android:fontFamily">@font/robotomono_light</item>
         <item name="android:textSize">@dimen/text_size_xl</item>
     </style>
 
-    <style name="AppTheme.Text.Muted" parent="AppTheme.Text">
-        <item name="android:textColor">@color/md_grey_600</item>
+    <style name="AppTheme.Text.Muted">
+        <item name="android:textColor">@color/textMuted</item>
     </style>
-    <style name="AppTheme.Text.Muted.Small" parent="AppTheme.Text.Muted">
+    <style name="AppTheme.Text.Muted.Small">
         <item name="android:textSize">@dimen/text_size_sm</item>
     </style>
-    <style name="AppTheme.Text.Muted.Large" parent="AppTheme.Text.Muted">
+    <style name="AppTheme.Text.Muted.Large">
+        <item name="android:textSize">@dimen/text_size_lg</item>
+    </style>
+
+    <style name="AppTheme.Text.Error">
+        <item name="android:textColor">@color/textError</item>
+    </style>
+    <style name="AppTheme.Text.Error.Small">
+        <item name="android:textSize">@dimen/text_size_sm</item>
+    </style>
+    <style name="AppTheme.Text.Error.Large">
         <item name="android:textSize">@dimen/text_size_lg</item>
     </style>
 

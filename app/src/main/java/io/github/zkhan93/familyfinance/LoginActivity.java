@@ -139,11 +139,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void startMainActivity() {
         if (PreferenceManager.getDefaultSharedPreferences
-                (getApplicationContext()).contains("familyId")) {
+                (getApplicationContext()).contains("familyID")) {
             //TODO: check if I'm a member of this family if not then delete familyId from
             // preference and show Select Family Activity
             startActivity(new Intent(LoginActivity.this,
-                    MainActivity.class));
+                    HomeActivity.class));
         } else {
             startActivity(new Intent(LoginActivity.this,
                     SelectFamilyActivity.class));
