@@ -41,6 +41,7 @@
     <string name="action_switch_family">Switch Family</string>
     <string name="action_about">About</string>
 
+
     <!--hints -->
     <string name="hint_account_name">Account\'s Name</string>
     <string name="hint_account_holder_name">Account holder\'s name</string>
@@ -64,6 +65,8 @@
     <string name="hint_email">Email</string>
     <string name="hint_username">Username</string>
     <string name="hint_description">Description</string>
+    <string name="hint_unique_id">Unique Family ID</string>
+
 
     <string name="progress_logging_you_in">Logging you in..</string>
     <string name="progress_select_account">Select an account..</string>
@@ -74,6 +77,17 @@
     <string name="progress_saving_details">Saving your details..</string>
     <string name="progress_updating_details">Updating details on server..</string>
     <string name="progress_success">All done</string>
+
+<!--    error/help/status message -->
+    <string name="msg_family_id_not_exist">Family with this ID does not exist! click "Create New Family" to start a new family with this ID</string>
+    <string name="msg_user_no_logged_in">Please login to continue</string>
+    <string name="msg_null_task">Previous task was not given</string>
+    <string name="msg_user_not_member">You are not a member in this family</string>
+    <string name="msg_request_submitted">Your request to join the family has been sent to the moderator of the family</string>
+    <string name="msg_request_approved">Your request is approved</string>
+
+    <!--    button text-->
+    <string name="btn_create_family">Create a new Family</string>
 
     <!-- Strings related to Settings -->
 
@@ -106,6 +120,10 @@
     <string name="card_type">Card Type</string>
     <string name="card_information">Card Information</string>
     <string name="transaction_history">Transaction History</string>
+    <string name="welcome">Welcome!</string>
+    <string name="dont_have_unique">Don\'t have a unique ID ?</string>
+    <string name="welcome_help">Enter the unique ID of the family you want to join</string>
+
 
     <!--    card types-->
     <string name="card_type_primary">Primary Card</string>

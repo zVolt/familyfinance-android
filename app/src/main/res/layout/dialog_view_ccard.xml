@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cards"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/listitem_ccard_small" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/cards"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/listitem_ccard_small" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/medium"
             android:orientation="vertical">
 
             <TextView
@@ -32,144 +32,158 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/card_information"
-                android:textAllCaps="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textAllCaps="true" />
 
-            <TextView
-                android:id="@+id/card_type"
-                style="@style/AppTheme.Text.Dark"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/large"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/card_info"
-                tools:text="Primary" />
+                android:layout_margin="@dimen/medium"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/card_type"
+                    style="@style/AppTheme.Text.Dark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/large"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@id/guideline"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Primary" />
 
 
-            <TextView
-                android:id="@+id/phone_number"
-                style="@style/AppTheme.Text.Dark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/large"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/card_type"
-                tools:text="8932061116" />
+                <TextView
+                    android:id="@+id/phone_number"
+                    style="@style/AppTheme.Text.Dark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/large"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/card_type"
+                    tools:text="8932061116" />
 
-            <TextView
-                android:id="@+id/bill_date"
-                style="@style/AppTheme.Text.Dark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/large"
-                android:textIsSelectable="true"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/phone_number"
-                tools:text="23 July" />
+                <TextView
+                    android:id="@+id/bill_date"
+                    style="@style/AppTheme.Text.Dark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/large"
+                    android:textIsSelectable="true"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/phone_number"
+                    tools:text="23 July" />
 
-            <TextView
-                android:id="@+id/userid"
-                style="@style/AppTheme.Text.Dark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/large"
-                android:textIsSelectable="true"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/bill_date"
-                tools:text="zkhan1993" />
+                <TextView
+                    android:id="@+id/userid"
+                    style="@style/AppTheme.Text.Dark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/large"
+                    android:textIsSelectable="true"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/bill_date"
+                    tools:text="zkhan1993" />
 
-            <TextView
-                android:id="@+id/password"
-                style="@style/AppTheme.Text.Dark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/large"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/userid"
-                tools:text="P@ssw0rd!" />
+                <TextView
+                    android:id="@+id/password"
+                    style="@style/AppTheme.Text.Dark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/large"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/userid"
+                    tools:text="P@ssw0rd!" />
 
-            <TextView
-                android:id="@+id/card_limit"
-                style="@style/AppTheme.Text.Dark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/large"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/password"
-                tools:text="2,25,000 INR" />
+                <TextView
+                    android:id="@+id/card_limit"
+                    style="@style/AppTheme.Text.Dark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/large"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/password"
+                    tools:text="2,25,000 INR" />
 
-            <TextView
-                android:id="@+id/tv_card_type"
-                style="@style/AppTheme.Text.Muted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/medium"
-                android:text="@string/card_type"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/card_type" />
+                <TextView
+                    android:id="@+id/tv_card_type"
+                    style="@style/AppTheme.Text.Muted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/medium"
+                    android:text="@string/card_type"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/card_type" />
 
-            <TextView
-                android:id="@+id/tv_phone_number"
-                style="@style/AppTheme.Text.Muted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/medium"
-                android:text="@string/phone_number"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/phone_number" />
+                <TextView
+                    android:id="@+id/tv_phone_number"
+                    style="@style/AppTheme.Text.Muted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/medium"
+                    android:text="@string/phone_number"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/phone_number" />
 
-            <TextView
-                android:id="@+id/tv_bill_date"
-                style="@style/AppTheme.Text.Muted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/medium"
-                android:text="@string/billing_date"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/bill_date" />
+                <TextView
+                    android:id="@+id/tv_bill_date"
+                    style="@style/AppTheme.Text.Muted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/medium"
+                    android:text="@string/billing_date"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/bill_date" />
 
-            <TextView
-                android:id="@+id/tv_user_id"
-                style="@style/AppTheme.Text.Muted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/medium"
-                android:text="@string/userid"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/userid" />
+                <TextView
+                    android:id="@+id/tv_user_id"
+                    style="@style/AppTheme.Text.Muted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/medium"
+                    android:text="@string/userid"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/userid" />
 
-            <TextView
-                android:id="@+id/tv_password"
-                style="@style/AppTheme.Text.Muted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/medium"
-                android:text="@string/password"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/password" />
+                <TextView
+                    android:id="@+id/tv_password"
+                    style="@style/AppTheme.Text.Muted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/medium"
+                    android:text="@string/password"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/password" />
 
-            <TextView
-                android:id="@+id/tv_card_limit"
-                style="@style/AppTheme.Text.Muted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/medium"
-                android:text="@string/card_limit"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/card_limit" />
+                <TextView
+                    android:id="@+id/tv_card_limit"
+                    style="@style/AppTheme.Text.Muted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/medium"
+                    android:text="@string/card_limit"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/card_limit" />
+
+
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.4" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/title_card_activity"
@@ -178,16 +192,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/large"
                 android:text="@string/transaction_history"
-                android:textAllCaps="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/card_limit" />
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.4" />
+                android:textAllCaps="true" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
@@ -195,10 +200,31 @@
                 android:layout_marginTop="@dimen/small"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/title_card_activity"
                 tools:listitem="@layout/listitem_card_activity" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageButton
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:src="@drawable/ic_share_grey_50_24dp"
+        style="@style/Widget.MaterialComponents.Button.Icon"
+        android:layout_height="wrap_content"/>
+    <ImageButton
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:src="@drawable/ic_share_grey_50_24dp"
+        style="@style/Widget.MaterialComponents.Button.Icon"
+        android:layout_height="wrap_content"/>
 
-
+    <ImageButton
+        android:src="@drawable/ic_share_grey_50_24dp"
+        style="@style/Widget.MaterialComponents.Button.Icon"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

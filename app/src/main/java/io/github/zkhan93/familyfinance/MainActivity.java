@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        familyId = sharedPreferences.getString("activeFamilyId", null);
+        familyId = sharedPreferences.getString("familyID", null);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         compilePatternAfterNoOfCallback = 2;
         //TODO: download the a json from https://gist.githubusercontent.com/zkhan93/500fc1fbcbd00724f8e856c6d0dac702/raw/card_brands.json as save it in preference as a string
@@ -379,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
             case R.id.action_switch_family:
                 PreferenceManager.getDefaultSharedPreferences(this).edit().remove
-                        ("activeFamilyId").apply();
+                        ("familyID").apply();
                 startActivity(new Intent(this, SelectFamilyActivity.class));
                 finish();
                 return true;
