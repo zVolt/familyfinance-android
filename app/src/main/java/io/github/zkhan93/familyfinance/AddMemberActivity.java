@@ -54,7 +54,6 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
         requestList.setAdapter(receiveRequestListAdapter);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait..");
-        Log.d(TAG, "laddu");
     }
 
     @Override

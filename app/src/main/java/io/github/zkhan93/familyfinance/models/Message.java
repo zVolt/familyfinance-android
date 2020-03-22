@@ -11,6 +11,8 @@ import org.greenrobot.greendao.annotation.ToOne;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
+import java.util.Objects;
+
 /**
  * Created by zeeshan on 11/13/17.
  */
@@ -62,7 +64,7 @@ public class Message extends BaseModel {
     @Keep
     public Member getSender() {
         String __key = this.senderId;
-        if (sender__resolvedKey == null || sender__resolvedKey != __key) {
+        if (sender__resolvedKey == null || !Objects.equals(sender__resolvedKey, __key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");

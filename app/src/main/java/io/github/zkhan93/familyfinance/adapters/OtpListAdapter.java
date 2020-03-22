@@ -1,7 +1,9 @@
 package io.github.zkhan93.familyfinance.adapters;
 
 import android.content.SharedPreferences;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -23,7 +25,7 @@ import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.MemberDao;
 import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.util.Util;
-import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
+import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
 import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
 /**
@@ -65,7 +67,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == ITEM_TYPE.EMPTY)
-            return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+            return new NoItemVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                     .listitem_empty, parent, false), "blankOTP");
         return new OtpVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                 .listitem_otp, parent, false), familyId);
@@ -132,7 +134,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         otp.setClaimedby(memberDao.load(otp.getClaimedByMemberId()));
                     tmpOtps.add(otp);
                 }
-                if(tmpOtps.size()>0) {
+                if (tmpOtps.size() > 1) {
                     tmpOtps.remove(tmpOtps.size() - 1); // skip the last item since it was already
                     // loaded in previous page
                     lastLoadedItem = tmpOtps.get(0).getId();
@@ -185,7 +187,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         otp.setClaimedby(memberDao.load(otp.getClaimedByMemberId()));
                     tmpOtps.add(otp);
                 }
-                if(tmpOtps.size()>0) {
+                if (tmpOtps.size() > 0) {
                     lastLoadedItem = tmpOtps.get(0).getId();
                     Log.d(TAG, "LastItemLoaded: " + lastLoadedItem);
                     Collections.reverse(tmpOtps);
@@ -221,7 +223,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (isfilterApplied &&
                     _otps != null &&
                     otps.size() > 0
-                    ) {
+            ) {
                 otps = _otps;
                 _otps = null;
                 isfilterApplied = false;
@@ -279,7 +281,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     !text.contains(name) &&
                     !content.contains(text) &&
                     !text.contains(content)
-                    ) {
+            ) {
                 itr.remove();
                 isSearchApplied = true;
             }

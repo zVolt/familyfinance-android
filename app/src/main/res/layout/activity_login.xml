@@ -1,60 +1,74 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_teal_300"
+    android:background="@drawable/ic_bg_login_top"
     android:gravity="center"
     android:orientation="vertical"
     tools:context="io.github.zkhan93.familyfinance.LoginActivity">
 
-    <LinearLayout
+    <Button
+        android:drawableStart="@drawable/ic_google"
+        android:drawablePadding="@dimen/small"
+        android:id="@+id/sign_in_button"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/medium"
+        android:text="@string/common_signin_button_text_long"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subheading2" />
+
+    <ImageView
+        android:id="@+id/logo_text"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.6"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:paddingTop="16dp">
+        android:layout_height="100dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/text_transparent_shadow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logo_transparent_shadow"/>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
-            android:src="@drawable/text_transparent_shadow"/>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
-            android:src="@drawable/text_subhead"/>
-
-        <include layout="@layout/progress_layout"/>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/subheading2"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.4"
-        android:background="@color/md_teal_400"
-        android:gravity="center"
-        android:paddingBottom="48dp">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium"
+        android:visibility="visible"
+        android:layout_marginEnd="@dimen/medium"
+        android:scaleType="fitCenter"
+        style="@style/AppTheme.Text.Light.Large"
+        android:textAlignment="center"
+        android:text="Keeping and sharing all your family secrets from one place"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo_text" />
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/common_signin_button_text_long"
-            app:buttonSize="wide"
-            />
-    </LinearLayout>
-</LinearLayout>
+    <ImageView
+        android:id="@+id/subheading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium"
+        android:visibility="gone"
+        android:layout_marginEnd="@dimen/medium"
+        android:scaleType="fitCenter"
+        android:src="@drawable/text_subhead"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo_text" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="52dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo_transparent_shadow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include layout="@layout/progress_layout"
+        android:visibility="gone"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

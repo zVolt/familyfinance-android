@@ -156,7 +156,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_ccard, menu);
+        inflater.inflate(R.menu.fragment_cards, menu);
         SearchView searchView =
                 (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(this);
