@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -58,7 +60,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private OnCompleteListener<Void> saveUserDataListener;
     private ProgressDialog progressDialog;
     @BindView(R.id.sign_in_button)
-    SignInButton btnLogin;
+    Button btnLogin;
 
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
