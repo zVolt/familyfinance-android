@@ -280,6 +280,7 @@ public class Util {
     }
 
     public static String getCardBrand(String number) {
+        //TODO: move this json to firebase
         String jsonString = "{\"american_express\":{\"34\":[\"15\"],\"37\":[\"15\"]},\"diners_club\":{\"36\":[\"14-19\"],\"300-305\":[\"16-19\"],\"3095\":[\"16-19\"],\"38-39\":[\"16-19\"]},\"rupay\":{\"60\":[\"16\"],\"6521\":[\"16\"],\"6522\":[\"16\"],\"6528\":[\"16\"]},\"jcb\":{\"3528-3589\":[\"16-19\"]},\"discover\":{\"6011\":[\"16-19\"],\"622126-622925\":[\"16-19\"],\"624000-626999\":[\"16-19\"],\"628200-628899\":[\"16-19\"],\"64\":[\"16-19\"],\"65\":[\"16-19\"]},\"dankort\":{\"5019\":[\"16\"]},\"maestro\":{\"6759\":[\"12-19\"],\"676770\":[\"12-19\"],\"676774\":[\"12-19\"],\"50\":[\"12-19\"],\"56-69\":[\"12-19\"]},\"mastercard\":{\"2221-2720\":[\"16\"],\"51-55\":[\"16\"]},\"unionpay\":{\"81\":[\"16\"]},\"visa\":{\"4\":[\"13-19\"]}}";
         JSONObject brandMap = null;
         try {
@@ -294,22 +295,17 @@ public class Util {
             }
         }
         number = number.replaceAll("[- .]", "");
-        Log.d(TAG, String.format("number is %s", number));
         char[] numArray = number.toCharArray();
         if (Character.isDigit(numArray[0])) {
-            Log.d(TAG, String.format("first character is a digit"));
             long firstSix = Long.parseLong(number.substring(0, 6));
-            Log.d(TAG, String.format("first six digits are %d", firstSix));
             int cardNumberLength = number.length();
             Iterator<String> brandNames = brandMap.keys();
             while (brandNames.hasNext()) {
                 String brandName = brandNames.next();
-                Log.d(TAG, String.format("parsing for %s", brandName));
                 JSONObject branRegex = brandMap.optJSONObject(brandName);
                 Iterator<String> startingDigits = branRegex.keys();
                 while (startingDigits.hasNext()) {
                     String startingDigit = startingDigits.next();
-                    Log.d(TAG, String.format("startingDigit should be %s", startingDigit));
                     long rangeStart, rangeEnd;
                     if (startingDigit.contains("-")) {
                         String[] segs = startingDigit.split("-");
@@ -321,7 +317,6 @@ public class Util {
                         rangeStart = Long.parseLong(String.format("%1$-6s", startingDigit).replace(' ', '0'));
                         rangeEnd = Long.parseLong(String.format("%1$-6s", startingDigit).replace(' ', '9'));
                     }
-                    Log.d(TAG, String.format("first 6 digits- start: %d end: %d", rangeStart, rangeEnd));
                     boolean validPrefix = firstSix >= rangeStart && firstSix <= rangeEnd;
                     if (validPrefix) {
 

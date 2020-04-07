@@ -6,11 +6,13 @@
 
 
     <!-- activity titles -->
+    <string name="title_home">Home</string>
     <string name="title_summary">Summary</string>
     <string name="title_emails">Emails</string>
     <string name="title_accounts">Accounts</string>
     <string name="title_members">Members</string>
     <string name="title_sms">SMS</string>
+    <string name="title_messages">Messages</string>
     <string name="title_ccards">Credit Cards</string>
     <string name="title_dcards">Debit Cards</string>
     <string name="title_wallets">Wallets</string>
@@ -78,7 +80,7 @@
     <string name="progress_updating_details">Updating details on server..</string>
     <string name="progress_success">All done</string>
 
-<!--    error/help/status message -->
+    <!--    error/help/status message -->
     <string name="msg_family_id_not_exist">Family with this ID does not exist! click "Create New Family" to start a new family with this ID</string>
     <string name="msg_user_no_logged_in">Please login to continue</string>
     <string name="msg_null_task">Previous task was not given</string>
@@ -114,16 +116,16 @@
     <string name="delete">Delete</string>
     <string name="expiry_date">EXP</string>
     <string name="cvv">CVV</string>
-    <string name="billing_date">Bill Date</string>
+    <string name="billing_date">Next Bill</string>
     <string name="card_limit">Card Limit</string>
     <string name="addon_cards">Add-on Cards</string>
     <string name="card_type">Card Type</string>
     <string name="card_information">Card Information</string>
     <string name="transaction_history">Transaction History</string>
-    <string name="welcome">Welcome!</string>
+    <string name="welcome">Hello %1$s !</string>
     <string name="dont_have_unique">Don\'t have a unique ID ?</string>
     <string name="welcome_help">Enter the unique ID of the family you want to join</string>
-
+    <string name="edit">Edit</string>
 
     <!--    card types-->
     <string name="card_type_primary">Primary Card</string>
@@ -157,8 +159,6 @@
     <string name="pref_autolock">Lock after %1$s</string>
     <string name="pref_allsms_enable">Send all incomming SMS to family</string>
     <string name="pref_allsms_disable">Send SMS containing OTP only</string>
-    <string name="pref_no_of_sms">Show only %1$s latest SMS</string>
-    <string name="pref_no_of_sms_default">Show only 50 latest SMS</string>
 
     <string name="pref_key_notification" translatable="false">pref_key_notification</string>
     <string name="pref_key_notification_only_otp" translatable="false">pref_key_notification_only_otp</string>
@@ -171,6 +171,8 @@
     <string name="pref_key_autolock" translatable="false">pref_key_autolock</string>
     <string name="pref_key_allsms">pref_key_allsms</string>
     <string name="pref_key_no_of_sms">pref_key_no_of_sms</string>
+    <string name="pref_family_id">familyId</string>
+
 
 
     <string name="enter_pin">Enter PIN</string>

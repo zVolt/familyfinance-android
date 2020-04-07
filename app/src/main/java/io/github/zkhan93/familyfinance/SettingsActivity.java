@@ -2,7 +2,6 @@ package io.github.zkhan93.familyfinance;
 
 
 import android.app.ActionBar;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -10,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 
+import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -45,10 +45,10 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FragmentManager fm = getFragmentManager();
-        Fragment fragment = fm.findFragmentByTag(FragmentSetting.TAG);
+        Fragment fragment = null;
         if (fragment == null)
             fragment = new FragmentSetting();
-        fm.beginTransaction().replace(R.id.container, fragment).commit();
+//        fm.beginTransaction().replace(R.id.container, fragment).commit();
     }
 
     /**

@@ -86,7 +86,7 @@ public class DialogFragmentViewDCard extends DialogFragment implements DialogInt
                 if (url != null)
                     Glide.with(bank.getContext()).load(url).into(bank);
                 else
-                    Glide.with(bank.getContext()).load("http://via.placeholder" +
+                    Glide.with(bank.getContext()).load("https://via.placeholder" +
                             ".com/200x200/f0f0f0/2c2c2c?text=" + dataSnapshot.getKey()).into(bank);
             }
 

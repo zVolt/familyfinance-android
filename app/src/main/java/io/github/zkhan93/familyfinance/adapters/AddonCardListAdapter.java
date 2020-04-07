@@ -45,7 +45,7 @@ public class AddonCardListAdapter extends RecyclerView.Adapter<CCardVH> {
 
     @Override
     public void onBindViewHolder(CCardVH holder, int position) {
-        holder.setCCard(addonCards.get(position));
+        holder.setCCard(addonCards.get(position), false);
     }
 
     @Override

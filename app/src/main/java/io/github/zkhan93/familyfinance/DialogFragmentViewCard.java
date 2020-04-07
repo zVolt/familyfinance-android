@@ -101,7 +101,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
                 if (url != null)
                     Glide.with(bank.getContext()).load(url).into(bank);
                 else
-                    Glide.with(bank.getContext()).load("http://via.placeholder" +
+                    Glide.with(bank.getContext()).load("https://via.placeholder" +
                             ".com/200x200/f0f0f0/2c2c2c?text=" + dataSnapshot.getKey()).into(bank);
             }
 
@@ -225,8 +225,6 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int newValue, boolean b) {
-
-        Util.Log.d(TAG, "%d %d %s", seekBar.getProgress(), newValue, String.valueOf(b));
         //skip initial trigger
 
         cardLimit.setText(NumberFormat.getCurrencyInstance().format(cCard.getMaxLimit()));
@@ -258,7 +256,6 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
     @Override
     public void delete(AddonCard addonCard) {
-        Log.d(TAG, "delete addon" + addonCard.getNumber());
         String title = "You want to delete Addon Card " + addonCard.getNumber();
         DialogFragmentConfirm<AddonCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
         Bundle bundle = new Bundle();

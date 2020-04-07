@@ -65,7 +65,6 @@ public class DialogFragmentViewCredential extends DialogFragment implements Dial
                             .getSystemService(Context.CLIPBOARD_SERVICE);
                     if (clipboardManager == null) return;
                     clipboardManager.setPrimaryClip(ClipData.newPlainText("", text));
-                    Util.Log.d(TAG, "text copied %s", text);
                 }
             }
         };

@@ -201,7 +201,6 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
         HashCode hc = hf.newHasher()
                 .putString(enteredPin, Charsets.UTF_8)
                 .hash();
-        Log.d(TAG, "" + hc.toString() + "\n actual" + actualPin);
         if (hc.toString().equals(actualPin)) {
             setResult(RESULT_OK);
             finish();

@@ -46,7 +46,7 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        familyId = getIntent().getStringExtra("familyId");
+        familyId = getIntent().getStringExtra(getString(R.string.pref_family_id));
         ReceiveRequestListAdapter receiveRequestListAdapter = new ReceiveRequestListAdapter((App) getApplication(),
                 familyId,
                 this);

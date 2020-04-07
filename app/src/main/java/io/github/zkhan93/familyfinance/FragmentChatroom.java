@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,6 +82,9 @@ public class FragmentChatroom extends Fragment implements MessageListAdapter.Mes
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID);
+        }
+        if(familyId == null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser != null)
@@ -161,8 +166,6 @@ public class FragmentChatroom extends Fragment implements MessageListAdapter.Mes
 
     @Override
     public void onNewMessage(int position) {
-        Util.Log.d(TAG, "%d %d", ((LinearLayoutManager) messages.getLayoutManager())
-                .findLastCompletelyVisibleItemPosition(), position);
         if (((LinearLayoutManager) messages.getLayoutManager())
                 .findLastCompletelyVisibleItemPosition() != position - 2) {
             //if last visible item is not at position-1

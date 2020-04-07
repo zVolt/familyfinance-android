@@ -7,7 +7,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.Dark" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme.DarkToolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+    </style>
+
+    <style name="AppTheme.Dark">
         <item name="colorPrimary">@color/md_blue_grey_900</item>
         <item name="colorPrimaryDark">@color/md_black</item>
         <item name="colorAccent">@color/md_grey_500</item>
@@ -15,6 +18,18 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="AppTheme.NavDrawer">
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textLight</item>
+        <item name="android:textColorSecondary">@color/textLight</item>
+
+<!--        <item name="android:colorAccent">@color/colorAccent</item>-->
+<!--        <item name="android:colorPressedHighlight">@color/colorAccent</item>-->
+<!--        <item name="android:colorControlActivated">@color/colorAccent</item>-->
+<!--        <item name="android:colorActivatedHighlight">@color/colorAccent</item>-->
+    </style>
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

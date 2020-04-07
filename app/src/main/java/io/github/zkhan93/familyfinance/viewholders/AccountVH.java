@@ -64,7 +64,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String url = dataSnapshot.getValue(String.class);
                 if (url == null)
-                    url = String.format("http://via.placeholder.com/200x200/f0f0f0/2c2c2c?text=%s",
+                    url = String.format("https://via.placeholder.com/200x200/f0f0f0/2c2c2c?text=%s",
                             dataSnapshot.getKey());
                 Glide.with(context)
                         .load(url)
