@@ -104,7 +104,6 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onLoadTaskComplete(List<CCard> data) {
-//        Log.d(TAG, "loaded: " + data.toString());
         ccards.clear();
         ccards.addAll(data);
         Collections.sort(ccards, CCard.BY_UPDATED_ON);
@@ -329,7 +328,6 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 addonCards.add(addonCard);
             }
         }
-//        Log.d(TAG, "fetched: " + ccards.toString());
         new InsertTask<>(addonCardDao, this, true).execute(addonCards.toArray(new
                 AddonCard[addonCards.size()]));
         new InsertTask<>(cCardDao, this, true).execute(ccards.toArray(new CCard[ccards.size()]));

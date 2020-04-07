@@ -9,6 +9,18 @@
     tools:context="io.github.zkhan93.familyfinance.SelectFamilyActivity">
 
     <Button
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:id="@+id/btn_logout"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/medium"
+        android:layout_marginEnd="@dimen/medium"
+        android:layout_width="wrap_content"
+        android:text="Sign Out"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <Button
         android:id="@+id/btn_create_family"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:textColor="@color/colorAccent"
@@ -60,7 +72,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/welcome"
+        android:id="@+id/txt_welcome"
         style="@style/AppTheme.Text.Light"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,9 +81,10 @@
         android:paddingTop="@dimen/large"
         android:paddingEnd="@dimen/large"
         android:text="@string/welcome"
-        android:textSize="40sp"
+        tools:text="Hello Zeeshan Khan !"
+        android:textSize="32sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/btn_logout" />
 
     <TextView
         android:layout_width="match_parent"
@@ -88,9 +101,10 @@
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/large"
         android:paddingEnd="@dimen/large"
+        android:layout_marginTop="@dimen/medium"
         android:text="@string/welcome_help"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/welcome" />
+        app:layout_constraintTop_toBottomOf="@id/txt_welcome" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_join_family"

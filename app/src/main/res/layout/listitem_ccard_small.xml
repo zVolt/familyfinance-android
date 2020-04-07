@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/sides"
     android:layout_marginTop="@dimen/small"
@@ -27,9 +27,9 @@
             android:id="@+id/bank_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            app:layout_constraintBottom_toBottomOf="@id/card_type"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/card_type"
             tools:src="@drawable/ic_bank_sbi" />
 
         <ImageView

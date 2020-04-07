@@ -207,7 +207,6 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(TAG, "hmm a preference has changed with key: " + key);
         if (key != null && key.equals("filter_sms_by_member")) {
             String memberId = sharedPreferences.getString(key, null);
             filterByMember(memberId);
@@ -218,7 +217,6 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private boolean isfilterApplied;
 
     private void filterByMember(String memberId) {
-        Log.d(TAG, "is see you want to filter by " + memberId);
         if (memberId == null || memberId.isEmpty()) {
             if (isfilterApplied &&
                     _otps != null &&
@@ -255,7 +253,6 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private ArrayList<Otp> __otps;
 
     public void filterByString(String text) {
-        Log.d(TAG, "is see you want to filter by " + text);
         if ((text == null || text.isEmpty()) && isfilterApplied) {
             otps = __otps;
             __otps = null;

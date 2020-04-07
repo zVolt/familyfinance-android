@@ -49,7 +49,7 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
         .OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher, View.OnClickListener,
         DialogFragmentBillingCycle.OnBillingCycleSelectListener {
     public static final String TAG = DialogFragmentCcard.class.getSimpleName();
-    public static final String ARG_FAMILY_ID = "familyID";
+    public static final String ARG_FAMILY_ID = "familyId";
     public static final String ARG_CARD = "ccard";
     @BindView(R.id.name)
     TextInputEditText cardName;

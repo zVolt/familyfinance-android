@@ -1,11 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
-import android.content.Context;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +18,10 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
@@ -33,22 +33,18 @@ import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentAccounts.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link FragmentAccounts#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentAccounts extends Fragment implements AccountVH.ItemInteractionListener,SearchView.OnQueryTextListener {
+public class FragmentAccounts extends Fragment implements AccountVH.ItemInteractionListener,
+        SearchView.OnQueryTextListener {
 
     public static final String TAG = FragmentAccounts.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_FAMILY_ID = "familiyID";
+    private static final String ARG_FAMILY_ID = "familyId";
 
 
     private String familyId;
-
-    private OnFragmentInteractionListener mListener;
     private AccountListAdapter accountListAdapter;
     private Toast toast;
     @BindView(R.id.list)
@@ -103,6 +99,9 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID);
         }
+        if(familyId==null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        }
     }
 
     @Override
@@ -135,23 +134,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         super.onStop();
         EventBus.getDefault().unregister(this);
         accountListAdapter.unregisterForEvents();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     @Override
@@ -189,7 +171,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     @Override
     public void onLongPress(Account account) {
-        Util.quickCopy(getActivity().getApplicationContext(),account);
+        Util.quickCopy(getActivity().getApplicationContext(), account);
     }
 
     /**
@@ -204,26 +186,17 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         }
 
     }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Log.d(TAG, "saarch for: " + query);
         accountListAdapter.onSearch(query);
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        Log.d(TAG, "search for: " + newText);
         accountListAdapter.onSearch(newText);
         return true;
     }
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnFragmentInteractionListener {
 
-    }
 }

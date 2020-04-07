@@ -61,11 +61,17 @@ public class SelectFamilyActivity extends AppCompatActivity {
     @BindView(R.id.btn_create_family)
     Button btnCreateFamily;
 
+    @BindView(R.id.btn_logout)
+    Button btnLogout;
+
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
     @BindView(R.id.txt_error_msg)
     TextView txtErrorMsg;
+
+    @BindView(R.id.txt_welcome)
+    TextView txtWelcome;
 
     private FirebaseDatabase fbDb;
     private DatabaseReference familyRef, membersRef, requestRef;
@@ -105,7 +111,7 @@ public class SelectFamilyActivity extends AppCompatActivity {
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             Util.Log.d(TAG, "fail: fetched the moderator ID to check the " +
-                                    "existance of family");
+                                    "existence of family");
                             tcs.setException(databaseError.toException());
                         }
                     });
@@ -119,9 +125,8 @@ public class SelectFamilyActivity extends AppCompatActivity {
                         new Exception(getString(R.string.msg_null_task)) : task.getException();
                 tcs.setException(ex);
             } else {
-// look up requests to see if users has access to the family
-// Note: only moderator of family can write the requests.familyID.userID.approve or .block
-
+                // look up requests to see if users has access to the family
+                // Note: only moderator of family can write the requests.familyID.userID.approve or .block
                 requestRef.child(familyId).child(me.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -160,7 +165,7 @@ public class SelectFamilyActivity extends AppCompatActivity {
                         new Exception(getString(R.string.msg_null_task)) : task.getException();
                 tcs.setException(ex);
             } else {
-// if the request was not found create it
+                // if the request was not found create it
                 if (task.getResult() == USER_REQ_NOT_FOUND) {
                     Map<String, Object> updates = new HashMap<>();
 
@@ -253,6 +258,7 @@ public class SelectFamilyActivity extends AppCompatActivity {
             finish();
             return;
         }
+        txtWelcome.setText(getString(R.string.welcome, fbUser.getDisplayName()));
         insertMeInLocalDb(fbUser);
 
         fbDb = FirebaseDatabase.getInstance();
@@ -263,7 +269,7 @@ public class SelectFamilyActivity extends AppCompatActivity {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     }
 
-    @OnClick({R.id.btn_join_family, R.id.btn_create_family})
+    @OnClick({R.id.btn_join_family, R.id.btn_create_family, R.id.btn_logout})
     public void onClick(View button) {
         showMessage("", false);
         familyId = edtTxtFamilyId.getText().toString().trim();
@@ -274,6 +280,9 @@ public class SelectFamilyActivity extends AppCompatActivity {
             case R.id.btn_create_family:
                 startFamilyBtnAction();
                 break;
+            case R.id.btn_logout:
+                signOut();
+                break;
         }
     }
 
@@ -281,6 +290,12 @@ public class SelectFamilyActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         checkActiveFamily();
+    }
+
+    private void signOut() {
+        FirebaseAuth.getInstance().signOut();
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     private void insertMeInLocalDb(@NonNull FirebaseUser fbUser) {
@@ -319,7 +334,7 @@ public class SelectFamilyActivity extends AppCompatActivity {
                     setLoadingUi(false);
                     if (status == USER_REQ_APPROVED) {
                         startHomeActivity();
-                        sharedPref.edit().putString("familyID", familyId).apply();
+                        sharedPref.edit().putString(getString(R.string.pref_family_id), familyId).apply();
                         showMessage(getString(R.string.msg_request_approved));
                     } else if (status == USER_REQ_SUBMITTED) {
                         showMessage(getString(R.string.msg_request_submitted));
@@ -378,8 +393,8 @@ public class SelectFamilyActivity extends AppCompatActivity {
                 });
     }
 
-    private void startHomeActivity(){
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+    private void startHomeActivity() {
+        startActivity(new Intent(getApplicationContext(), HomeActivity.class));
         finish();
     }
 
@@ -415,7 +430,7 @@ public class SelectFamilyActivity extends AppCompatActivity {
      * if a familyID is saved in preferences, initiate the join Family action, otherwise do nothing
      */
     private void checkActiveFamily() {
-        familyId = sharedPref.getString("familyID", null);
+        familyId = sharedPref.getString(getString(R.string.pref_family_id), null);
         if (familyId == null) {
             // if no active familyID is set then let the user choose the family
             truncateLocalDb();

@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,6 +93,9 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
         if (getArguments() != null) {
             Bundle bundle = getArguments();
             familyId = bundle.getString(ARG_FAMILY_ID, null);
+        }
+        if(familyId == null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
 
         mCredential = GoogleAccountCredential.usingOAuth2(
@@ -223,7 +228,6 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
                     transport, jsonFactory, credential)
                     .setApplicationName("Family Finance")
                     .build();
-            Log.d(TAG, "selectedAccountName: " + credential.getSelectedAccountName());
         }
 
         @Override

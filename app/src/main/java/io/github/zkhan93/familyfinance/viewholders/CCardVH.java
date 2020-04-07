@@ -8,12 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.palette.graphics.Palette;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -23,8 +17,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.ref.WeakReference;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.palette.graphics.Palette;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.R;
@@ -35,7 +35,8 @@ import io.github.zkhan93.familyfinance.util.Util;
  * Created by zeeshan on 7/7/17.
  */
 
-public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickListener,
+        View.OnLongClickListener {
 
     public static final String TAG = CCardVH.class.getSimpleName();
 
@@ -69,14 +70,14 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
 
     private Context context;
 
-    private ItemInteractionListener itemInteractionListener;
+    private WeakReference<ItemInteractionListener> itemInteractionListener;
     private CCard cCard;
     private MyValueEventListener bankImageLinkListener, cardTypeImageLinkListener, bankNameListener;
 
     {
         bankImageLinkListener = new MyValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String url = dataSnapshot.getValue(String.class);
                 if (url == null)
                     url = String.format("https://via.placeholder" +
@@ -91,7 +92,8 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
                         .apply(RequestOptions.placeholderOf(R.drawable.ic_bank_grey_600_18dp))
                         .into(new CustomTarget<Bitmap>() {
                             @Override
-                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            public void onResourceReady(@NonNull Bitmap resource,
+                                                        @Nullable Transition<? super Bitmap> transition) {
                                 createPaletteAsync(resource);
                                 bankLogo.setImageBitmap(resource);
                             }
@@ -105,18 +107,13 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
         };
         cardTypeImageLinkListener = new MyValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String url = dataSnapshot.getValue(String.class);
-                if (url == null)
-                    cardType.setVisibility(View.GONE);
-                else {
-                    cardType.setVisibility(View.VISIBLE);
+                if (url != null) {
                     Glide.with(context)
                             .load(url)
-                            .apply(RequestOptions.placeholderOf(R.drawable.ic_bank_grey_600_18dp))
                             .into(cardType);
                 }
-
             }
         };
         bankNameListener = new MyValueEventListener() {
@@ -130,7 +127,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
 
     public CCardVH(View itemView, @NonNull ItemInteractionListener itemInteractionListener) {
         super(itemView);
-        this.itemInteractionListener = itemInteractionListener;
+        this.itemInteractionListener = new WeakReference<>(itemInteractionListener);
         context = itemView.getContext();
         ButterKnife.bind(this, itemView);
         itemView.setOnClickListener(this);
@@ -138,23 +135,23 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
     }
 
     private void createPaletteAsync(Bitmap bitmap) {
-        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-            public void onGenerated(Palette p) {
-                // Use generated instance
+        Palette.from(bitmap).generate(p -> {
+            // Use generated instance
+            if (p != null) {
                 Palette.Swatch swatch = p.getVibrantSwatch();
                 if (swatch != null) {
-                    Log.d(TAG, "swatch is NOT NULL");
                     container.setBackgroundColor(Util.manipulateColor(swatch.getRgb(), 0.5f));
                 }
             }
         });
     }
-
     public void setCCard(CCard cCard) {
+        setCCard(cCard, true);
+    }
+    public void setCCard(CCard cCard, boolean secure) {
         this.cCard = cCard;
-        Log.d(TAG, String.format("card: %s => %s", cCard.getNumber(), Util.getCardBrand(cCard.getNumber())));
 
-        number.setText(cCard.getFormattedNumber(' ', true));
+        number.setText(cCard.getFormattedNumber(' ', secure));
         bankName.setText(cCard.getBank());
 
         if (cCard.getCardholder() == null || cCard.getCardholder().equals("")) {
@@ -202,12 +199,14 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        itemInteractionListener.onView(cCard);
+        if (itemInteractionListener.get() != null)
+            itemInteractionListener.get().onView(cCard);
     }
 
     @Override
     public boolean onLongClick(View view) {
-        itemInteractionListener.onLongPress(cCard);
+        if (itemInteractionListener.get() != null)
+            itemInteractionListener.get().onLongPress(cCard);
         return true;
     }
 

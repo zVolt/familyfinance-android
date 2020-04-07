@@ -2,6 +2,7 @@ package io.github.zkhan93.familyfinance;
 
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,6 +128,9 @@ public class FragmentDCards extends Fragment {
         if (getArguments() != null) {
             Bundle bundle = getArguments();
             familyId = bundle.getString(ARG_FAMILY_ID, null);
+        }
+        if(familyId == null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
     }
 

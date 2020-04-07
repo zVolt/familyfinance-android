@@ -4,6 +4,8 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +59,9 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID);
+        }
+        if(familyId == null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
     }
 
