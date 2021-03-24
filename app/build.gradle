@@ -4,8 +4,9 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion '28.0.3'
     ndkVersion "22.1.7171670"
+    buildToolsVersion '29.0.2'
+
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
@@ -97,11 +98,11 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
 
     //greenDao
-    implementation 'org.greenrobot:greendao:3.2.2'
+    implementation 'org.greenrobot:greendao:3.3.0'
     implementation 'net.zetetic:android-database-sqlcipher:3.5.6'
 
     //EventBus
-    implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation 'org.greenrobot:eventbus:3.2.0'
 
     //glide
     implementation 'com.github.bumptech.glide:glide:4.10.0'
