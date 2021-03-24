@@ -1,5 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -10,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -18,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
+import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.InfiniteScrollListener;
 import io.github.zkhan93.familyfinance.util.Util;
 
@@ -74,8 +78,9 @@ public class FragmentSms extends Fragment implements
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID, null);
         }
-        if(familyId == null){
-            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        if (familyId == null) {
+            familyId =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
     }
 
@@ -99,13 +104,12 @@ public class FragmentSms extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        Util.Log.d(TAG,"added IS");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Util.Log.d(TAG,"removed IS");
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.hideFab();
+        }
     }
 
 
