@@ -1,8 +1,11 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -10,6 +13,7 @@ import androidx.navigation.ui.NavigationUI;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.Util;
 
 import android.preference.PreferenceManager;
@@ -37,18 +41,33 @@ public class FragmentHome extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_family_id), null);
+        familyId =
+                PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_family_id), null);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView =  inflater.inflate(R.layout.fragment_home, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, rootView);
         return rootView;
     }
 
-    @OnClick({R.id.summary, R.id.ccards, R.id.dcards, R.id.accounts, R.id.messages, R.id.members, R.id.credentials})
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.hideFab();
+        }
+    }
+
+
+    @OnClick({R.id.summary, R.id.ccards, R.id.dcards, R.id.accounts, R.id.messages, R.id.members,
+            R.id.credentials})
     void onCardClicked(View view) {
         Util.Log.d(TAG, "card clicked %d", view.getId());
         Bundle bundle = new Bundle();

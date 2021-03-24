@@ -33,7 +33,13 @@
             app:defaultNavHost="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:navGraph="@navigation/main_navigation" />
-
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add_white_24dp"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
@@ -47,4 +53,5 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/navdrawer_header"
         app:menu="@menu/main_navdrawer_menu" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,5 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,6 +16,9 @@ import android.view.ViewGroup;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.lang.ref.WeakReference;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -26,6 +31,7 @@ import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
@@ -41,7 +47,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     public static final String TAG = FragmentCCards.class.getSimpleName();
 
     private static final String ARG_FAMILY_ID = "familyId";
-
 
 
     private String familyId;
@@ -75,8 +80,9 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
             Bundle bundle = getArguments();
             familyId = bundle.getString(ARG_FAMILY_ID, null);
         }
-        if(familyId == null){
-            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        if (familyId == null) {
+            familyId =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
     }
 
@@ -115,6 +121,18 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         EventBus.getDefault().unregister(this);
         cCardListAdapter.unregisterForEvent();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.showFab();
+        }
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

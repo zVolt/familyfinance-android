@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,8 +26,9 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.github.zkhan93.familyfinance.util.FabHost;
 
-public class HomeActivity extends AppCompatActivity implements AppBarConfiguration.OnNavigateUpListener {
+public class HomeActivity extends AppCompatActivity implements AppBarConfiguration.OnNavigateUpListener, FabHost {
 
     public static String TAG = HomeActivity.class.getSimpleName();
 
@@ -42,6 +44,8 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
 
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
 
     TextView txtHeading;
     TextView txtSubheading;
@@ -127,5 +131,20 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    /**
+     * implementing methods from @FabHost
+     */
+    @Override
+    public void showFab() {
+        if (fab != null)
+            fab.show();
+    }
+
+    @Override
+    public void hideFab() {
+        if (fab != null)
+            fab.hide();
     }
 }
