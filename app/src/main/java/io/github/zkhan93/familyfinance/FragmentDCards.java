@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.DCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.DCard;
+import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.DCardVH;
 
@@ -126,6 +128,17 @@ public class FragmentDCards extends Fragment {
         }
         if(familyId == null){
             familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.showFab();
         }
     }
 

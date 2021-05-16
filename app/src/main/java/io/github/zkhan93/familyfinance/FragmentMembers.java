@@ -1,5 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
 import io.github.zkhan93.familyfinance.models.Member;
+import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.Util;
 
 
@@ -85,9 +87,16 @@ public class FragmentMembers extends Fragment {
         return rootView;
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.showFab();
+        }
         if (Util.isInternetConnected(getActivity().getApplicationContext())) {
             Log.d(TAG, "seeking presence");
             FirebaseDatabase.getInstance().getReference("family").child(familyId).child
