@@ -3,13 +3,6 @@ package io.github.zkhan93.familyfinance;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -21,6 +14,8 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -28,8 +23,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Calendar;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
@@ -49,33 +47,20 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     public static final String ARG_FAMILY_ID = "familyId";
     public static final String ARG_ACCOUNT = "account";
 
-    @BindView(R.id.bank)
     Spinner bank;
-    @BindView(R.id.other_bank_til)
     TextInputLayout otherBankTil;
-    @BindView(R.id.other_bank)
     TextInputEditText otherBank;
-    @BindView(R.id.number)
     TextInputEditText number;
-    @BindView(R.id.account_holder)
     TextInputEditText accountHolder;
 
-    @BindView(R.id.ifsc)
     TextInputEditText ifsc;
-    @BindView(R.id.userid)
     TextInputEditText userid;
-    @BindView(R.id.password)
     TextInputEditText password;
-    @BindView(R.id.email)
     TextInputEditText email;
-    @BindView(R.id.phone_number)
     TextInputEditText phoneNumber;
 
-    @BindView(R.id.more_btn)
     ImageButton moreButton;
-    @BindView(R.id.more_title)
     TextView moreTitle;
-    @BindView(R.id.more_fields)
     View moreFields;
 
     private String familyId;
@@ -126,7 +111,21 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
 
         rootView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.dialog_add_account, null);
-        ButterKnife.bind(this, rootView);
+        bank = rootView.findViewById(R.id.bank);
+        otherBankTil = rootView.findViewById(R.id.other_bank_til);
+        otherBank = rootView.findViewById(R.id.other_bank);
+        number = rootView.findViewById(R.id.number);
+        accountHolder = rootView.findViewById(R.id.account_holder);
+
+        ifsc = rootView.findViewById(R.id.ifsc);
+        userid = rootView.findViewById(R.id.userid);
+        password = rootView.findViewById(R.id.password);
+        email = rootView.findViewById(R.id.email);
+        phoneNumber = rootView.findViewById(R.id.phone_number);
+
+        moreButton = rootView.findViewById(R.id.more_btn);
+        moreTitle = rootView.findViewById(R.id.more_title);
+        moreFields = rootView.findViewById(R.id.more_fields);
         moreButton.setOnClickListener(this);
         bank.setAdapter(bankSpinnerAdapter);
         bank.setOnItemSelectedListener(this);

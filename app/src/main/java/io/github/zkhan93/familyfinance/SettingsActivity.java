@@ -5,13 +5,11 @@ import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

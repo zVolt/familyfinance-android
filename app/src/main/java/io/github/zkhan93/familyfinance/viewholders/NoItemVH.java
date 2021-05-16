@@ -1,7 +1,5 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,8 +10,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 
 /**
@@ -22,13 +20,12 @@ import io.github.zkhan93.familyfinance.R;
 
 public class NoItemVH extends RecyclerView.ViewHolder implements ValueEventListener {
     public static final String TAG = NoItemVH.class.getSimpleName();
-    @BindView(R.id.image)
-    ImageView image;
 
+    ImageView image;
 
     public NoItemVH(View itemView, @NonNull String imageChild) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        image = itemView.findViewById(R.id.image);
         Log.d(TAG, "empty VH created");
         FirebaseDatabase.getInstance()
                 .getReference("images")

@@ -22,8 +22,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.Account;
@@ -47,7 +45,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     private String familyId;
     private AccountListAdapter accountListAdapter;
     private Toast toast;
-    @BindView(R.id.list)
     RecyclerView accountsList;
     ValueEventListener connectionEventListener = new ValueEventListener() {
         @Override
@@ -109,7 +106,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_accounts, container, false);
-        ButterKnife.bind(this, rootView);
+        accountsList = rootView.findViewById(R.id.list);
         toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
         FirebaseDatabase.getInstance().getReference(".info/connected").addValueEventListener
                 (connectionEventListener);

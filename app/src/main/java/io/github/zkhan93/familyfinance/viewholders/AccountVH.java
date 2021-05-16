@@ -1,8 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.MenuInflater;
@@ -22,8 +20,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.NumberFormat;
 import java.util.Date;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.Member;
@@ -35,21 +33,13 @@ import io.github.zkhan93.familyfinance.models.Member;
 public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
         .OnMenuItemClickListener, View.OnClickListener, View.OnLongClickListener {
     public static final String TAG = AccountVH.class.getSimpleName();
-    @BindView(R.id.account_holder)
     TextView name;
-    @BindView(R.id.account_number)
     TextView accountNumber;
-    @BindView(R.id.bank)
     ImageView bank;
-    @BindView(R.id.ifsc)
     TextView ifsc;
-    @BindView(R.id.balance)
     TextView balance;
-    @BindView(R.id.updated_by)
     ImageView updatedBy;
-    @BindView(R.id.updated_on)
     TextView updatedOn;
-    @BindView(R.id.menu)
     ImageButton menu;
 
     private Context context;
@@ -85,7 +75,14 @@ public class AccountVH extends RecyclerView.ViewHolder implements PopupMenu
     public AccountVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);
         context = itemView.getContext();
-        ButterKnife.bind(this, itemView);
+        name = itemView.findViewById(R.id.account_holder);
+        accountNumber = itemView.findViewById(R.id.account_number);
+        bank = itemView.findViewById(R.id.bank);
+        ifsc = itemView.findViewById(R.id.ifsc);
+        balance = itemView.findViewById(R.id.balance);
+        updatedBy = itemView.findViewById(R.id.updated_by);
+        updatedOn = itemView.findViewById(R.id.updated_on);
+        menu = itemView.findViewById(R.id.menu);
         this.itemInteractionListener = itemInteractionListener;
 
         popup = new PopupMenu(itemView.getContext(), menu);

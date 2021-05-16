@@ -6,10 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,8 +30,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.util.Util;
 
@@ -56,29 +54,17 @@ public class DialogFragmentViewAccount extends DialogFragment implements DialogI
     private Map<String, Object> updateMap;
     private ValueEventListener bankImageLinkListener;
 
-    @BindView(R.id.bank)
     ImageView bank;
-    @BindView(R.id.account_number)
     TextView accountNumber;
-    @BindView(R.id.account_holder)
     TextView accountHolder;
-    @BindView(R.id.balance)
     TextView balance;
-    @BindView(R.id.limit)
     SeekBar limit;
-    @BindView(R.id.ifsc)
     TextView ifsc;
-    @BindView(R.id.email)
     TextView email;
-    @BindView(R.id.phone_number)
     TextView phoneNumber;
-    @BindView(R.id.userid)
     TextView userid;
-    @BindView(R.id.password)
     TextView password;
-    @BindView(R.id.updated_by)
     ImageView updatedBy;
-    @BindView(R.id.updated_on)
     TextView updatedOn;
 
     {
@@ -135,7 +121,18 @@ public class DialogFragmentViewAccount extends DialogFragment implements DialogI
 
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_view_account,
                 null);
-        ButterKnife.bind(this, rootView);
+        bank = rootView.findViewById(R.id.bank);
+        accountNumber = rootView.findViewById(R.id.account_number);
+        accountHolder = rootView.findViewById(R.id.account_holder);
+        balance = rootView.findViewById(R.id.balance);
+        limit = rootView.findViewById(R.id.limit);
+        ifsc = rootView.findViewById(R.id.ifsc);
+        email = rootView.findViewById(R.id.email);
+        phoneNumber = rootView.findViewById(R.id.phone_number);
+        userid = rootView.findViewById(R.id.userid);
+        password = rootView.findViewById(R.id.password);
+        updatedBy = rootView.findViewById(R.id.updated_by);
+        updatedOn = rootView.findViewById(R.id.updated_on);
         if (account != null) {
             FirebaseDatabase.getInstance().getReference("images").child("banks").child(account
                     .getBank

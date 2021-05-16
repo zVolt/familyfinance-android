@@ -15,13 +15,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,8 +31,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.AddonCardListAdapter;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
@@ -64,33 +61,19 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
     private Map<String, Object> updateMap;
     private ValueEventListener bankImageLinkListener;
 
-    @BindView(R.id.bank)
     ImageView bank;
-    @BindView(R.id.card_holder)
     TextView cardHolder;
-    @BindView(R.id.card_number)
     TextView cardNumber;
-    @BindView(R.id.expires_on)
     TextView expiresOn;
-    @BindView(R.id.cvv)
     TextView cvv;
-    @BindView(R.id.billing_cycle)
     TextView billingCycle;
-    @BindView(R.id.phone_number)
     TextView phoneNumber;
-    @BindView(R.id.limit)
     SeekBar limit;
-    @BindView(R.id.card_limit)
     TextView cardLimit;
-    @BindView(R.id.updated_by)
     ImageView updateBy;
-    @BindView(R.id.updated_on)
     TextView updatedOn;
-    @BindView(R.id.userid)
     TextView userid;
-    @BindView(R.id.password)
     TextView password;
-    @BindView(R.id.cards)
     RecyclerView cards;
 
     {
@@ -144,7 +127,22 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
 
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_view_ccard,
                 null);
-        ButterKnife.bind(this, rootView);
+
+        bank = rootView.findViewById(R.id.bank);
+        cardHolder = rootView.findViewById(R.id.card_holder);
+        cardNumber = rootView.findViewById(R.id.card_number);
+        expiresOn = rootView.findViewById(R.id.expires_on);
+        cvv = rootView.findViewById(R.id.cvv);
+        billingCycle = rootView.findViewById(R.id.billing_cycle);
+        phoneNumber = rootView.findViewById(R.id.phone_number);
+        limit = rootView.findViewById(R.id.limit);
+        cardLimit = rootView.findViewById(R.id.card_limit);
+        updateBy = rootView.findViewById(R.id.updated_by);
+        updatedOn = rootView.findViewById(R.id.updated_on);
+        userid = rootView.findViewById(R.id.userid);
+        password = rootView.findViewById(R.id.password);
+        cards = rootView.findViewById(R.id.cards);
+
         if (cCard != null) {
             FirebaseDatabase.getInstance().getReference("images").child("banks").child(cCard
                     .getBank().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);

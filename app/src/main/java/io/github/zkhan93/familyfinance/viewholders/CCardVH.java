@@ -25,8 +25,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.util.Util;
@@ -40,33 +38,16 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
 
     public static final String TAG = CCardVH.class.getSimpleName();
 
-
-    @BindView(R.id.bank_icon)
     ImageView bankLogo;
-
-    @BindView(R.id.card_type)
     ImageView cardType;
-
-    @BindView(R.id.bank_name)
     TextView bankName;
-
-    @BindView(R.id.cardholder)
     TextView cardholder;
-
-    @BindView(R.id.number)
     TextView number;
-    @BindView(R.id.expires_on)
     TextView expiresOn;
-    @BindView(R.id.tv_expires_on)
     TextView tvExpiresOn;
-
-    @BindView(R.id.cvv)
     TextView cvv;
-    @BindView(R.id.tv_cvv)
     TextView tvCvv;
-    @BindView(R.id.container)
     ConstraintLayout container;
-
 
     private Context context;
 
@@ -129,7 +110,17 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
         super(itemView);
         this.itemInteractionListener = new WeakReference<>(itemInteractionListener);
         context = itemView.getContext();
-        ButterKnife.bind(this, itemView);
+
+        bankLogo = itemView.findViewById(R.id.bank_icon);
+        cardType = itemView.findViewById(R.id.card_type);
+        bankName = itemView.findViewById(R.id.bank_name);
+        cardholder = itemView.findViewById(R.id.cardholder);
+        number = itemView.findViewById(R.id.number);
+        expiresOn = itemView.findViewById(R.id.expires_on);
+        tvExpiresOn = itemView.findViewById(R.id.tv_expires_on);
+        cvv = itemView.findViewById(R.id.cvv);
+        tvCvv = itemView.findViewById(R.id.tv_cvv);
+        container = itemView.findViewById(R.id.container);
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
     }

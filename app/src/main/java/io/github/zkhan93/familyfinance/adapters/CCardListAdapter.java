@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance.adapters;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.events.InsertEvent;
@@ -32,8 +32,8 @@ import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
-import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
+import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
 
 /**
  * Created by zeeshan on 8/7/17.

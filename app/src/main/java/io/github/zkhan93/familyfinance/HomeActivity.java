@@ -24,8 +24,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.util.FabHost;
 
 public class HomeActivity extends AppCompatActivity implements AppBarConfiguration.OnNavigateUpListener, FabHost {

@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,9 +19,8 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -43,11 +40,30 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
     private HashFunction hf = Hashing.sha256();
     private String action;
     private SharedPreferences sharedPreferences;
+    private final View.OnClickListener clickListener;
 
     public interface ACTIONS {
         String SET_PIN = "setpin";
         String CONFIRM_PIN = "confirmpin";
         String CHECK_PIN = "checkpin";
+    }
+
+    public PinActivity() {
+        super();
+        clickListener = view -> {
+            String str = pin.getText().toString();
+            switch (view.getId()) {
+                case R.id.delete:
+                    if (str.length() > 0)
+                        pin.setText(str.substring(0, str.length() - 1));
+                    break;
+                case R.id.cancel:
+                    sharedPreferences.edit().putString(getString(R.string.pref_key_pin_value), null)
+                            .apply();
+                    break;
+            }
+
+        };
     }
 
     @Override
@@ -59,6 +75,7 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
         EditText pin = findViewById(R.id.pin);
         TextView msg = findViewById(R.id.msg);
         TextView title = findViewById(R.id.title);
+        findViewById(R.id.cancel).setOnClickListener(clickListener);
 
         pin.requestFocus();
         pin.setOnEditorActionListener(this);
@@ -107,6 +124,7 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setEnterTransition(TransitionInflater.from(this).inflateTransition(R
                     .transition.slide));
+
     }
 
     @Override
@@ -115,20 +133,7 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
         return true;
     }
 
-    @OnClick({R.id.cancel})
-    public void onViewClick(View view) {
-        String str = pin.getText().toString();
-        switch (view.getId()) {
-            case R.id.delete:
-                if (str.length() > 0)
-                    pin.setText(str.substring(0, str.length() - 1));
-                break;
-            case R.id.cancel:
-                sharedPreferences.edit().putString(getString(R.string.pref_key_pin_value), null)
-                        .apply();
-                break;
-        }
-    }
+
 
     private void performAction() {
         switch (action) {

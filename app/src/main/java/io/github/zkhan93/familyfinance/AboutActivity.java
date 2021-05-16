@@ -1,9 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -13,8 +10,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import io.github.zkhan93.familyfinance.util.Util;
 
 public class AboutActivity extends AppCompatActivity implements ValueEventListener {

@@ -6,9 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.URLUtil;
@@ -22,8 +19,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.models.Credential;
 import io.github.zkhan93.familyfinance.models.CredentialType;
 import io.github.zkhan93.familyfinance.util.Util;
@@ -39,11 +37,8 @@ public class DialogFragmentViewCredential extends DialogFragment implements Dial
 
     static String ARG_CRED = "credential";
 
-    @BindView(R.id.username)
     TextView username;
-    @BindView(R.id.password)
     TextView password;
-    @BindView(R.id.description)
     TextView description;
 
     TextView typeName;
@@ -101,7 +96,9 @@ public class DialogFragmentViewCredential extends DialogFragment implements Dial
                 .dialog_view_credential_title, null, false);
         typeName = titleView.findViewById(R.id.typeName);
         typeIcon = titleView.findViewById(R.id.typeIcon);
-        ButterKnife.bind(this, rootView);
+        username = rootView.findViewById(R.id.username);
+        password = rootView.findViewById(R.id.password);
+        description = rootView.findViewById(R.id.description);
 
         username.setText(credential.getUsername());
         username.setOnClickListener(clickToCopyClistener);

@@ -3,18 +3,15 @@ package io.github.zkhan93.familyfinance;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.AddonCardListAdapter;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
@@ -25,21 +22,14 @@ import io.github.zkhan93.familyfinance.util.Util;
 public class CardDetailActivity extends AppCompatActivity {
     public static String TAG = CardDetailActivity.class.getSimpleName();
 
-    @BindView(R.id.cards)
     RecyclerView cards;
 
-    @BindView(R.id.card_type)
     TextView cardType;
-    @BindView(R.id.phone_number)
     TextView phoneNumber;
-    @BindView(R.id.bill_date)
     TextView billDate;
-    @BindView(R.id.userid)
     TextView userID;
 
-    @BindView(R.id.password)
     TextView password;
-    @BindView(R.id.card_limit)
     TextView cardLimit;
 
     private CCard ccard;
@@ -49,7 +39,13 @@ public class CardDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_view_ccard);
-        ButterKnife.bind(this);
+        cards = findViewById(R.id.cards);
+        cardType = findViewById(R.id.card_type);
+        phoneNumber = findViewById(R.id.phone_number);
+        billDate = findViewById(R.id.bill_date);
+        userID = findViewById(R.id.userid);
+        password = findViewById(R.id.password);
+        cardLimit = findViewById(R.id.card_limit);
         cCardDao = ((App) getApplication()).getDaoSession().getCCardDao();
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {

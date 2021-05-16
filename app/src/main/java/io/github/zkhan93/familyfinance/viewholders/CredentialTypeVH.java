@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
@@ -8,6 +7,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.CredentialType;
 

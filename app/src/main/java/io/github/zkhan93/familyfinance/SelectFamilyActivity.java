@@ -32,9 +32,6 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
@@ -70,6 +67,8 @@ public class SelectFamilyActivity extends AppCompatActivity {
     private Continuation<Void, Task<Integer>> checkForApprovedRequest;
     private Continuation<Integer, Task<Integer>> createRequestTask;
     private Continuation<Integer, Task<Integer>> fetchMembersTask;
+
+    private View.OnClickListener clickListener;
 
     private int USER_REQ_APPROVED = 0;
     private int USER_REQ_SUBMITTED = 1;
@@ -231,6 +230,24 @@ public class SelectFamilyActivity extends AppCompatActivity {
             }
             return tcs.getTask();
         };
+        clickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showMessage("", false);
+                familyId = edtTxtFamilyId.getText().toString().trim();
+                switch (view.getId()) {
+                    case R.id.btn_join_family:
+                        joinFamilyBtnAction();
+                        break;
+                    case R.id.btn_create_family:
+                        startFamilyBtnAction();
+                        break;
+                    case R.id.btn_logout:
+                        signOut();
+                        break;
+                }
+            }
+        };
     }
 
     @Override
@@ -245,7 +262,9 @@ public class SelectFamilyActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
         txtErrorMsg = findViewById(R.id.txt_error_msg);
         txtWelcome = findViewById(R.id.txt_welcome);
-
+        btnJoinFamily.setOnClickListener(clickListener);
+        btnCreateFamily.setOnClickListener(clickListener);
+        btnLogout.setOnClickListener(clickListener);
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser == null) {
             toastText(getString(R.string.msg_user_no_logged_in));
@@ -261,24 +280,9 @@ public class SelectFamilyActivity extends AppCompatActivity {
         membersRef = fbDb.getReference("members");
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
     }
 
-    @OnClick({R.id.btn_join_family, R.id.btn_create_family, R.id.btn_logout})
-    public void onClick(View button) {
-        showMessage("", false);
-        familyId = edtTxtFamilyId.getText().toString().trim();
-        switch (button.getId()) {
-            case R.id.btn_join_family:
-                joinFamilyBtnAction();
-                break;
-            case R.id.btn_create_family:
-                startFamilyBtnAction();
-                break;
-            case R.id.btn_logout:
-                signOut();
-                break;
-        }
-    }
 
     @Override
     protected void onStart() {

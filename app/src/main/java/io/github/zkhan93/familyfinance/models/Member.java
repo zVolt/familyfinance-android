@@ -5,8 +5,8 @@ import android.os.Parcel;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 
 import java.util.Comparator;
 
