@@ -55,13 +55,9 @@ public class MainActivity extends AppCompatActivity{
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    @BindView(R.id.container)
     ViewPager mViewPager;
-
-    @BindView(R.id.fab)
     FloatingActionButton fab;
     @Nullable
-    @BindView(R.id.tabs)
     TabLayout tabLayout;
 
     /**
@@ -205,7 +201,10 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        mViewPager = findViewById(R.id.container);
+        fab = findViewById(R.id.fab);
+        tabLayout = findViewById(R.id.tabs);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three

@@ -27,7 +27,6 @@ import butterknife.ButterKnife;
 public class SettingsActivity extends AppCompatActivity {
     public static final String TAG = SettingsActivity.class.getSimpleName();
 
-    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
 
@@ -35,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        ButterKnife.bind(this);
+        toolbar =findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

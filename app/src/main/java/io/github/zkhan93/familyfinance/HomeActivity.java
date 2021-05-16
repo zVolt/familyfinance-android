@@ -31,20 +31,10 @@ import io.github.zkhan93.familyfinance.util.FabHost;
 public class HomeActivity extends AppCompatActivity implements AppBarConfiguration.OnNavigateUpListener, FabHost {
 
     public static String TAG = HomeActivity.class.getSimpleName();
-
-    @BindView(R.id.toolbar)
     Toolbar toolbar;
-
-    @BindView(R.id.appbar)
     AppBarLayout appBarLayout;
-
-    @BindView(R.id.drawer_layout)
     public DrawerLayout drawerLayout;
-
-    @BindView(R.id.navigation_view)
     NavigationView navigationView;
-
-    @BindView(R.id.fab)
     FloatingActionButton fab;
 
     TextView txtHeading;
@@ -110,7 +100,12 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
     }
 
     private void setUpViewRef() {
-        ButterKnife.bind(this);
+        toolbar = findViewById(R.id.toolbar);
+        appBarLayout = findViewById(R.id.appbar);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
+        fab = findViewById(R.id.fab);
+
         View headerView = navigationView.getHeaderView(0);
         txtHeading = headerView.findViewById(R.id.heading);
         txtSubheading = headerView.findViewById(R.id.subheading);

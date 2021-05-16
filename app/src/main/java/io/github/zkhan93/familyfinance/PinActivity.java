@@ -35,14 +35,9 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
     private final int REQUEST_CHECK_PIN = 100;
     private final int REQUEST_CONFIRM_PIN = 101;
 
-    @BindView(R.id.cancel)
     Button cancel;
-    @BindView(R.id.pin)
     EditText pin;
-
-    @BindView(R.id.msg)
     TextView msg;
-    @BindView(R.id.title)
     TextView title;
 
     private HashFunction hf = Hashing.sha256();
@@ -60,7 +55,11 @@ public class PinActivity extends AppCompatActivity implements TextView.OnEditorA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pin);
-        ButterKnife.bind(this);
+        Button cancel = findViewById(R.id.cancel);
+        EditText pin = findViewById(R.id.pin);
+        TextView msg = findViewById(R.id.msg);
+        TextView title = findViewById(R.id.title);
+
         pin.requestFocus();
         pin.setOnEditorActionListener(this);
         if (getIntent() == null)

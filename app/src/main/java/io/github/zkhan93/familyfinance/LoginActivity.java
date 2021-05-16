@@ -53,12 +53,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseAuth mAuth;
     private GoogleSignInAccount account;
     private OnCompleteListener<Void> saveUserDataListener;
-    @BindView(R.id.sign_in_button)
     Button btnLogin;
-
-    @BindView(R.id.progress_bar)
     ProgressBar progressBar;
-    @BindView(R.id.progress_message)
     TextView progressMsg;
 
     {
@@ -83,7 +79,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
+
+        btnLogin = findViewById(R.id.sign_in_button);
+        progressBar = findViewById(R.id.progress_bar);
+        progressMsg = findViewById(R.id.progress_message);
+
         btnLogin.setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions
