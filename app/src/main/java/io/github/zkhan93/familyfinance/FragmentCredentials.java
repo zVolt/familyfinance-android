@@ -1,5 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.CredentialListAdapter;
 import io.github.zkhan93.familyfinance.models.Credential;
+import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.viewholders.CredentialVH;
 
 
@@ -72,6 +74,17 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
                 .getApplicationContext()));
         credentialList.setAdapter(credentialListAdapter);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.showFab();
+        }
     }
 
     @Override

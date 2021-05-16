@@ -1,12 +1,14 @@
 package io.github.zkhan93.familyfinance;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -26,7 +28,7 @@ public class FragmentHome extends Fragment {
     private String familyId;
 
     private View.OnClickListener cardClicklistener;
-
+    private NavController navController;
     public FragmentHome() {
         // Required empty public constructor
     }
@@ -38,12 +40,19 @@ public class FragmentHome extends Fragment {
                 PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_family_id), null);
         cardClicklistener = view -> {
             Util.Log.d(TAG, "card clicked %d", view.getId());
-            Bundle bundle = new Bundle();
-            bundle.putString(getString(R.string.pref_family_id), familyId);
-            NavController navController = Navigation.findNavController(getActivity(),
-                    R.id.nav_host_fragment);
-            navController.navigate(view.getId(), bundle);
+            if (navController!=null) {
+                Bundle bundle = new Bundle();
+                bundle.putString(getString(R.string.pref_family_id), familyId);
+                navController.navigate(view.getId(), bundle);
+            }
         };
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(getActivity()!=null)
+            navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
     }
 
     @Override
