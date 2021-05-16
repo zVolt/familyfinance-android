@@ -1,12 +1,10 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.TextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Email;
 
@@ -16,18 +14,17 @@ import io.github.zkhan93.familyfinance.models.Email;
 
 public class EmailVH extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.subject)
     TextView subject;
-    @BindView(R.id.to)
     TextView to;
-    @BindView(R.id.from)
     TextView from;
-    @BindView(R.id.timestamp)
     TextView timestamp;
 
     public EmailVH(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        subject = itemView.findViewById(R.id.subject);
+        to = itemView.findViewById(R.id.to);
+        from = itemView.findViewById(R.id.from);
+        timestamp = itemView.findViewById(R.id.timestamp);
     }
 
     public void setEmail(Email email) {

@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -12,14 +11,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
 import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.InfiniteScrollListener;
@@ -41,7 +37,6 @@ public class FragmentSms extends Fragment implements
     private OtpListAdapter otpListAdapter;
     private InfiniteScrollListener infiniteScrollListener;
 
-    @BindView(R.id.list)
     RecyclerView otpsList;
 
     {
@@ -89,7 +84,8 @@ public class FragmentSms extends Fragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
-        ButterKnife.bind(this, rootView);
+
+        otpsList = rootView.findViewById(R.id.list);
         otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(),
                 familyId, null);
         otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));

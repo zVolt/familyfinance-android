@@ -36,8 +36,6 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
 

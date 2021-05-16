@@ -1,8 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,9 +14,8 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.Date;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
@@ -33,21 +30,13 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
     public static String TAG = AddonCard.class.getSimpleName();
 
-    @BindView(R.id.name)
     TextView name;
-    @BindView(R.id.card_number)
     TextView number;
-    @BindView(R.id.phone_number)
     TextView mobNumber;
-    @BindView(R.id.expires_on)
     TextView expiresOn;
-    @BindView(R.id.cvv)
     TextView cvv;
-    @BindView(R.id.updated_by)
     ImageView updatedBy;
-    @BindView(R.id.updated_on)
     TextView updatedOn;
-    @BindView(R.id.menu)
     ImageButton menu;
 
     private PopupMenu popup;
@@ -58,8 +47,16 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
     public AddonCardVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);
         context = itemView.getContext();
-        ButterKnife.bind(this, itemView);
+        name = itemView.findViewById(R.id.name);
+        number = itemView.findViewById(R.id.card_number);
+        mobNumber = itemView.findViewById(R.id.phone_number);
+        expiresOn = itemView.findViewById(R.id.expires_on);
+        cvv = itemView.findViewById(R.id.cvv);
+        updatedBy = itemView.findViewById(R.id.updated_by);
+        updatedOn = itemView.findViewById(R.id.updated_on);
+        menu = itemView.findViewById(R.id.menu);
         itemView.setOnLongClickListener(this);
+        itemView.findViewById(R.id.menu).setOnClickListener(view -> popup.show());
         this.itemInteractionListener = itemInteractionListener;
         popup = new PopupMenu(itemView.getContext(), menu);
         MenuInflater inflater = popup.getMenuInflater();
@@ -67,11 +64,7 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
         inflater.inflate(R.menu.addon_card, popup.getMenu());
         updatedBy.setVisibility(View.GONE);
         updatedOn.setVisibility(View.GONE);
-    }
 
-    @OnClick(R.id.menu)
-    void onClick(View view) {
-        popup.show();
     }
 
     @Override

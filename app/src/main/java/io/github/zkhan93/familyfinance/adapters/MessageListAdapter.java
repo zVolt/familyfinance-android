@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance.adapters;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.BaseModel;

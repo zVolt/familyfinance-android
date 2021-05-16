@@ -8,12 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -26,8 +20,11 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.DCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.DCard;
@@ -49,10 +46,8 @@ public class FragmentDCards extends Fragment {
     private DCardListAdapter.AdapterInteraction adapterInteraction;
     private ValueEventListener noContentImageUrlListener;
     private DCardVH.ItemInteractionListener cardInteractionListener;
-    @BindView(R.id.list)
-    RecyclerView dCardsList;
 
-    @BindView(R.id.no_content)
+    RecyclerView dCardsList;
     ImageView noContent;
 
     public FragmentDCards() {
@@ -153,7 +148,8 @@ public class FragmentDCards extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_dcard, container, false);
-        ButterKnife.bind(this, rootView);
+        noContent = rootView.findViewById(R.id.no_content);
+        dCardsList = rootView.findViewById(R.id.list);
         baseCardRef = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("dcards")

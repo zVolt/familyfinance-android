@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,8 +14,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 
 /**
@@ -24,16 +22,15 @@ import io.github.zkhan93.familyfinance.R;
  */
 
 public class BalanceByBankVH extends RecyclerView.ViewHolder implements ValueEventListener {
-    @BindView(R.id.avatar)
     ImageView avatar;
-    @BindView(R.id.balance)
     TextView balance;
 
     private DatabaseReference imageRef;
 
     public BalanceByBankVH(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        avatar = itemView.findViewById(R.id.avatar);
+        balance = itemView.findViewById(R.id.balance);
         imageRef = FirebaseDatabase.getInstance().getReference("images").child("banks");
     }
 

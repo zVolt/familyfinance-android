@@ -3,13 +3,6 @@ package io.github.zkhan93.familyfinance;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -22,6 +15,8 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,8 +28,11 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.DCard;
 
@@ -50,39 +48,23 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
     public static final String ARG_FAMILY_ID = "familyId";
     public static final String ARG_CARD = "ccard";
 
-    @BindView(R.id.name)
     TextInputEditText cardName;
-    @BindView(R.id.card_holder)
     TextInputEditText cardHolder;
-    @BindView(R.id.number)
     TextInputEditText number;
-    @BindView(R.id.email)
     TextInputEditText email;
-    @BindView(R.id.username)
     TextInputEditText username;
-    @BindView(R.id.password)
     TextInputEditText password;
-    @BindView(R.id.pin)
     TextInputEditText pin;
-    @BindView(R.id.bank)
     Spinner bank;
-    @BindView(R.id.cvv)
     EditText cvv;
-    @BindView(R.id.expires_on)
     EditText expiresOn;
-    @BindView(R.id.phone_number)
     TextInputEditText phoneNumber;
 
-    @BindView(R.id.other_bank_til)
     TextInputLayout otherBankTil;
-    @BindView(R.id.other_bank)
     TextInputEditText otherBank;
 
-    @BindView(R.id.more_btn)
     ImageButton moreButton;
-    @BindView(R.id.more_title)
     TextView moreTitle;
-    @BindView(R.id.more_fields)
     View moreFields;
 
     private String familyId, selectedBankId;
@@ -188,7 +170,24 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
 
         rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_dcard,
                 null);
-        ButterKnife.bind(this, rootView);
+        cardName = rootView.findViewById(R.id.name);
+        cardHolder = rootView.findViewById(R.id.card_holder);
+        number = rootView.findViewById(R.id.number);
+        email = rootView.findViewById(R.id.email);
+        username = rootView.findViewById(R.id.username);
+        password = rootView.findViewById(R.id.password);
+        pin = rootView.findViewById(R.id.pin);
+        bank = rootView.findViewById(R.id.bank);
+        cvv = rootView.findViewById(R.id.cvv);
+        expiresOn = rootView.findViewById(R.id.expires_on);
+        phoneNumber = rootView.findViewById(R.id.phone_number);
+
+        otherBankTil = rootView.findViewById(R.id.other_bank_til);
+        otherBank = rootView.findViewById(R.id.other_bank);
+
+        moreButton = rootView.findViewById(R.id.more_btn);
+        moreTitle = rootView.findViewById(R.id.more_title);
+        moreFields = rootView.findViewById(R.id.more_fields);
         expiresOn.addTextChangedListener(expiresOnTextWatcher);
         bank.setAdapter(bankSpinnerAdapter);
         bank.setOnItemSelectedListener(this);

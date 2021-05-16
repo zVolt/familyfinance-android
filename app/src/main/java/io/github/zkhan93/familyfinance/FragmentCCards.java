@@ -1,8 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,17 +14,12 @@ import android.view.ViewGroup;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.lang.ref.WeakReference;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.AddonCard;
@@ -52,7 +45,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     private String familyId;
     private CCardListAdapter cCardListAdapter;
 
-    @BindView(R.id.list)
     RecyclerView ccardsList;
 
     public FragmentCCards() {
@@ -91,7 +83,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_ccards, container, false);
-        ButterKnife.bind(this, rootView);
+        ccardsList = rootView.findViewById(R.id.list);
         cCardListAdapter = new CCardListAdapter((App) getActivity().getApplication(), familyId,
                 FragmentCCards.this);
         ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));

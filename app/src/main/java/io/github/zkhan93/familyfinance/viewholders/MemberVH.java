@@ -1,8 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,8 +11,8 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.Calendar;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
 
@@ -24,16 +22,11 @@ import io.github.zkhan93.familyfinance.models.Member;
 
 public class MemberVH extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.name)
     TextView name;
-    @BindView(R.id.email)
     TextView email;
-    @BindView(R.id.timestamp)
     TextView timestamp;
 
-    @BindView(R.id.avatar)
     ImageView avatar;
-    @BindView(R.id.state)
     ImageView state;
 
     private Context context;
@@ -41,7 +34,12 @@ public class MemberVH extends RecyclerView.ViewHolder {
     public MemberVH(View itemView) {
         super(itemView);
         context = itemView.getContext();
-        ButterKnife.bind(this, itemView);
+        name = itemView.findViewById(R.id.name);
+        email = itemView.findViewById(R.id.email);
+        timestamp = itemView.findViewById(R.id.timestamp);
+
+        avatar = itemView.findViewById(R.id.avatar);
+        state = itemView.findViewById(R.id.state);
     }
 
     public void setMember(Member member) {

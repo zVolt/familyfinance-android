@@ -3,9 +3,6 @@ package io.github.zkhan93.familyfinance;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -16,8 +13,9 @@ import android.widget.Spinner;
 
 import com.google.firebase.database.FirebaseDatabase;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.adapters.CredentialTypeSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.Credential;
 import io.github.zkhan93.familyfinance.models.CredentialType;
@@ -36,13 +34,9 @@ public class DialogFragmentCredential extends DialogFragment implements DialogIn
     private static String ARG_CREDENTIAL = "credential";
     private static String ARG_FAMILY_ID = "familyId";
 
-    @BindView(R.id.description)
     EditText description;
-    @BindView(R.id.username)
     EditText username;
-    @BindView(R.id.password)
     EditText password;
-    @BindView(R.id.type)
     Spinner credentialTypeSpinner;
 
     private CredentialTypeSpinnerAdapter typeAdapter;
@@ -94,7 +88,11 @@ public class DialogFragmentCredential extends DialogFragment implements DialogIn
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_credential,
                 null, false);
-        ButterKnife.bind(this, rootView);
+        description = rootView.findViewById(R.id.description);
+        username = rootView.findViewById(R.id.username);
+        password = rootView.findViewById(R.id.password);
+        credentialTypeSpinner = rootView.findViewById(R.id.type);
+
         typeAdapter = new CredentialTypeSpinnerAdapter(this);
         credentialTypeSpinner.setAdapter(typeAdapter);
         credentialTypeSpinner.setOnItemSelectedListener(this);
