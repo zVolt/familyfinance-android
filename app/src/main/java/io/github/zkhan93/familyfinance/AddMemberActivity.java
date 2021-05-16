@@ -30,9 +30,7 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
 
     public static final String TAG = AddMemberActivity.class.getSimpleName();
 
-    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.list)
     RecyclerView requestList;
 
     private String familyId;
@@ -42,7 +40,10 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_member);
-        ButterKnife.bind(this);
+
+        toolbar = findViewById(R.id.toolbar);
+        requestList = findViewById(R.id.list);
+
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

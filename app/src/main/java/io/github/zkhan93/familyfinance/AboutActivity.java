@@ -19,11 +19,8 @@ import io.github.zkhan93.familyfinance.util.Util;
 
 public class AboutActivity extends AppCompatActivity implements ValueEventListener {
 
-    @BindView(R.id.additional_title)
     protected TextView title;
-    @BindView(R.id.additional_content)
     protected TextView content;
-    @BindView(R.id.version_number)
     protected TextView versionInfo;
 
 
@@ -33,8 +30,12 @@ public class AboutActivity extends AppCompatActivity implements ValueEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        title = findViewById(R.id.additional_title);
+        content = findViewById(R.id.additional_content);
+        versionInfo = findViewById(R.id.version_number);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)

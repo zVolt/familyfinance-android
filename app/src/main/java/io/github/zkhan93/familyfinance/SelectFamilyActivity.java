@@ -52,25 +52,12 @@ public class SelectFamilyActivity extends AppCompatActivity {
 
     public static final String TAG = SelectFamilyActivity.class.getSimpleName();
 
-    @BindView(R.id.edtxt_family_id)
     EditText edtTxtFamilyId;
-
-    @BindView(R.id.btn_join_family)
     FloatingActionButton btnJoinFamily;
-
-    @BindView(R.id.btn_create_family)
     Button btnCreateFamily;
-
-    @BindView(R.id.btn_logout)
     Button btnLogout;
-
-    @BindView(R.id.progress_bar)
     ProgressBar progressBar;
-
-    @BindView(R.id.txt_error_msg)
     TextView txtErrorMsg;
-
-    @BindView(R.id.txt_welcome)
     TextView txtWelcome;
 
     private FirebaseDatabase fbDb;
@@ -250,7 +237,14 @@ public class SelectFamilyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_family);
-        ButterKnife.bind(this);
+
+        edtTxtFamilyId = findViewById(R.id.edtxt_family_id);
+        btnJoinFamily = findViewById(R.id.btn_join_family);
+        btnCreateFamily = findViewById(R.id.btn_create_family);
+        btnLogout = findViewById(R.id.btn_logout);
+        progressBar = findViewById(R.id.progress_bar);
+        txtErrorMsg = findViewById(R.id.txt_error_msg);
+        txtWelcome = findViewById(R.id.txt_welcome);
 
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser == null) {
