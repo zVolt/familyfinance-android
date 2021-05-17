@@ -331,9 +331,9 @@ public class SelectFamilyActivity extends AppCompatActivity {
                 .addOnSuccessListener(status -> {
                     setLoadingUi(false);
                     if (status == USER_REQ_APPROVED) {
-                        startHomeActivity();
                         sharedPref.edit().putString(getString(R.string.pref_family_id), familyId).apply();
                         showMessage(getString(R.string.msg_request_approved));
+                        startHomeActivity();
                     } else if (status == USER_REQ_SUBMITTED) {
                         showMessage(getString(R.string.msg_request_submitted));
                     }

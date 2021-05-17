@@ -39,6 +39,7 @@ public class FragmentHome extends Fragment {
         familyId =
                 PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_family_id), null);
         cardClicklistener = view -> {
+            this.hideFab();
             Util.Log.d(TAG, "card clicked %d", view.getId());
             if (navController!=null) {
                 Bundle bundle = new Bundle();
@@ -76,6 +77,9 @@ public class FragmentHome extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        this.hideFab();
+    }
+    private void hideFab(){
         Activity parentActivity = getActivity();
         if (parentActivity != null) {
             FabHost fab = (FabHost) parentActivity;
@@ -83,5 +87,4 @@ public class FragmentHome extends Fragment {
                 fab.hideFab();
         }
     }
-
 }

@@ -46,10 +46,11 @@ public class SmsReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "onReceive");
+
         String activeFamilyId = PreferenceManager.getDefaultSharedPreferences(context).getString
-                ("activeFamilyId", null);
+                ("familyId", null);
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        Util.Log.d(TAG, "fbUser: %s, familyId: %s", fbUser, activeFamilyId);
         if (fbUser != null &&
                 activeFamilyId != null &&
                 intent.getAction() != null &&
@@ -74,7 +75,7 @@ public class SmsReceiver extends BroadcastReceiver {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
                 (context.getApplicationContext());
-        String activeFamilyId = sharedPreferences.getString("activeFamilyId", null);
+        String activeFamilyId = sharedPreferences.getString("familyId", null);
         Set<String> keywords = sharedPreferences.getStringSet("keywords", new HashSet<String>());
         //if not in any family
         if (activeFamilyId == null)
@@ -138,7 +139,7 @@ public class SmsReceiver extends BroadcastReceiver {
         for (Otp tmpOtp : otps) {
             newOtpRef = otpRef.push();
             tmpOtp.setId(newOtpRef.getKey());
-            extractedOtp = Util.extractOTPFromString(context, tmpOtp.getContent());
+//            extractedOtp = Util.extractOTPFromString(context, tmpOtp.getContent());
             newOtpRef.setValue(tmpOtp);
             data.put(MessagingService.KEYS.NUMBER, tmpOtp.getNumber());
             data.put(MessagingService.KEYS.ID, newOtpRef.getKey());
