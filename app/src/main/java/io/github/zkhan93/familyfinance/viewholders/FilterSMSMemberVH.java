@@ -1,8 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -10,8 +8,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
 
@@ -20,9 +18,7 @@ import io.github.zkhan93.familyfinance.models.Member;
  */
 
 public class FilterSMSMemberVH extends RecyclerView.ViewHolder implements View.OnClickListener {
-    @BindView(R.id.name)
     TextView name;
-    @BindView(R.id.avatar)
     ImageView avatar;
     private Context context;
     private ItemInteractionListener itemInteractionListener;
@@ -33,7 +29,8 @@ public class FilterSMSMemberVH extends RecyclerView.ViewHolder implements View.O
         itemView.setOnClickListener(this);
         this.itemInteractionListener = itemInteractionListener;
         context = itemView.getContext();
-        ButterKnife.bind(this, itemView);
+        name = itemView.findViewById(R.id.name);
+        avatar = itemView.findViewById(R.id.avatar);
     }
 
     public void setMember(@NonNull Member member) {

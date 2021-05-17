@@ -1,11 +1,8 @@
 package io.github.zkhan93.familyfinance;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,36 +19,34 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.Account;
+import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentAccounts.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link FragmentAccounts#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentAccounts extends Fragment implements AccountVH.ItemInteractionListener,SearchView.OnQueryTextListener {
+public class FragmentAccounts extends Fragment implements AccountVH.ItemInteractionListener,
+        SearchView.OnQueryTextListener {
 
     public static final String TAG = FragmentAccounts.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_FAMILY_ID = "familiyID";
+    private static final String ARG_FAMILY_ID = "familyId";
 
 
     private String familyId;
-
-    private OnFragmentInteractionListener mListener;
     private AccountListAdapter accountListAdapter;
     private Toast toast;
-    @BindView(R.id.list)
     RecyclerView accountsList;
     ValueEventListener connectionEventListener = new ValueEventListener() {
         @Override
@@ -103,6 +98,9 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID);
         }
+        if(familyId==null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        }
     }
 
     @Override
@@ -110,7 +108,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_accounts, container, false);
-        ButterKnife.bind(this, rootView);
+        accountsList = rootView.findViewById(R.id.list);
         toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
         FirebaseDatabase.getInstance().getReference(".info/connected").addValueEventListener
                 (connectionEventListener);
@@ -131,6 +129,17 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.showFab();
+        }
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
@@ -138,25 +147,8 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_ccard, menu);
+        inflater.inflate(R.menu.fragment_cards, menu);
         SearchView searchView =
                 (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(this);
@@ -189,7 +181,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     @Override
     public void onLongPress(Account account) {
-        Util.quickCopy(getActivity().getApplicationContext(),account);
+        Util.quickCopy(getActivity().getApplicationContext(), account);
     }
 
     /**
@@ -204,26 +196,17 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         }
 
     }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Log.d(TAG, "saarch for: " + query);
         accountListAdapter.onSearch(query);
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        Log.d(TAG, "search for: " + newText);
         accountListAdapter.onSearch(newText);
         return true;
     }
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnFragmentInteractionListener {
 
-    }
 }

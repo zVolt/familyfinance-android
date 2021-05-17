@@ -3,9 +3,7 @@ package io.github.zkhan93.familyfinance;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +17,11 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.MessageListAdapter;
 import io.github.zkhan93.familyfinance.models.Message;
-import io.github.zkhan93.familyfinance.util.Util;
 
 
 /**
@@ -43,21 +40,45 @@ public class FragmentChatroom extends Fragment implements MessageListAdapter.Mes
     private OnFragmentInteractionListener mListener;
     private int unreadMessageStartPosition, unreadMessageCount;
 
-    @BindView(R.id.list)
     RecyclerView messages;
-    @BindView(R.id.content)
     EditText content;
-    @BindView(R.id.send)
     ImageButton send;
-    @BindView(R.id.smily)
     ImageButton smily;
-    @BindView(R.id.attach)
     ImageButton attach;
-    @BindView(R.id.new_message)
     ImageButton newMessage;
+
+    private View.OnClickListener clickListener;
 
     public FragmentChatroom() {
         // Required empty public constructor
+        clickListener = view -> {
+            switch (view.getId()) {
+                case R.id.send:
+                    String strContent = content.getText().toString().trim();
+                    if (strContent.isEmpty()) {
+                        content.setText("");
+                        return;
+                    }
+                    Message message = new Message();
+                    message.setContent(strContent);
+                    message.setTimestamp(Calendar.getInstance().getTimeInMillis());
+                    message.setSenderId(meId);
+                    FirebaseDatabase.getInstance().getReference("chats").child(familyId).push().setValue
+                            (message);
+                    content.setText("");
+                    break;
+                case R.id.smily:
+                case R.id.attach:
+                    Toast.makeText(getContext(), "Will be available soon..", Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.new_message:
+                    if (unreadMessageStartPosition != 0)
+                        messages.smoothScrollToPosition(unreadMessageStartPosition);
+                    newMessage.setVisibility(View.GONE);
+                    unreadMessageStartPosition = -1;
+                    break;
+            }
+        };
     }
 
     /**
@@ -81,6 +102,9 @@ public class FragmentChatroom extends Fragment implements MessageListAdapter.Mes
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID);
         }
+        if(familyId == null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        }
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser != null)
             meId = fbUser.getUid();
@@ -91,13 +115,22 @@ public class FragmentChatroom extends Fragment implements MessageListAdapter.Mes
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_chatroom, container, false);
-        ButterKnife.bind(this, rootView);
+        messages = rootView.findViewById(R.id.list);
+        content = rootView.findViewById(R.id.content);
+        send = rootView.findViewById(R.id.send);
+        smily = rootView.findViewById(R.id.smily);
+        attach = rootView.findViewById(R.id.attach);
+        newMessage = rootView.findViewById(R.id.new_message);
         messages.setLayoutManager(new LinearLayoutManager(getActivity()));
         MessageListAdapter messageListAdapter = new MessageListAdapter(getActivity()
                 .getApplicationContext(),
                 familyId, this);
         messages.setAdapter(messageListAdapter);
         newMessage.setVisibility(View.GONE);
+        send.setOnClickListener(clickListener);
+        smily.setOnClickListener(clickListener);
+        attach.setOnClickListener(clickListener);
+        newMessage.setOnClickListener(clickListener);
         return rootView;
     }
 
@@ -121,30 +154,6 @@ public class FragmentChatroom extends Fragment implements MessageListAdapter.Mes
         mListener = null;
     }
 
-    @OnClick({R.id.send, R.id.attach, R.id.smily})
-    public void onSend(View view) {
-        switch (view.getId()) {
-            case R.id.send:
-                String strContent = content.getText().toString().trim();
-                if (strContent.isEmpty()) {
-                    content.setText("");
-                    return;
-                }
-                Message message = new Message();
-                message.setContent(strContent);
-                message.setTimestamp(Calendar.getInstance().getTimeInMillis());
-                message.setSenderId(meId);
-                FirebaseDatabase.getInstance().getReference("chats").child(familyId).push().setValue
-                        (message);
-                content.setText("");
-                break;
-            case R.id.smily:
-            case R.id.attach:
-                Toast.makeText(getContext(), "Will be available soon..", Toast.LENGTH_SHORT).show();
-                break;
-        }
-    }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -161,8 +170,6 @@ public class FragmentChatroom extends Fragment implements MessageListAdapter.Mes
 
     @Override
     public void onNewMessage(int position) {
-        Util.Log.d(TAG, "%d %d", ((LinearLayoutManager) messages.getLayoutManager())
-                .findLastCompletelyVisibleItemPosition(), position);
         if (((LinearLayoutManager) messages.getLayoutManager())
                 .findLastCompletelyVisibleItemPosition() != position - 2) {
             //if last visible item is not at position-1
@@ -177,11 +184,4 @@ public class FragmentChatroom extends Fragment implements MessageListAdapter.Mes
         newMessage.setVisibility(View.VISIBLE);
     }
 
-    @OnClick(R.id.new_message)
-    void onClick(View view) {
-        if (unreadMessageStartPosition != 0)
-            messages.smoothScrollToPosition(unreadMessageStartPosition);
-        newMessage.setVisibility(View.GONE);
-        unreadMessageStartPosition = -1;
-    }
 }

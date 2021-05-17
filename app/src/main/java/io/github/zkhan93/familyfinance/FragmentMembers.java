@@ -1,13 +1,9 @@
 package io.github.zkhan93.familyfinance;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,18 +12,18 @@ import android.view.ViewGroup;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
 import io.github.zkhan93.familyfinance.models.Member;
+import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.Util;
 
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link FragmentMembers#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -42,12 +38,10 @@ public class FragmentMembers extends Fragment {
 
     private String familyId;
 
-    @BindView(R.id.list)
     RecyclerView membersList;
 
     private Member enableSmsFor;
     private MemberListAdapter memberListAdapter;
-    private OnFragmentInteractionListener mListener;
 
     public FragmentMembers() {
         // Required empty public constructor
@@ -73,9 +67,10 @@ public class FragmentMembers extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            Bundle args = getArguments();
-            familyId = args.getString(ARG_FAMILY_ID, null);
-//            familyModeratorId = args.getString(ARG_FAMILY_MODERATOR_ID, null);
+            familyId = getArguments().getString(ARG_FAMILY_ID, null);
+        }
+        if(familyId == null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
     }
 
@@ -84,7 +79,7 @@ public class FragmentMembers extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_members, container, false);
-        ButterKnife.bind(this, rootView);
+        membersList = rootView.findViewById(R.id.list);
         memberListAdapter = new MemberListAdapter((App) getActivity().getApplication(), familyId);
         membersList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
@@ -92,38 +87,22 @@ public class FragmentMembers extends Fragment {
         return rootView;
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            //call the interface methods
-        }
-    }
 
     @Override
     public void onResume() {
         super.onResume();
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.showFab();
+        }
         if (Util.isInternetConnected(getActivity().getApplicationContext())) {
             Log.d(TAG, "seeking presence");
             FirebaseDatabase.getInstance().getReference("family").child(familyId).child
                     ("checkPresence").setValue(ServerValue.TIMESTAMP);
         } else
             Log.d(TAG, "seeking presence condiftion failed");
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
 //    @Override
@@ -181,15 +160,5 @@ public class FragmentMembers extends Fragment {
                 }
                 break;
         }
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnFragmentInteractionListener {
-
     }
 }

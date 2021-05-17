@@ -9,11 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,8 +34,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.EmailListAdapter;
 import io.github.zkhan93.familyfinance.callbacks.SubscribeEmailCallback;
 import io.github.zkhan93.familyfinance.util.Util;
@@ -70,7 +69,6 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
     private EmailListAdapter emailListAdapter;
     GoogleAccountCredential mCredential;
 
-    @BindView(R.id.list)
     RecyclerView emailList;
 
     public FragmentEmails() {
@@ -92,6 +90,9 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
             Bundle bundle = getArguments();
             familyId = bundle.getString(ARG_FAMILY_ID, null);
         }
+        if(familyId == null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        }
 
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getActivity().getApplicationContext(), Arrays.asList(SCOPES))
@@ -103,7 +104,7 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_emails, container, false);
-        ButterKnife.bind(this, rootView);
+        emailList = rootView.findViewById(R.id.list);
         emailListAdapter = new EmailListAdapter(getActivity().getApplication(), familyId,
                 this);
         emailList.setLayoutManager(new LinearLayoutManager(getActivity()
@@ -223,7 +224,6 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
                     transport, jsonFactory, credential)
                     .setApplicationName("Family Finance")
                     .build();
-            Log.d(TAG, "selectedAccountName: " + credential.getSelectedAccountName());
         }
 
         @Override

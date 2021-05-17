@@ -1,186 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="4dp"
+    android:layout_marginStart="@dimen/sides"
+    android:layout_marginTop="@dimen/small"
+    android:layout_marginEnd="@dimen/sides"
+    android:layout_marginBottom="@dimen/small"
     android:clickable="true"
+    android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    app:cardCornerRadius="4dp">
+    app:cardCornerRadius="@dimen/cc_card_corner_radius"
+    app:cardElevation="20dp"
+    app:cardPreventCornerOverlap="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_height="match_parent"
+        android:layout_margin="0dp"
+        android:background="@drawable/ccard_bg_black_gradient"
+        android:padding="@dimen/medium">
 
-        <LinearLayout
-            android:id="@+id/ll1"
+        <ImageView
+            android:id="@+id/bank_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/card_type"
+            tools:src="@drawable/ic_bank_sbi" />
+
+        <ImageView
+            android:id="@+id/card_type"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="#00000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/visa_white"
+            />
+
+        <TextView
+            android:id="@+id/bank_name"
+            style="@style/AppTheme.Text.Light.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_marginStart="@dimen/small"
+            app:layout_constraintBottom_toBottomOf="@id/bank_icon"
+            app:layout_constraintStart_toEndOf="@id/bank_icon"
+            app:layout_constraintTop_toTopOf="@id/bank_icon"
+            tools:text="State Bank of India" />
 
-            <ImageView
-                android:id="@+id/bank"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_bank_sbi"/>
-
-            <TextView
-                android:id="@+id/number"
-                style="@style/TextAppearance.AppCompat.Body2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:textIsSelectable="true"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ll1"
-                tools:text="xxxx-xxxx-xxxx-6778"/>
-
-        </LinearLayout>
-
-        <ImageButton
-            android:id="@+id/menu"
-            style="@style/Base.Widget.AppCompat.ActionButton.Overflow"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/number"
+            style="@style/AppTheme.Text.Light.CardNumber"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            android:layout_marginTop="@dimen/small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bank_icon"
+            tools:text="**** **** **** 6778" />
 
         <TextView
             android:id="@+id/cardholder"
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:maxLength="15"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ll1"
-            tools:text="Zeeshan Khan"/>
-
-
-        <ProgressBar
-            android:id="@+id/limit"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            style="@style/AppTheme.Text.Light"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:indeterminate="false"
-            android:max="100"
-            android:progress="75"
-            android:progressTint="@color/colorPrimary"
-            app:layout_constraintHorizontal_bias="0.0"
+            android:textAllCaps="true"
+            app:layout_constraintEnd_toStartOf="@id/expires_on"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/number"
+            tools:text="Zeeshan Khan" />
+
+        <TextView
+            android:id="@+id/tv_expires_on"
+            style="@style/AppTheme.Text.Light.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small"
+            android:text="@string/expiry_date"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardholder"/>
-
-        <TextView
-            android:id="@+id/consumed_limit"
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/limit"
-            tools:text="25$"/>
-
-        <TextView
-            android:id="@+id/remaining_limit"
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/limit"
-            tools:text="100$"/>
-
-        <TextView
-            android:id="@+id/tv1"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="8dp"
-            android:text="Billing Cycle"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/consumed_limit"/>
-
-        <TextView
-            android:id="@+id/date"
-            style="@style/TextAppearance.AppCompat.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv1"
-            tools:text="23 July - 10 Aug"/>
-
-        <TextView
-            android:id="@+id/tv2"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Expires on"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv1"/>
+            app:layout_constraintTop_toBottomOf="@id/cardholder" />
 
         <TextView
             android:id="@+id/expires_on"
-            style="@style/TextAppearance.AppCompat.Body1"
+            style="@style/AppTheme.Text.Light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            app:layout_constraintEnd_toEndOf="@+id/tv2"
-            app:layout_constraintTop_toBottomOf="@+id/tv2"
-            tools:text="12/19"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_expires_on"
+            tools:text="12/19" />
 
         <TextView
-            android:id="@+id/addons_title"
-            style="@style/TextAppearance.AppCompat.Caption"
+            android:id="@+id/tv_cvv"
+            style="@style/AppTheme.Text.Light.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Addons Cards"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/date"/>
+            android:layout_marginTop="@dimen/small"
+            android:text="@string/cvv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardholder" />
 
         <TextView
-            android:id="@+id/tv3"
-            style="@style/TextAppearance.AppCompat.Caption"
+            android:id="@+id/cvv"
+            style="@style/AppTheme.Text.Light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="4dp"
-            android:text="updated by"
-            app:layout_constraintBottom_toBottomOf="@+id/updated_on"
-            app:layout_constraintRight_toLeftOf="@+id/updated_by"
-            />
-
-        <ImageView
-            android:id="@+id/updated_by"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginRight="4dp"
-            app:layout_constraintBottom_toBottomOf="@+id/updated_on"
-            app:layout_constraintRight_toLeftOf="@+id/updated_on"
-            tools:src="@color/md_orange_500"
-            />
-
-        <TextView
-            android:id="@+id/updated_on"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/expires_on"
-            tools:text="7 minutes ago"/>
+            app:layout_constraintStart_toStartOf="@+id/tv_cvv"
+            app:layout_constraintTop_toBottomOf="@+id/tv_cvv"
+            tools:text="532" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

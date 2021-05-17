@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,8 +8,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Message;
 
@@ -19,22 +17,21 @@ import io.github.zkhan93.familyfinance.models.Message;
  */
 
 public class MessageVH extends RecyclerView.ViewHolder {
-    @BindView(R.id.header)
     View header;
-    @BindView(R.id.sender_avatar)
     ImageView senderAvatar;
-    @BindView(R.id.sender_name)
     TextView senderName;
-    @BindView(R.id.content)
     TextView content;
-    @BindView(R.id.timestamp)
     TextView timestamp;
 
     private String meId;
 
     public MessageVH(View itemView, String meId) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        header = itemView.findViewById(R.id.header);
+        senderAvatar = itemView.findViewById(R.id.sender_avatar);
+        senderName = itemView.findViewById(R.id.sender_name);
+        content = itemView.findViewById(R.id.content);
+        timestamp = itemView.findViewById(R.id.timestamp);
         this.meId = meId;
     }
 

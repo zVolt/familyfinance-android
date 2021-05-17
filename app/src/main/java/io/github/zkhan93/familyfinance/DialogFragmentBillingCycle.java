@@ -4,16 +4,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.util.Util;
 
 /**
@@ -28,11 +26,8 @@ public class DialogFragmentBillingCycle extends DialogFragment implements
     private static final String ARG_BILLING_DAY = "billing_day";
     private static final String ARG_PAYMENT_DAY = "payment_day";
 
-    @BindView(R.id.billing_day)
     NumberPicker billingDay;
-    @BindView(R.id.payment_day)
     NumberPicker paymentDay;
-    @BindView(R.id.billing_cycle)
     TextView billingCycle;
 
     private int intBillingDay, intPaymentDay;
@@ -75,7 +70,10 @@ public class DialogFragmentBillingCycle extends DialogFragment implements
 
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout
                 .dialog_billingcycle, null, false);
-        ButterKnife.bind(this, rootView);
+        billingDay = rootView.findViewById(R.id.billing_day);
+        paymentDay = rootView.findViewById(R.id.payment_day);
+        billingCycle = rootView.findViewById(R.id.billing_cycle);
+
         billingDay.setMinValue(1);
         billingDay.setMaxValue(31);
         billingDay.setValue(intBillingDay);

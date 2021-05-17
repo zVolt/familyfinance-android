@@ -5,20 +5,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +13,8 @@ import android.view.View;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,19 +27,24 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
 
 import static io.github.zkhan93.familyfinance.FragmentMembers.PERMISSION_REQUEST_CODE;
 
-public class MainActivity extends AppCompatActivity implements
-        FragmentMembers.OnFragmentInteractionListener, FragmentSms
-        .OnFragmentInteractionListener, FragmentAccounts.OnFragmentInteractionListener,
-        FragmentCCards.OnFragmentInteractionListener, FragmentSummary
-        .OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity{
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public String familyId;
@@ -59,13 +52,9 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    @BindView(R.id.container)
     ViewPager mViewPager;
-
-    @BindView(R.id.fab)
     FloatingActionButton fab;
     @Nullable
-    @BindView(R.id.tabs)
     TabLayout tabLayout;
 
     /**
@@ -84,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements
     private ValueEventListener keywordsListener, otpCharsListener, otpLengthListener;
     private int compilePatternAfterNoOfCallback;
     private SharedPreferences sharedPreferences;
-
+    private View.OnClickListener clickListener;
     {
         activePage = PAGE_POSITION.SUMMARY;
         pageChangeListener = new ViewPager
@@ -203,13 +192,59 @@ public class MainActivity extends AppCompatActivity implements
 
             }
         };
+
+    }
+
+    public MainActivity() {
+        clickListener = view -> {
+            switch (view.getId()) {
+                case R.id.fab:
+                    String message;
+                    switch (activePage) {
+                        case PAGE_POSITION.ACCOUNTS:
+                            DialogFragmentAddAccount.newInstance(familyId).show
+                                    (getSupportFragmentManager(),
+                                            DialogFragmentAddAccount.TAG);
+                            break;
+                        case PAGE_POSITION.CCARDS:
+                            DialogFragmentCcard.newInstance(familyId).show(getSupportFragmentManager
+                                    (), DialogFragmentCcard.TAG);
+                            break;
+                        case PAGE_POSITION.DCARDS:
+                            DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
+                                    (), DialogFragmentCcard.TAG);
+                            break;
+//                    case PAGE_POSITION.WALLETS:
+//                        DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
+//                                (), DialogFragmentCcard.TAG);
+//                        break;
+                        case PAGE_POSITION.MEMBERS:
+                            Intent intent = new Intent(getApplicationContext(), AddMemberActivity.class);
+                            intent.putExtra(getString(R.string.pref_family_id), familyId);
+                            startActivity(intent);
+                            break;
+                        case PAGE_POSITION.CREDENTIALS:
+                            DialogFragmentCredential.getInstance(null, familyId)
+                                    .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
+                        default:
+                            break;
+                    }
+
+                    break;
+                default:
+                    Log.d(TAG, "action not implemented");
+            }
+        };
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        mViewPager = findViewById(R.id.container);
+        fab = findViewById(R.id.fab);
+        tabLayout = findViewById(R.id.tabs);
+        fab.setOnClickListener(clickListener);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -242,9 +277,10 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        familyId = sharedPreferences.getString("activeFamilyId", null);
+        familyId = sharedPreferences.getString(getString(R.string.pref_family_id), null);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         compilePatternAfterNoOfCallback = 2;
+        //TODO: download the a json from https://gist.githubusercontent.com/zkhan93/500fc1fbcbd00724f8e856c6d0dac702/raw/card_brands.json as save it in preference as a string
         ref.child("otpChars").addListenerForSingleValueEvent
                 (otpCharsListener);
         ref.child("otpLength").addListenerForSingleValueEvent
@@ -374,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
             case R.id.action_switch_family:
                 PreferenceManager.getDefaultSharedPreferences(this).edit().remove
-                        ("activeFamilyId").apply();
+                        (getString(R.string.pref_family_id)).apply();
                 startActivity(new Intent(this, SelectFamilyActivity.class));
                 finish();
                 return true;
@@ -383,47 +419,6 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @OnClick(R.id.fab)
-    void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.fab:
-                String message;
-                switch (activePage) {
-                    case PAGE_POSITION.ACCOUNTS:
-                        DialogFragmentAddAccount.newInstance(familyId).show
-                                (getSupportFragmentManager(),
-                                        DialogFragmentAddAccount.TAG);
-                        break;
-                    case PAGE_POSITION.CCARDS:
-                        DialogFragmentCcard.newInstance(familyId).show(getSupportFragmentManager
-                                (), DialogFragmentCcard.TAG);
-                        break;
-                    case PAGE_POSITION.DCARDS:
-                        DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
-                                (), DialogFragmentCcard.TAG);
-                        break;
-//                    case PAGE_POSITION.WALLETS:
-//                        DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
-//                                (), DialogFragmentCcard.TAG);
-//                        break;
-                    case PAGE_POSITION.MEMBERS:
-                        Intent intent = new Intent(this, AddMemberActivity.class);
-                        intent.putExtra("familyId", familyId);
-                        startActivity(intent);
-                        break;
-                    case PAGE_POSITION.CREDENTIALS:
-                        DialogFragmentCredential.getInstance(null,familyId)
-                                .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
-                    default:
-                        break;
-                }
-
-                break;
-            default:
-                Log.d(TAG, "action not implemented");
-        }
     }
 
     public void showFab() {
@@ -526,10 +521,10 @@ public class MainActivity extends AppCompatActivity implements
         int CCARDS = 1;
         int SMS = 2;
         int DCARDS = 3;
-//        int WALLETS = 4;
+        //        int WALLETS = 4;
         int CREDENTIALS = 4;
         int ACCOUNTS = 5;
-//        int EMAILS = 7;
+        //        int EMAILS = 7;
         int MEMBERS = 6;
 //      int CHAT_ROOM = 9;
     }

@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance.adapters;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.events.InsertEvent;
@@ -31,8 +31,8 @@ import io.github.zkhan93.familyfinance.models.AccountDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
-import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
+import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
 
 /**
  * Created by zeeshan on 8/7/17.
@@ -71,7 +71,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if(viewType==ITEM_TYPE.EMPTY){
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout
                     .listitem_empty, parent, false);
-            return new EmptyVH(view,"blankAccount");
+            return new NoItemVH(view,"blankAccount");
         }
         else if (viewType == ITEM_TYPE.NORMAL) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout

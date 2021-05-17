@@ -1,10 +1,8 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.callbacks.SubscribeEmailCallback;
 
@@ -18,11 +16,10 @@ public class SubscribeEmailVH extends RecyclerView.ViewHolder {
     public SubscribeEmailVH(View itemView, SubscribeEmailCallback subscribeEmailCallback) {
         super(itemView);
         this.subscribeEmailCallback = subscribeEmailCallback;
-        ButterKnife.bind(this, itemView);
+        itemView.findViewById(R.id.subscribe).setOnClickListener(view -> {
+            subscribeEmailCallback.onSubscribeEmail();
+        });
     }
 
-    @OnClick(R.id.subscribe)
-    public void onSubscribe(View button) {
-        subscribeEmailCallback.onSubscribeEmail();
-    }
+
 }

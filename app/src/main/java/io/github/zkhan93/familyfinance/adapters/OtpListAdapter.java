@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance.adapters;
 
 import android.content.SharedPreferences;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -18,12 +17,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.MemberDao;
 import io.github.zkhan93.familyfinance.models.Otp;
 import io.github.zkhan93.familyfinance.util.Util;
-import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
+import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
 import io.github.zkhan93.familyfinance.viewholders.OtpVH;
 
 /**
@@ -65,7 +65,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == ITEM_TYPE.EMPTY)
-            return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+            return new NoItemVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                     .listitem_empty, parent, false), "blankOTP");
         return new OtpVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                 .listitem_otp, parent, false), familyId);
@@ -132,7 +132,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         otp.setClaimedby(memberDao.load(otp.getClaimedByMemberId()));
                     tmpOtps.add(otp);
                 }
-                if(tmpOtps.size()>0) {
+                if (tmpOtps.size() > 1) {
                     tmpOtps.remove(tmpOtps.size() - 1); // skip the last item since it was already
                     // loaded in previous page
                     lastLoadedItem = tmpOtps.get(0).getId();
@@ -185,7 +185,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         otp.setClaimedby(memberDao.load(otp.getClaimedByMemberId()));
                     tmpOtps.add(otp);
                 }
-                if(tmpOtps.size()>0) {
+                if (tmpOtps.size() > 0) {
                     lastLoadedItem = tmpOtps.get(0).getId();
                     Log.d(TAG, "LastItemLoaded: " + lastLoadedItem);
                     Collections.reverse(tmpOtps);
@@ -205,7 +205,6 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(TAG, "hmm a preference has changed with key: " + key);
         if (key != null && key.equals("filter_sms_by_member")) {
             String memberId = sharedPreferences.getString(key, null);
             filterByMember(memberId);
@@ -216,12 +215,11 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private boolean isfilterApplied;
 
     private void filterByMember(String memberId) {
-        Log.d(TAG, "is see you want to filter by " + memberId);
         if (memberId == null || memberId.isEmpty()) {
             if (isfilterApplied &&
                     _otps != null &&
                     otps.size() > 0
-                    ) {
+            ) {
                 otps = _otps;
                 _otps = null;
                 isfilterApplied = false;
@@ -253,7 +251,6 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private ArrayList<Otp> __otps;
 
     public void filterByString(String text) {
-        Log.d(TAG, "is see you want to filter by " + text);
         if ((text == null || text.isEmpty()) && isfilterApplied) {
             otps = __otps;
             __otps = null;
@@ -279,7 +276,7 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     !text.contains(name) &&
                     !content.contains(text) &&
                     !text.contains(content)
-                    ) {
+            ) {
                 itr.remove();
                 isSearchApplied = true;
             }

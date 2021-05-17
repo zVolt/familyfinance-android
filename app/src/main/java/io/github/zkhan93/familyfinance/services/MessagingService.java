@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import androidx.core.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -27,14 +26,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.core.app.NotificationCompat;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.MainActivity;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
 
-import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener
-        .ACTION_CLAIM_OTP;
+import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener.ACTION_CLAIM_OTP;
 import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener.ACTION_COPY_OTP;
 
 /**

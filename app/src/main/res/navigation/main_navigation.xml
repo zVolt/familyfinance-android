@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_navigation"
+    app:startDestination="@id/home">
+    <fragment
+        android:id="@id/settings"
+        android:name="io.github.zkhan93.familyfinance.FragmentSetting"
+        android:label="@string/title_settings">
+    </fragment>
+    <fragment
+        android:id="@id/accounts"
+        android:name="io.github.zkhan93.familyfinance.FragmentAccounts"
+        android:label="@string/title_accounts">
+        <argument
+            android:name="familyId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@id/members"
+        android:name="io.github.zkhan93.familyfinance.FragmentMembers"
+        android:label="@string/title_members"
+        tools:layout="@layout/fragment_otps">
+        <argument
+            android:name="familyId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@id/dcards"
+        android:name="io.github.zkhan93.familyfinance.FragmentDCards"
+        android:label="@string/title_dcards"
+        tools:layout="@layout/fragment_dcard">
+        <action
+            android:id="@+id/action_fragmentDCards_to_CCardDetailFragment"
+            app:destination="@id/ccard_detail" />
+        <argument
+            android:name="familyId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@id/credentials"
+        android:name="io.github.zkhan93.familyfinance.FragmentCredentials"
+        android:label="@string/title_credentials"
+        tools:layout="@layout/fragment_credential">
+        <argument
+            android:name="familyId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@id/ccards"
+        android:name="io.github.zkhan93.familyfinance.FragmentCCards"
+        android:label="@string/title_ccards"
+        tools:layout="@layout/fragment_ccards">
+        <action
+            android:id="@+id/action_fragmentCCards_to_CCardDetailFragment"
+            app:destination="@id/ccard_detail" />
+        <argument
+            android:name="familyId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@id/summary"
+        android:name="io.github.zkhan93.familyfinance.FragmentSummary"
+        android:label="@string/title_summary">
+        <argument
+            android:name="familyId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/ccard_detail"
+        android:name="io.github.zkhan93.familyfinance.FragmentCCardDetail"
+        android:label="Card Details" >
+        <argument
+            android:name="card"
+            app:argType="io.github.zkhan93.familyfinance.models.CCard" />
+    </fragment>
+    <fragment
+        android:id="@id/messages"
+        android:name="io.github.zkhan93.familyfinance.FragmentSms"
+        android:label="@string/title_messages">
+        <argument
+            android:name="familyId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@id/home"
+        android:name="io.github.zkhan93.familyfinance.FragmentHome"
+        android:label="@string/app_name">
+        <action
+            android:id="@+id/action_homeFragment_to_fragmentCCards"
+            app:destination="@id/ccards" />
+        <action
+            android:id="@+id/action_homeFragment_to_fragmentDCards"
+            app:destination="@id/dcards" />
+        <action
+            android:id="@+id/action_homeFragment_to_fragmentSummary"
+            app:destination="@id/summary" />
+        <action
+            android:id="@+id/action_homeFragment_to_fragmentMembers"
+            app:destination="@id/members" />
+        <action
+            android:id="@+id/action_homeFragment_to_fragmentCredentials"
+            app:destination="@id/credentials" />
+        <action
+            android:id="@+id/action_homeFragment_to_fragmentSms"
+            app:destination="@id/message" />
+        <action
+            android:id="@+id/action_homeFragment_to_fragmentAccounts"
+            app:destination="@id/accounts" />
+    </fragment>
+</navigation>

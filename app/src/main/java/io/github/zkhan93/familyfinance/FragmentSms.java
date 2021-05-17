@@ -1,14 +1,9 @@
 package io.github.zkhan93.familyfinance;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,34 +11,32 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
+import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.InfiniteScrollListener;
 import io.github.zkhan93.familyfinance.util.Util;
 
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentSms.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link FragmentSms#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class FragmentSms extends Fragment implements
         SearchView.OnQueryTextListener {
     public static final String TAG = FragmentSms.class.getSimpleName();
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ARG_FAMILY_ID = "familyId";
 
-
-    private OnFragmentInteractionListener mListener;
     private String familyId;
     private OtpListAdapter otpListAdapter;
     private InfiniteScrollListener infiniteScrollListener;
 
-    @BindView(R.id.list)
     RecyclerView otpsList;
 
     {
@@ -80,6 +73,10 @@ public class FragmentSms extends Fragment implements
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID, null);
         }
+        if (familyId == null) {
+            familyId =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        }
     }
 
     @Override
@@ -87,7 +84,8 @@ public class FragmentSms extends Fragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
-        ButterKnife.bind(this, rootView);
+
+        otpsList = rootView.findViewById(R.id.list);
         otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(),
                 familyId, null);
         otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
@@ -102,13 +100,12 @@ public class FragmentSms extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        Util.Log.d(TAG,"added IS");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Util.Log.d(TAG,"removed IS");
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.hideFab();
+        }
     }
 
 
@@ -156,23 +153,6 @@ public class FragmentSms extends Fragment implements
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
     public boolean onQueryTextSubmit(String query) {
         otpListAdapter.filterByString(query.toLowerCase());
         return true;
@@ -182,16 +162,6 @@ public class FragmentSms extends Fragment implements
     public boolean onQueryTextChange(String newText) {
         otpListAdapter.filterByString(newText.toLowerCase());
         return true;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnFragmentInteractionListener {
-
     }
 
 }

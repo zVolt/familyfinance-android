@@ -4,20 +4,16 @@
         android:title="@string/pref_header_general">
         <SwitchPreference
             android:defaultValue="true"
+            android:icon="@drawable/ic_file_copy"
             android:key="@string/pref_key_copy"
             android:summary="@string/pref_copy_enable"
             android:title="@string/pref_title_copy"/>
         <SwitchPreference
             android:defaultValue="true"
+            android:icon="@drawable/ic_sync"
             android:key="@string/pref_key_allsms"
             android:summary="@string/pref_allsms_enable"
             android:title="@string/pref_title_allsms"/>
-        <EditTextPreference
-            android:defaultValue="50"
-            android:key="@string/pref_key_no_of_sms"
-            android:inputType="number"
-            android:summary="@string/pref_no_of_sms_default"
-            android:title="@string/pref_title_no_of_sms"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="security_setting"
@@ -26,11 +22,13 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="@string/pref_key_pin"
+            android:icon="@drawable/ic_lock"
             android:enabled="true"
             android:summary="@string/pref_pin_disable"
             android:title="@string/pref_title_pin"/>
         <ListPreference
             android:defaultValue="10"
+            android:icon="@drawable/ic_update"
             android:dependency="@string/pref_key_pin"
             android:entries="@array/pref_autolock_keys"
             android:entryValues="@array/pref_autolock_values"
@@ -43,11 +41,13 @@
         android:title="@string/pref_header_notifications">
         <SwitchPreference
             android:defaultValue="true"
+            android:icon="@drawable/ic_notifications"
             android:key="@string/pref_key_notification"
             android:summary="@string/pref_notification_enable"
             android:title="@string/pref_title_notifications"/>
         <SwitchPreference
             android:defaultValue="false"
+            android:icon="@drawable/ic_message"
             android:dependency="@string/pref_key_notification"
             android:key="@string/pref_key_notification_only_otp"
             android:summary="@string/pref_notificationOnlyOtp_disable"
@@ -55,16 +55,10 @@
         <!-- Allows the user to choose a ringtone in the 'notification' category. -->
         <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
         <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
-        <RingtonePreference
-            android:defaultValue="content://settings/system/notification_sound"
-            android:dependency="@string/pref_key_notification"
-            android:key="@string/pref_key_ringtone"
-            android:ringtoneType="notification"
-            android:summary="@string/pref_ringtone_silent"
-            android:title="@string/pref_title_ringtone"/>
 
         <SwitchPreference
             android:defaultValue="true"
+            android:icon="@drawable/ic_vibration"
             android:dependency="@string/pref_key_notification"
             android:key="@string/pref_key_vibrate"
             android:title="@string/pref_title_vibrate"/>

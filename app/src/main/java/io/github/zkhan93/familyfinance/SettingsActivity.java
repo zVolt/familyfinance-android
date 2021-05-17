@@ -2,16 +2,14 @@ package io.github.zkhan93.familyfinance;
 
 
 import android.app.ActionBar;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -27,7 +25,6 @@ import butterknife.ButterKnife;
 public class SettingsActivity extends AppCompatActivity {
     public static final String TAG = SettingsActivity.class.getSimpleName();
 
-    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
 
@@ -35,7 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        ButterKnife.bind(this);
+        toolbar =findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -45,10 +42,10 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FragmentManager fm = getFragmentManager();
-        Fragment fragment = fm.findFragmentByTag(FragmentSetting.TAG);
+        Fragment fragment = null;
         if (fragment == null)
             fragment = new FragmentSetting();
-        fm.beginTransaction().replace(R.id.container, fragment).commit();
+//        fm.beginTransaction().replace(R.id.container, fragment).commit();
     }
 
     /**
