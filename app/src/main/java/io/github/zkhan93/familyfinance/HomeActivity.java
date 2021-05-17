@@ -1,8 +1,10 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -19,12 +21,16 @@ import com.google.firebase.auth.FirebaseUser;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import io.github.zkhan93.familyfinance.util.FabHost;
+
+import static io.github.zkhan93.familyfinance.FragmentMembers.PERMISSION_REQUEST_CODE;
 
 public class HomeActivity extends AppCompatActivity implements AppBarConfiguration.OnNavigateUpListener, FabHost {
 
@@ -60,6 +66,37 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         setUpHeaderContent();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkRequiredPermissions();
+    }
+
+    private void checkRequiredPermissions() {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest
+                .permission.RECEIVE_SMS) & ContextCompat.checkSelfPermission(this, android.Manifest
+                .permission.READ_PHONE_STATE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest
+                    .permission.RECEIVE_SMS)) {
+                //explain the need of this permission
+                //todo show a dialog and then on positive show request permission
+                Log.d(TAG, "lol we need it :D");
+                ActivityCompat.requestPermissions(this, new String[]{
+                        android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission
+                        .READ_PHONE_STATE
+                }, PERMISSION_REQUEST_CODE);
+
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{
+                        android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission
+                        .READ_PHONE_STATE
+                }, PERMISSION_REQUEST_CODE);
+            }
+        }
+    }
+
     private void initListeners() {
         headerActionListener = view -> {
             int viewId = view.getId();
@@ -79,7 +116,7 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
             }
         };
         fabClickListener = view -> {
-            if (navController.getCurrentDestination()==null)
+            if (navController.getCurrentDestination() == null)
                 return;
             int activeNavItemId = navController.getCurrentDestination().getId();
             if (activeNavItemId == R.id.ccards) {
@@ -158,6 +195,14 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
     public void showFab() {
         if (fab != null)
             fab.show();
+    }
+
+    @Override
+    public void showFab(int icon) {
+        if (fab != null) {
+            fab.setImageResource(icon);
+            fab.show();
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.models.DaoSession;
+import io.github.zkhan93.familyfinance.util.FabHost;
 
 
 /**
@@ -58,7 +60,6 @@ public class FragmentCCardDetail extends Fragment {
     TextView cardLimit;
 
     LineChart chart;
-
 
     private CCardDao cCardDao;
 
@@ -116,6 +117,17 @@ public class FragmentCCardDetail extends Fragment {
         setUpCards();
         setUpChart();
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Activity parentActivity = getActivity();
+        if (parentActivity != null) {
+            FabHost fab = (FabHost) parentActivity;
+            if (fab != null)
+                fab.hideFab();
+        }
     }
 
     private void setUpChart() {
