@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
-import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.InfiniteScrollListener;
 import io.github.zkhan93.familyfinance.util.Util;
 
@@ -100,12 +99,6 @@ public class FragmentSms extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        Activity parentActivity = getActivity();
-        if (parentActivity != null) {
-            FabHost fab = (FabHost) parentActivity;
-            if (fab != null)
-                fab.hideFab();
-        }
     }
 
 

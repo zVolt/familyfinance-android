@@ -90,12 +90,6 @@ public class FragmentMembers extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Activity parentActivity = getActivity();
-        if (parentActivity != null) {
-            FabHost fab = (FabHost) parentActivity;
-            if (fab != null)
-                fab.showFab();
-        }
         if (Util.isInternetConnected(getActivity().getApplicationContext())) {
             Log.d(TAG, "seeking presence");
             FirebaseDatabase.getInstance().getReference("family").child(familyId).child

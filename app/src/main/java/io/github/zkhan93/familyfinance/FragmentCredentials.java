@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.CredentialListAdapter;
 import io.github.zkhan93.familyfinance.models.Credential;
-import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.viewholders.CredentialVH;
 
 
@@ -76,16 +75,6 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Activity parentActivity = getActivity();
-        if (parentActivity != null) {
-            FabHost fab = (FabHost) parentActivity;
-            if (fab != null)
-                fab.showFab();
-        }
-    }
 
     @Override
     public void onCredentialClicked(Credential credential) {

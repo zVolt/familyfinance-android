@@ -1,19 +1,16 @@
 package io.github.zkhan93.familyfinance;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.Util;
 
 
@@ -39,7 +36,7 @@ public class FragmentHome extends Fragment {
         familyId =
                 PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_family_id), null);
         cardClicklistener = view -> {
-            this.hideFab();
+
             Util.Log.d(TAG, "card clicked %d", view.getId());
             if (navController!=null) {
                 Bundle bundle = new Bundle();
@@ -73,18 +70,4 @@ public class FragmentHome extends Fragment {
         return rootView;
     }
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        this.hideFab();
-    }
-    private void hideFab(){
-        Activity parentActivity = getActivity();
-        if (parentActivity != null) {
-            FabHost fab = (FabHost) parentActivity;
-            if (fab != null)
-                fab.hideFab();
-        }
-    }
 }
