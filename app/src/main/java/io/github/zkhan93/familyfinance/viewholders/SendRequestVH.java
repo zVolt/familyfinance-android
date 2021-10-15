@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -10,8 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Request;
 
@@ -23,13 +21,9 @@ public class SendRequestVH extends RecyclerView.ViewHolder implements View.OnCli
 
     public static String TAG = SendRequestVH.class.getSimpleName();
     public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM yy hh:mm a", Locale.US);
-    @BindView(R.id.status)
     TextView status;
-    @BindView(R.id.family_id)
     TextView familyId;
-    @BindView(R.id.timestamp)
     TextView timestamp;
-    @BindView(R.id.delete)
     ImageButton delete;
 
     private Request request;
@@ -38,7 +32,10 @@ public class SendRequestVH extends RecyclerView.ViewHolder implements View.OnCli
     public SendRequestVH(View itemView) {
         super(itemView);
         Context context = itemView.getContext();
-        ButterKnife.bind(this, itemView);
+        status = itemView.findViewById(R.id.status);
+        familyId = itemView.findViewById(R.id.family_id);
+        timestamp = itemView.findViewById(R.id.timestamp);
+        delete = itemView.findViewById(R.id.delete);
         itemView.setOnClickListener(this);
         delete.setOnClickListener(this);
     }

@@ -1,9 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -13,17 +10,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import io.github.zkhan93.familyfinance.util.Util;
 
 public class AboutActivity extends AppCompatActivity implements ValueEventListener {
 
-    @BindView(R.id.additional_title)
     protected TextView title;
-    @BindView(R.id.additional_content)
     protected TextView content;
-    @BindView(R.id.version_number)
     protected TextView versionInfo;
 
 
@@ -33,8 +28,12 @@ public class AboutActivity extends AppCompatActivity implements ValueEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        title = findViewById(R.id.additional_title);
+        content = findViewById(R.id.additional_content);
+        versionInfo = findViewById(R.id.version_number);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)

@@ -1,5 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,8 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
 import io.github.zkhan93.familyfinance.util.InfiniteScrollListener;
 import io.github.zkhan93.familyfinance.util.Util;
@@ -37,7 +36,6 @@ public class FragmentSms extends Fragment implements
     private OtpListAdapter otpListAdapter;
     private InfiniteScrollListener infiniteScrollListener;
 
-    @BindView(R.id.list)
     RecyclerView otpsList;
 
     {
@@ -74,8 +72,9 @@ public class FragmentSms extends Fragment implements
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID, null);
         }
-        if(familyId == null){
-            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        if (familyId == null) {
+            familyId =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
     }
 
@@ -84,7 +83,8 @@ public class FragmentSms extends Fragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_otps, container, false);
-        ButterKnife.bind(this, rootView);
+
+        otpsList = rootView.findViewById(R.id.list);
         otpListAdapter = new OtpListAdapter((App) getActivity().getApplication(),
                 familyId, null);
         otpsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
@@ -99,13 +99,6 @@ public class FragmentSms extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        Util.Log.d(TAG,"added IS");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Util.Log.d(TAG,"removed IS");
     }
 
 

@@ -32,9 +32,6 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
@@ -52,25 +49,12 @@ public class SelectFamilyActivity extends AppCompatActivity {
 
     public static final String TAG = SelectFamilyActivity.class.getSimpleName();
 
-    @BindView(R.id.edtxt_family_id)
     EditText edtTxtFamilyId;
-
-    @BindView(R.id.btn_join_family)
     FloatingActionButton btnJoinFamily;
-
-    @BindView(R.id.btn_create_family)
     Button btnCreateFamily;
-
-    @BindView(R.id.btn_logout)
     Button btnLogout;
-
-    @BindView(R.id.progress_bar)
     ProgressBar progressBar;
-
-    @BindView(R.id.txt_error_msg)
     TextView txtErrorMsg;
-
-    @BindView(R.id.txt_welcome)
     TextView txtWelcome;
 
     private FirebaseDatabase fbDb;
@@ -83,6 +67,8 @@ public class SelectFamilyActivity extends AppCompatActivity {
     private Continuation<Void, Task<Integer>> checkForApprovedRequest;
     private Continuation<Integer, Task<Integer>> createRequestTask;
     private Continuation<Integer, Task<Integer>> fetchMembersTask;
+
+    private View.OnClickListener clickListener;
 
     private int USER_REQ_APPROVED = 0;
     private int USER_REQ_SUBMITTED = 1;
@@ -244,14 +230,41 @@ public class SelectFamilyActivity extends AppCompatActivity {
             }
             return tcs.getTask();
         };
+        clickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showMessage("", false);
+                familyId = edtTxtFamilyId.getText().toString().trim();
+                switch (view.getId()) {
+                    case R.id.btn_join_family:
+                        joinFamilyBtnAction();
+                        break;
+                    case R.id.btn_create_family:
+                        startFamilyBtnAction();
+                        break;
+                    case R.id.btn_logout:
+                        signOut();
+                        break;
+                }
+            }
+        };
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_family);
-        ButterKnife.bind(this);
 
+        edtTxtFamilyId = findViewById(R.id.edtxt_family_id);
+        btnJoinFamily = findViewById(R.id.btn_join_family);
+        btnCreateFamily = findViewById(R.id.btn_create_family);
+        btnLogout = findViewById(R.id.btn_logout);
+        progressBar = findViewById(R.id.progress_bar);
+        txtErrorMsg = findViewById(R.id.txt_error_msg);
+        txtWelcome = findViewById(R.id.txt_welcome);
+        btnJoinFamily.setOnClickListener(clickListener);
+        btnCreateFamily.setOnClickListener(clickListener);
+        btnLogout.setOnClickListener(clickListener);
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser == null) {
             toastText(getString(R.string.msg_user_no_logged_in));
@@ -267,24 +280,9 @@ public class SelectFamilyActivity extends AppCompatActivity {
         membersRef = fbDb.getReference("members");
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
     }
 
-    @OnClick({R.id.btn_join_family, R.id.btn_create_family, R.id.btn_logout})
-    public void onClick(View button) {
-        showMessage("", false);
-        familyId = edtTxtFamilyId.getText().toString().trim();
-        switch (button.getId()) {
-            case R.id.btn_join_family:
-                joinFamilyBtnAction();
-                break;
-            case R.id.btn_create_family:
-                startFamilyBtnAction();
-                break;
-            case R.id.btn_logout:
-                signOut();
-                break;
-        }
-    }
 
     @Override
     protected void onStart() {
@@ -333,9 +331,9 @@ public class SelectFamilyActivity extends AppCompatActivity {
                 .addOnSuccessListener(status -> {
                     setLoadingUi(false);
                     if (status == USER_REQ_APPROVED) {
-                        startHomeActivity();
                         sharedPref.edit().putString(getString(R.string.pref_family_id), familyId).apply();
                         showMessage(getString(R.string.msg_request_approved));
+                        startHomeActivity();
                     } else if (status == USER_REQ_SUBMITTED) {
                         showMessage(getString(R.string.msg_request_submitted));
                     }

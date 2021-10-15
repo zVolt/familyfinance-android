@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.graphics.drawable.Drawable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,8 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.Otp;
@@ -30,15 +28,10 @@ import io.github.zkhan93.familyfinance.util.Util;
 public class OtpVH extends RecyclerView.ViewHolder {
     public static String TAG = OtpVH.class.getSimpleName();
 
-    @BindView(R.id.receiver)
     ImageView receiver;
-    @BindView(R.id.number)
     TextView number;
-    @BindView(R.id.content)
     TextView content;
-    @BindView(R.id.timestamp)
     TextView timestamp;
-    @BindView(R.id.claim)
     TextView claim;
 
     private DatabaseReference fromRef;
@@ -86,7 +79,11 @@ public class OtpVH extends RecyclerView.ViewHolder {
 
     public OtpVH(View itemView, String familyId) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        receiver = itemView.findViewById(R.id.receiver);
+        number = itemView.findViewById(R.id.number);
+        content = itemView.findViewById(R.id.content);
+        timestamp = itemView.findViewById(R.id.timestamp);
+        claim = itemView.findViewById(R.id.claim);
     }
 
     public void setOtp(Otp otp) {

@@ -1,17 +1,9 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,15 +14,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.Date;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.DCard;
-import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
 
 import static io.github.zkhan93.familyfinance.LoginActivity.TAG;
@@ -39,24 +29,12 @@ import static io.github.zkhan93.familyfinance.LoginActivity.TAG;
 public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
         .OnMenuItemClickListener, View.OnClickListener, View.OnLongClickListener {
 
-    @BindView(R.id.bank_icon)
     ImageView bank;
-
-    @BindView(R.id.card_type)
     ImageView cardType;
-
-    @BindView(R.id.bank_name)
     TextView bankName;
-
-    @BindView(R.id.number)
     TextView number;
-    @BindView(R.id.cardholder)
     TextView cardholder;
-
-    @BindView(R.id.expires_on)
     TextView expiresOn;
-
-    @BindView(R.id.cvv)
     TextView cvv;
 
     private DCard dCard;
@@ -124,7 +102,13 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
         super(itemView);
         this.itemInteractionListener = itemInteractionListener;
         this.context = itemView.getContext();
-        ButterKnife.bind(this, itemView);
+        bank = itemView.findViewById(R.id.bank_icon);
+        cardType = itemView.findViewById(R.id.card_type);
+        bankName = itemView.findViewById(R.id.bank_name);
+        number = itemView.findViewById(R.id.number);
+        cardholder = itemView.findViewById(R.id.cardholder);
+        expiresOn = itemView.findViewById(R.id.expires_on);
+        cvv = itemView.findViewById(R.id.cvv);
 
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);

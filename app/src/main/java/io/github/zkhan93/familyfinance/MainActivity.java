@@ -39,9 +39,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
 
@@ -55,13 +52,9 @@ public class MainActivity extends AppCompatActivity{
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    @BindView(R.id.container)
     ViewPager mViewPager;
-
-    @BindView(R.id.fab)
     FloatingActionButton fab;
     @Nullable
-    @BindView(R.id.tabs)
     TabLayout tabLayout;
 
     /**
@@ -80,7 +73,7 @@ public class MainActivity extends AppCompatActivity{
     private ValueEventListener keywordsListener, otpCharsListener, otpLengthListener;
     private int compilePatternAfterNoOfCallback;
     private SharedPreferences sharedPreferences;
-
+    private View.OnClickListener clickListener;
     {
         activePage = PAGE_POSITION.SUMMARY;
         pageChangeListener = new ViewPager
@@ -199,13 +192,59 @@ public class MainActivity extends AppCompatActivity{
 
             }
         };
+
+    }
+
+    public MainActivity() {
+        clickListener = view -> {
+            switch (view.getId()) {
+                case R.id.fab:
+                    String message;
+                    switch (activePage) {
+                        case PAGE_POSITION.ACCOUNTS:
+                            DialogFragmentAddAccount.newInstance(familyId).show
+                                    (getSupportFragmentManager(),
+                                            DialogFragmentAddAccount.TAG);
+                            break;
+                        case PAGE_POSITION.CCARDS:
+                            DialogFragmentCcard.newInstance(familyId).show(getSupportFragmentManager
+                                    (), DialogFragmentCcard.TAG);
+                            break;
+                        case PAGE_POSITION.DCARDS:
+                            DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
+                                    (), DialogFragmentCcard.TAG);
+                            break;
+//                    case PAGE_POSITION.WALLETS:
+//                        DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
+//                                (), DialogFragmentCcard.TAG);
+//                        break;
+                        case PAGE_POSITION.MEMBERS:
+                            Intent intent = new Intent(getApplicationContext(), AddMemberActivity.class);
+                            intent.putExtra(getString(R.string.pref_family_id), familyId);
+                            startActivity(intent);
+                            break;
+                        case PAGE_POSITION.CREDENTIALS:
+                            DialogFragmentCredential.getInstance(null, familyId)
+                                    .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
+                        default:
+                            break;
+                    }
+
+                    break;
+                default:
+                    Log.d(TAG, "action not implemented");
+            }
+        };
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        mViewPager = findViewById(R.id.container);
+        fab = findViewById(R.id.fab);
+        tabLayout = findViewById(R.id.tabs);
+        fab.setOnClickListener(clickListener);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -380,47 +419,6 @@ public class MainActivity extends AppCompatActivity{
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @OnClick(R.id.fab)
-    void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.fab:
-                String message;
-                switch (activePage) {
-                    case PAGE_POSITION.ACCOUNTS:
-                        DialogFragmentAddAccount.newInstance(familyId).show
-                                (getSupportFragmentManager(),
-                                        DialogFragmentAddAccount.TAG);
-                        break;
-                    case PAGE_POSITION.CCARDS:
-                        DialogFragmentCcard.newInstance(familyId).show(getSupportFragmentManager
-                                (), DialogFragmentCcard.TAG);
-                        break;
-                    case PAGE_POSITION.DCARDS:
-                        DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
-                                (), DialogFragmentCcard.TAG);
-                        break;
-//                    case PAGE_POSITION.WALLETS:
-//                        DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
-//                                (), DialogFragmentCcard.TAG);
-//                        break;
-                    case PAGE_POSITION.MEMBERS:
-                        Intent intent = new Intent(this, AddMemberActivity.class);
-                        intent.putExtra(getString(R.string.pref_family_id), familyId);
-                        startActivity(intent);
-                        break;
-                    case PAGE_POSITION.CREDENTIALS:
-                        DialogFragmentCredential.getInstance(null, familyId)
-                                .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
-                    default:
-                        break;
-                }
-
-                break;
-            default:
-                Log.d(TAG, "action not implemented");
-        }
     }
 
     public void showFab() {

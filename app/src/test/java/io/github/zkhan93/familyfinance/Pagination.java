@@ -1,11 +1,16 @@
 package io.github.zkhan93.familyfinance;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
 import io.github.zkhan93.familyfinance.models.DaoSession;
@@ -14,7 +19,7 @@ import io.github.zkhan93.familyfinance.models.MemberDao;
 /**
  * Created by zeeshan on 25/3/18.
  */
-
+@RunWith(MockitoJUnitRunner.class)
 public class Pagination {
     @Mock
     private DaoSession daoSession;
@@ -35,9 +40,11 @@ public class Pagination {
 
     @Test
     public void loadingFirstPage() {
-        App app = Mockito.mock(App.class);
-        Mockito.when(daoSession.getMemberDao()).thenReturn(memberDao);
-        Mockito.when(app.getDaoSession()).thenReturn(daoSession);
-        OtpListAdapter otp = new OtpListAdapter(app, "", null);
+//        App app = Mockito.mock(App.class);
+//        FirebaseDatabase mockFirebase = Mockito.mock(FirebaseDatabase.class);
+//        Mockito.when(FirebaseDatabase.getInstance()).thenReturn(mockFirebase);
+//        Mockito.when(daoSession.getMemberDao()).thenReturn(memberDao);
+//        Mockito.when(app.getDaoSession()).thenReturn(daoSession);
+//        OtpListAdapter otp = new OtpListAdapter(app, "", null);
     }
 }

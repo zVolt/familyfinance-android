@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -25,19 +24,20 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.AddonCardListAdapter;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.models.DaoSession;
 import io.github.zkhan93.familyfinance.util.Util;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 
 /**
@@ -52,26 +52,20 @@ public class FragmentCCardDetail extends Fragment {
 
     private CCard card;
 
-    @BindView(R.id.cards)
     RecyclerView cards;
 
-    @BindView(R.id.phone_number)
     TextView phoneNumber;
-    @BindView(R.id.bill_date)
     TextView billDate;
-    @BindView(R.id.userid)
     TextView userID;
 
-    @BindView(R.id.password)
     TextView password;
-    @BindView(R.id.card_limit)
     TextView cardLimit;
 
-    @BindView(R.id.chart)
     LineChart chart;
 
-
     private CCardDao cCardDao;
+    private AppState appState;
+    private String familyId;
 
     public FragmentCCardDetail() {
     }
@@ -105,20 +99,53 @@ public class FragmentCCardDetail extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_ccard_detail, container, false);
-        ButterKnife.bind(this, rootView);
+        cards = rootView.findViewById(R.id.cards);
+
+        phoneNumber = rootView.findViewById(R.id.phone_number);
+        billDate = rootView.findViewById(R.id.bill_date);
+        userID = rootView.findViewById(R.id.userid);
+
+        password = rootView.findViewById(R.id.password);
+        cardLimit = rootView.findViewById(R.id.card_limit);
+
+        chart = rootView.findViewById(R.id.chart);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
             card = bundle.getParcelable("card");
             if (card != null)
                 card.__setDaoSession((DaoSession) cCardDao.getSession());
+            familyId = bundle.getString("familyId");
         }
         setCardDetails();
         setUpCards();
         setUpChart();
+        setUpFab();
         return rootView;
     }
+
+    private void setUpFab() {
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
+        appState.getFabIcon().setValue(R.drawable.ic_edit);
+        appState.getFabShow().setValue(true);
+        appState.getFabActionID().setValue(TAG);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        appState.getFabAction().observe(getViewLifecycleOwner(), id -> {
+            if (id.equals(TAG)) {
+                Util.Log.d(TAG, "click: %s", id);
+                DialogFragmentCcard.newInstance(familyId, card).show(getParentFragmentManager(),
+                        DialogFragmentCcard.TAG);
+            }
+        });
+    }
+
 
     private void setUpChart() {
         List<Entry> entries = new ArrayList<>();
@@ -238,4 +265,5 @@ public class FragmentCCardDetail extends Fragment {
         }
         return null;
     }
+
 }

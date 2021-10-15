@@ -4,11 +4,6 @@ package io.github.zkhan93.familyfinance;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputEditText;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -27,8 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
@@ -46,15 +44,10 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
     public static final String ARG_MAIN_CARD_NUMBER = "mainCardNumber";
     public static final String ARG_ADDONCARD = "addonCard";
 
-    @BindView(R.id.name)
     TextInputEditText name;
-    @BindView(R.id.number)
     TextInputEditText number;
-    @BindView(R.id.expires_on)
     EditText expiresOn;
-    @BindView(R.id.cvv)
     EditText cvv;
-    @BindView(R.id.phone_number)
     TextInputEditText phoneNumber;
 
 
@@ -143,7 +136,11 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
         View rootView = LayoutInflater
                 .from(getActivity())
                 .inflate(R.layout.dialog_add_addoncard,null);
-        ButterKnife.bind(this, rootView);
+        name = rootView.findViewById(R.id.name);
+        number = rootView.findViewById(R.id.number);
+        expiresOn = rootView.findViewById(R.id.expires_on);
+        cvv = rootView.findViewById(R.id.cvv);
+        phoneNumber = rootView.findViewById(R.id.phone_number);
         expiresOn.addTextChangedListener(expiresOnTextWatcher);
         if (addonCard != null) {
             name.setText(addonCard.getName());

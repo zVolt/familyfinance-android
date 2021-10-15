@@ -6,10 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,8 +26,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.models.DCard;
 import io.github.zkhan93.familyfinance.util.Util;
 
@@ -53,29 +51,17 @@ public class DialogFragmentViewDCard extends DialogFragment implements DialogInt
     private Map<String, Object> updateMap;
     private ValueEventListener bankImageLinkListener;
 
-    @BindView(R.id.bank)
     ImageView bank;
-    @BindView(R.id.card_holder)
     TextView cardHolder;
-    @BindView(R.id.email)
     TextView email;
-    @BindView(R.id.username)
     TextView username;
-    @BindView(R.id.password)
     TextView password;
-    @BindView(R.id.pin)
     TextView pin;
-    @BindView(R.id.card_number)
     TextView cardNumber;
-    @BindView(R.id.expires_on)
     TextView expiresOn;
-    @BindView(R.id.cvv)
     TextView cvv;
-    @BindView(R.id.phone_number)
     TextView phoneNumber;
-    @BindView(R.id.updated_by)
     ImageView updateBy;
-    @BindView(R.id.updated_on)
     TextView updatedOn;
 
     {
@@ -129,7 +115,18 @@ public class DialogFragmentViewDCard extends DialogFragment implements DialogInt
 
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_view_dcard,
                 null);
-        ButterKnife.bind(this, rootView);
+        bank = rootView.findViewById(R.id.bank);
+        cardHolder = rootView.findViewById(R.id.card_holder);
+        email = rootView.findViewById(R.id.email);
+        username = rootView.findViewById(R.id.username);
+        password = rootView.findViewById(R.id.password);
+        pin = rootView.findViewById(R.id.pin);
+        cardNumber = rootView.findViewById(R.id.card_number);
+        expiresOn = rootView.findViewById(R.id.expires_on);
+        cvv = rootView.findViewById(R.id.cvv);
+        phoneNumber = rootView.findViewById(R.id.phone_number);
+        updateBy = rootView.findViewById(R.id.updated_by);
+        updatedOn = rootView.findViewById(R.id.updated_on);
         if (dCard != null) {
             FirebaseDatabase.getInstance().getReference("images").child("banks").child(dCard
                     .getBank().toUpperCase()).addListenerForSingleValueEvent(bankImageLinkListener);

@@ -13,14 +13,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-
 import android.widget.Toast;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.google.api.client.util.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +26,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.listeners.ClearNotificationRecevier;
 import io.github.zkhan93.familyfinance.models.Account;

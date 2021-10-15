@@ -25,12 +25,9 @@ import java.util.Locale;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.BalanceByBankAdapter;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.CCard;
-import io.github.zkhan93.familyfinance.models.DaoSession;
 import io.github.zkhan93.familyfinance.util.Constants;
 
 
@@ -44,32 +41,20 @@ public class FragmentSummary extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_FAMILY_ID = "familyId";
 
-    @BindView(R.id.grand_total)
     public TextView grandTotal;
-    @BindView(R.id.account_total)
     public TextView accountTotal;
-    @BindView(R.id.consumed_cc_limit)
     public TextView consumedCCTotal;
-    @BindView(R.id.total_cc_limit)
     public TextView totalCCTotal;
 
-    @BindView(R.id.account_title)
     public TextView accountTitle;
-    @BindView(R.id.card_title)
     public TextView cardTitle;
 
-    @BindView(R.id.card_limit_bar)
     public ProgressBar cardLimitbar;
 
-
-    @BindView(R.id.next_payment1)
     public View nextPayment1;
-    @BindView(R.id.next_payment2)
     public View nextPayment2;
-    @BindView(R.id.next_payment3)
     public View nextPayment3;
 
-    @BindView(R.id.balance_by_bank)
     public RecyclerView balanceBybankList;
 
     private String familyId;
@@ -237,7 +222,19 @@ public class FragmentSummary extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_summary, container, false);
-        ButterKnife.bind(this, rootView);
+
+        grandTotal = rootView.findViewById(R.id.grand_total);
+        accountTotal = rootView.findViewById(R.id.account_total);
+        consumedCCTotal = rootView.findViewById(R.id.consumed_cc_limit);
+        totalCCTotal = rootView.findViewById(R.id.total_cc_limit);
+        accountTitle = rootView.findViewById(R.id.account_title);
+        cardTitle = rootView.findViewById(R.id.card_title);
+        cardLimitbar = rootView.findViewById(R.id.card_limit_bar);
+        nextPayment1 = rootView.findViewById(R.id.next_payment1);
+        nextPayment2 = rootView.findViewById(R.id.next_payment2);
+        nextPayment3 = rootView.findViewById(R.id.next_payment3);
+        balanceBybankList = rootView.findViewById(R.id.balance_by_bank);
+
         if (savedInstanceState != null) {
             amountTotal = savedInstanceState.getFloat("amountTotal", amountTotal);
             amountAccount = savedInstanceState.getFloat("amountAccount", amountAccount);

@@ -1,17 +1,15 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.CredentialListAdapter;
 import io.github.zkhan93.familyfinance.models.Credential;
 import io.github.zkhan93.familyfinance.viewholders.CredentialVH;
@@ -29,7 +27,6 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
 
     private static final String ARG_FAMILY_ID = "familyId";
 
-    @BindView(R.id.passwords)
     RecyclerView credentialList;
 
     private String familyId;
@@ -69,7 +66,7 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_credential, container, false);
-        ButterKnife.bind(this, rootView);
+        credentialList = rootView.findViewById(R.id.passwords);
         CredentialListAdapter credentialListAdapter = new CredentialListAdapter(getActivity()
                 .getApplicationContext(), this, familyId);
         credentialList.setLayoutManager(new LinearLayoutManager(getActivity()
@@ -77,6 +74,7 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
         credentialList.setAdapter(credentialListAdapter);
         return rootView;
     }
+
 
     @Override
     public void onCredentialClicked(Credential credential) {

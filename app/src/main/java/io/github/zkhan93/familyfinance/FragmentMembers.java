@@ -1,5 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,8 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
@@ -38,7 +37,6 @@ public class FragmentMembers extends Fragment {
 
     private String familyId;
 
-    @BindView(R.id.list)
     RecyclerView membersList;
 
     private Member enableSmsFor;
@@ -80,13 +78,14 @@ public class FragmentMembers extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_members, container, false);
-        ButterKnife.bind(this, rootView);
+        membersList = rootView.findViewById(R.id.list);
         memberListAdapter = new MemberListAdapter((App) getActivity().getApplication(), familyId);
         membersList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         membersList.setAdapter(memberListAdapter);
         return rootView;
     }
+
 
     @Override
     public void onResume() {

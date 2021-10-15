@@ -4,7 +4,9 @@ import android.os.Parcel;
 
 import com.google.firebase.database.Exclude;
 
+import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.OrderBy;
@@ -19,8 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.DaoException;
+import io.github.zkhan93.familyfinance.util.CardUtil;
 
 /**
  * Created by zeeshan on 7/7/17.
@@ -191,25 +192,7 @@ public class CCard extends BaseModel {
     }
 
     public String getFormattedNumber(char delimiter, boolean hideDigits) {
-        StringBuilder strb = new StringBuilder(19);
-        int i;
-        if (hideDigits) {
-            for (i = 0; i < this.number.length() - 4; i++)
-                strb.append("*");
-            strb.append(number.substring(number.length() - 4));
-        } else
-            strb.append(this.number);
-        String number = strb.toString();
-        strb.setLength(0);
-        i = 1;
-        for (char c : number.toCharArray()) {
-            strb.append(c);
-            if (i % 4 == 0)
-                strb.append(delimiter);
-            i++;
-        }
-        strb.deleteCharAt(strb.length() - 1);
-        return strb.toString();
+        return CardUtil.formatCardNumber(number, delimiter, hideDigits);
     }
 
     @Override

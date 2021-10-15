@@ -1,18 +1,13 @@
 package io.github.zkhan93.familyfinance;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -26,13 +21,18 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.DCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.DCard;
 import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.DCardVH;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,11 +49,10 @@ public class FragmentDCards extends Fragment {
     private DCardListAdapter.AdapterInteraction adapterInteraction;
     private ValueEventListener noContentImageUrlListener;
     private DCardVH.ItemInteractionListener cardInteractionListener;
-    @BindView(R.id.list)
-    RecyclerView dCardsList;
 
-    @BindView(R.id.no_content)
+    RecyclerView dCardsList;
     ImageView noContent;
+    AppState appState;
 
     public FragmentDCards() {
         // Required empty public constructor
@@ -135,6 +134,12 @@ public class FragmentDCards extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        appState.getFabActionID().setValue(TAG);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         dCardListAdapter.startListening();
@@ -153,7 +158,8 @@ public class FragmentDCards extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_dcard, container, false);
-        ButterKnife.bind(this, rootView);
+        noContent = rootView.findViewById(R.id.no_content);
+        dCardsList = rootView.findViewById(R.id.list);
         baseCardRef = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("dcards")
@@ -164,9 +170,14 @@ public class FragmentDCards extends Fragment {
                 .getReference()
                 .child("images")
                 .child("blank").child("ccard").addListenerForSingleValueEvent(noContentImageUrlListener);
+        setUpFab();
         return rootView;
     }
-
+    private void setUpFab(){
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
+        appState.getFabIcon().setValue(R.drawable.ic_add_white_24dp);
+        appState.getFabShow().setValue(true);
+    }
     private void setupCardAdapter(Query query) {
         if (dCardListAdapter != null)
             dCardListAdapter.stopListening();

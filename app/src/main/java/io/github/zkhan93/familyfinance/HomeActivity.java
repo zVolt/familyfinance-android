@@ -1,8 +1,10 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -12,36 +14,33 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import io.github.zkhan93.familyfinance.vm.AppState;
+
+import static io.github.zkhan93.familyfinance.FragmentMembers.PERMISSION_REQUEST_CODE;
 
 public class HomeActivity extends AppCompatActivity implements AppBarConfiguration.OnNavigateUpListener {
 
     public static String TAG = HomeActivity.class.getSimpleName();
-
-    @BindView(R.id.toolbar)
     Toolbar toolbar;
-
-    @BindView(R.id.appbar)
     AppBarLayout appBarLayout;
-
-    @BindView(R.id.drawer_layout)
     public DrawerLayout drawerLayout;
-
-    @BindView(R.id.navigation_view)
     NavigationView navigationView;
-
+    FloatingActionButton fab;
 
     TextView txtHeading;
     TextView txtSubheading;
@@ -52,9 +51,14 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
     private View.OnClickListener headerActionListener;
     private AppBarConfiguration appBarConfiguration;
 
+    private View.OnClickListener fabClickListener;
+    private NavController navController;
+    private AppState appState;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        appState = new ViewModelProvider(this).get(AppState.class);
         setContentView(R.layout.activity_home);
         familyId =
                 PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_family_id), null);
@@ -63,26 +67,85 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         setSupportActionBar(toolbar);
         setUpNavigationDrawer();
         setUpHeaderContent();
+        appState.getFabIcon().observe(this, icon -> fab.setImageResource(icon));
+        appState.getFabShow().observe(this, show -> {
+            if (show)
+                fab.show();
+            else
+                fab.hide();
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkRequiredPermissions();
+    }
+
+    private void checkRequiredPermissions() {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest
+                .permission.RECEIVE_SMS) & ContextCompat.checkSelfPermission(this, android.Manifest
+                .permission.READ_PHONE_STATE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest
+                    .permission.RECEIVE_SMS)) {
+                //explain the need of this permission
+                //todo show a dialog and then on positive show request permission
+                Log.d(TAG, "lol we need it :D");
+                ActivityCompat.requestPermissions(this, new String[]{
+                        android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission
+                        .READ_PHONE_STATE
+                }, PERMISSION_REQUEST_CODE);
+
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{
+                        android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission
+                        .READ_PHONE_STATE
+                }, PERMISSION_REQUEST_CODE);
+            }
+        }
     }
 
     private void initListeners() {
         headerActionListener = view -> {
-            switch (view.getId()) {
-                case R.id.logout:
-                    AuthUI.getInstance()
-                            .signOut(HomeActivity.this)
-                            .addOnCompleteListener(task -> {
-                                // user is now signed out
-                                startActivity(new Intent(getApplicationContext(),
-                                        LoginActivity.class));
-                                finish();
-                            });
-                    break;
-                case R.id.switch_family:
-                    androidx.preference.PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().remove(getString(R.string.pref_family_id)).apply();
-                    startActivity(new Intent(HomeActivity.this, SelectFamilyActivity.class));
-                    finish();
-                    break;
+            int viewId = view.getId();
+            if (viewId == R.id.logout) {
+                AuthUI.getInstance()
+                        .signOut(HomeActivity.this)
+                        .addOnCompleteListener(task -> {
+                            // user is now signed out
+                            startActivity(new Intent(getApplicationContext(),
+                                    LoginActivity.class));
+                            finish();
+                        });
+            } else if (viewId == R.id.switch_family) {
+                androidx.preference.PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().remove(getString(R.string.pref_family_id)).apply();
+                startActivity(new Intent(HomeActivity.this, SelectFamilyActivity.class));
+                finish();
+            }
+        };
+        fabClickListener = view -> {
+            // send click event back to registered listeners (Fragments)
+            appState.setFabAction();
+
+            if (navController.getCurrentDestination() == null)
+                return;
+            int activeNavItemId = navController.getCurrentDestination().getId();
+            if (activeNavItemId == R.id.dcards) {
+                DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
+                        (), DialogFragmentCcard.TAG);
+            } else if (activeNavItemId == R.id.credentials) {
+                DialogFragmentCredential.getInstance(null, familyId)
+                        .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
+            } else if (activeNavItemId == R.id.members) {
+                Intent intent = new Intent(getApplicationContext(), AddMemberActivity.class);
+                intent.putExtra(getString(R.string.pref_family_id), familyId);
+                startActivity(intent);
+            } else if (activeNavItemId == R.id.accounts) {
+                DialogFragmentAddAccount.newInstance(familyId).show
+                        (getSupportFragmentManager(),
+                                DialogFragmentAddAccount.TAG);
             }
         };
     }
@@ -97,7 +160,7 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
     }
 
     private void setUpNavigationDrawer() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         appBarConfiguration =
                 new AppBarConfiguration.Builder(navController.getGraph())
                         .setOpenableLayout(drawerLayout).build();
@@ -106,7 +169,12 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
     }
 
     private void setUpViewRef() {
-        ButterKnife.bind(this);
+        toolbar = findViewById(R.id.toolbar);
+        appBarLayout = findViewById(R.id.appbar);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
+        fab = findViewById(R.id.fab);
+
         View headerView = navigationView.getHeaderView(0);
         txtHeading = headerView.findViewById(R.id.heading);
         txtSubheading = headerView.findViewById(R.id.subheading);
@@ -115,6 +183,7 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         btnSwitchFamily = headerView.findViewById(R.id.switch_family);
         btnLogout.setOnClickListener(headerActionListener);
         btnSwitchFamily.setOnClickListener(headerActionListener);
+        fab.setOnClickListener(fabClickListener);
     }
 
     /**
@@ -128,4 +197,5 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
 }

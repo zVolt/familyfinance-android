@@ -1,7 +1,5 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,9 +13,8 @@ import com.bumptech.glide.request.RequestOptions;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Request;
 
@@ -28,17 +25,11 @@ import io.github.zkhan93.familyfinance.models.Request;
 public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMenu
         .OnMenuItemClickListener {
     public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd, MMM hh:mm a", Locale.US);
-    @BindView(R.id.avatar)
     ImageView avatar;
-    @BindView(R.id.name)
     TextView name;
-    @BindView(R.id.email)
     TextView email;
-    @BindView(R.id.status)
     TextView status;
-    @BindView(R.id.timestamp)
     TextView timestamp;
-    @BindView(R.id.show_options)
     ImageButton showOptions;
 
     private Request request;
@@ -47,11 +38,17 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
 
     public ReceiveRequestVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        avatar = itemView.findViewById(R.id.avatar);
+        name = itemView.findViewById(R.id.name);
+        email = itemView.findViewById(R.id.email);
+        status = itemView.findViewById(R.id.status);
+        timestamp = itemView.findViewById(R.id.timestamp);
+        showOptions = itemView.findViewById(R.id.show_options);
         this.itemInteractionListener = itemInteractionListener;
         popupMenu = new PopupMenu(itemView.getContext(), showOptions);
         popupMenu.inflate(R.menu.receive_request);
         popupMenu.setOnMenuItemClickListener(this);
+        itemView.findViewById(R.id.show_options).setOnClickListener(view -> popupMenu.show());
     }
 
     public void setRequest(Request request) {
@@ -67,10 +64,8 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
         timestamp.setText(DateUtils.getRelativeTimeSpanString(request.getUpdatedOn()));
     }
 
-    @OnClick(R.id.show_options)
-    public void showOptions(View view) {
-        popupMenu.show();
-    }
+
+
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {

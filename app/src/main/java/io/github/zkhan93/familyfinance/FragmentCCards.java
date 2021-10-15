@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -14,20 +13,22 @@ import android.view.ViewGroup;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 
 /**
@@ -42,12 +43,10 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     private static final String ARG_FAMILY_ID = "familyId";
 
-
-
     private String familyId;
     private CCardListAdapter cCardListAdapter;
+    AppState appState;
 
-    @BindView(R.id.list)
     RecyclerView ccardsList;
 
     public FragmentCCards() {
@@ -75,8 +74,9 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
             Bundle bundle = getArguments();
             familyId = bundle.getString(ARG_FAMILY_ID, null);
         }
-        if(familyId == null){
-            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        if (familyId == null) {
+            familyId =
+                    PreferenceManager.getDefaultSharedPreferences(requireActivity()).getString(ARG_FAMILY_ID, null);
         }
     }
 
@@ -85,13 +85,31 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_ccards, container, false);
-        ButterKnife.bind(this, rootView);
-        cCardListAdapter = new CCardListAdapter((App) getActivity().getApplication(), familyId,
+        ccardsList = rootView.findViewById(R.id.list);
+        cCardListAdapter = new CCardListAdapter((App) requireActivity().getApplication(), familyId,
                 FragmentCCards.this);
-        ccardsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        ccardsList.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);
         setHasOptionsMenu(true);
+        setUpFab();
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        appState.getFabAction().observe(getViewLifecycleOwner(), id -> {
+            Util.Log.d(TAG, "click: %s", id);
+            if (id.equals(TAG))
+                DialogFragmentCcard.newInstance(familyId).show(getParentFragmentManager(),
+                        DialogFragmentCcard.TAG);
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        appState.getFabActionID().setValue(TAG);
     }
 
     @Override
@@ -116,9 +134,17 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         cCardListAdapter.unregisterForEvent();
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+
+    }
+
+    private void setUpFab(){
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
+        appState.getFabIcon().setValue(R.drawable.ic_add_white_24dp);
+        appState.getFabShow().setValue(true);
     }
 
     @Override
@@ -129,13 +155,13 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         bundle.putString(DialogFragmentConfirm.ARG_TITLE, title);
         bundle.putParcelable(DialogFragmentConfirm.ARG_ITEM, cCard);
         dialogFragmentConfirm.setArguments(bundle);
-        dialogFragmentConfirm.show(getActivity().getSupportFragmentManager(),
+        dialogFragmentConfirm.show(requireActivity().getSupportFragmentManager(),
                 DialogFragmentConfirm.TAG);
     }
 
     @Override
     public void edit(CCard cCard) {
-        DialogFragmentCcard.newInstance(familyId, cCard).show(getFragmentManager(),
+        DialogFragmentCcard.newInstance(familyId, cCard).show(getParentFragmentManager(),
                 DialogFragmentCcard.TAG);
     }
 
@@ -143,20 +169,21 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     public void onView(CCard cCard) {
         Bundle bundle = new Bundle();
         bundle.putParcelable("card", cCard);
-        NavController navController = Navigation.findNavController(getActivity(),
+        bundle.putString("familyId", familyId);
+        NavController navController = Navigation.findNavController(requireActivity(),
                 R.id.nav_host_fragment);
         navController.navigate(R.id.ccard_detail, bundle);
     }
 
     @Override
     public void addAddonCard(CCard cCard) {
-        DialogFragmentAddonCard.newInstance(familyId, cCard.getNumber()).show(getFragmentManager(),
+        DialogFragmentAddonCard.newInstance(familyId, cCard.getNumber()).show(getParentFragmentManager(),
                 DialogFragmentAddonCard.TAG);
     }
 
     @Override
     public void onLongPress(CCard cCard) {
-        Util.quickCopy(getActivity().getApplicationContext(), cCard);
+        Util.quickCopy(requireActivity().getApplicationContext(), cCard);
     }
 
     /**
@@ -167,12 +194,12 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         if (event == null || event.getItem() == null) return;
         if (event.getItem() instanceof CCard) {
             CCard cCard = (CCard) event.getItem();
-            ((App) getActivity().getApplication()).getDaoSession().getCCardDao().deleteByKey
+            ((App) requireActivity().getApplication()).getDaoSession().getCCardDao().deleteByKey
                     (cCard.getNumber());
             cCardListAdapter.deleteCcard(cCard.getNumber());
         } else if (event.getItem() instanceof AddonCard) {
             AddonCard addonCard = (AddonCard) event.getItem();
-            ((App) getActivity().getApplication()).getDaoSession().getAddonCardDao().deleteByKey
+            ((App) requireActivity().getApplication()).getDaoSession().getAddonCardDao().deleteByKey
                     (addonCard.getNumber());
             cCardListAdapter.deleteCcard(addonCard.getNumber(), true);
         }
