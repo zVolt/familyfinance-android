@@ -14,16 +14,18 @@ jobs:
         id: decode_google_services
         uses: timheuer/base64-to-file@v1
         with:
-          fileName: "$GITHUB_WORKSPACE/app/google-services.json"
+          fileName: $GITHUB_WORKSPACE/app/google-services.json
           encodedString: ${{ secrets.GOOGLE_SERVICES }}
-      - name: List repo files
-        run: ls ./app
       - name: Decode Keystore
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
         with:
           fileName: 'keystore/your_signing_keystore.jks'
           encodedString: ${{ secrets.KEYSTORE }}
+      - name: List root
+        run: ls ./
+      - name: List app
+        run: ls ./app
       - name: set up JDK 1.8
         uses: actions/setup-java@v1
         with:
