@@ -25,7 +25,7 @@ jobs:
       - name: List root
         run: ls ./
       - name: List app
-        run: ls ./app
+        run: cat ./app/google-services.json
       - name: set up JDK 1.8
         uses: actions/setup-java@v1
         with:
