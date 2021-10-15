@@ -16,6 +16,8 @@ jobs:
         with:
           fileName: "$GITHUB_WORKSPACE/app/google-services.json"
           encodedString: ${{ secrets.GOOGLE_SERVICES }}
+      - name: List repo files
+        run: ls ./app
       - name: Decode Keystore
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
