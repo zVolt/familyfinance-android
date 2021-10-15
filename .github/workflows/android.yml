@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Decode Google Services
         id: decode_google_services
-        run: cat ${{ secrets.GOOGLE_SERVICES }} > ./app/google-services.json
+        run: echo ${{ secrets.GOOGLE_SERVICES }} > ./app/google-services.json
       - name: Decode Keystore
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
