@@ -1,7 +1,7 @@
-name: Build APK
+name: Android CI
 
 on:
-  push:
+  pull_request:
     branches: [ master ]
   workflow_dispatch:
 
@@ -14,8 +14,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
       - name: Decode Google Services
         run: |
           echo $GOOGLE_SERVICES >> app/google-services.json
@@ -36,8 +34,3 @@ jobs:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-      - name: Upload
-        uses: actions/upload-artifact@v2
-        with:
-          name: Build Artifacts
-          path: app/build/outputs/
