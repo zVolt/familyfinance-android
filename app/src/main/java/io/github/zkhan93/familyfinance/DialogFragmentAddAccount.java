@@ -46,7 +46,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         .OnClickListener, TextWatcher {
 
     public static final String TAG = DialogFragmentAddAccount.class.getSimpleName();
-    public static final String ARG_FAMILY_ID = "familyID";
+    public static final String ARG_FAMILY_ID = "familyId";
     public static final String ARG_ACCOUNT = "account";
 
     @BindView(R.id.bank)

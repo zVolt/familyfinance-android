@@ -79,7 +79,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             public void onClick(View view) {
                 //TODO: close all other group and remove their childs
                 String groupKey = (String) view.getTag();
-                Log.d(TAG, "groupClick" + groupKey);
                 //extract the group object and its position in list
                 CredentialType clickedCredentialType = null;
                 int clickedGroupIndex = 0;
@@ -92,7 +91,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     }
                     clickedGroupIndex++;
                 }
-                Log.d(TAG, "group at " + clickedGroupIndex);
                 if (clickedCredentialType == null) return;
                 if (clickedCredentialType.expanded) {
                     Log.d(TAG, "hiding");
@@ -101,7 +99,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     for (int i = 0; i < numberOfChilds; i++) {
                         wrappedCredentials.remove(childStartFrom);
                         notifyItemRemoved(childStartFrom);
-                        Log.d(TAG, "removing from " + childStartFrom);
                     }
                     clickedCredentialType.expanded = false;
                 } else {
@@ -183,7 +180,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-        Log.d(TAG, "added " + dataSnapshot.toString());
         if (ignoreChildEvents) return;
         Credential credential = dataSnapshot.getValue(Credential.class);
         if (credential == null) return;
@@ -211,7 +207,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        Log.d(TAG, "changed " + dataSnapshot.toString());
         Credential credential = dataSnapshot.getValue(Credential.class);
         if (credential == null) return;
         credential.setId(dataSnapshot.getKey());
@@ -239,7 +234,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-        Log.d(TAG, "removed " + dataSnapshot.toString());
         Credential credential = dataSnapshot.getValue(Credential.class);
         if (credential == null) return;
         credential.setId(dataSnapshot.getKey());
@@ -293,10 +287,6 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             credentials.add(credential);
             typeToCredentialsMap.put(credential.getTypeId(), credentials);
 
-        }
-        for (Map.Entry<String, List<Credential>> entry : typeToCredentialsMap.entrySet()) {
-            Log.d(TAG, entry.getKey() + " " + entry.getValue().size() + " " + entry.getValue()
-                    .toString());
         }
         notifyDataSetChanged();
         ignoreChildEvents = false;

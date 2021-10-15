@@ -1,190 +1,248 @@
 package io.github.zkhan93.familyfinance;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.github.zkhan93.familyfinance.adapters.SendRequestListAdapter;
-import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.Account;
+import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.models.Credential;
+import io.github.zkhan93.familyfinance.models.DCard;
 import io.github.zkhan93.familyfinance.models.DaoSession;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.models.MemberDao;
-import io.github.zkhan93.familyfinance.models.Request;
+import io.github.zkhan93.familyfinance.models.Message;
 import io.github.zkhan93.familyfinance.models.RequestDao;
-import io.github.zkhan93.familyfinance.tasks.InsertTask;
-import io.github.zkhan93.familyfinance.viewholders.SendRequestVH;
+import io.github.zkhan93.familyfinance.models.Wallet;
+import io.github.zkhan93.familyfinance.util.Util;
 
-public class SelectFamilyActivity extends AppCompatActivity implements ValueEventListener,
-        SendRequestVH.ItemInteractionListener {
+public class SelectFamilyActivity extends AppCompatActivity {
 
     public static final String TAG = SelectFamilyActivity.class.getSimpleName();
 
-    @BindView(R.id.family_id)
+    @BindView(R.id.edtxt_family_id)
     EditText edtTxtFamilyId;
-    @BindView(R.id.join_family)
-    Button joinFamily;
-    @BindView(R.id.start_new)
-    Button startNew;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.requests)
-    RecyclerView requestList;
 
-    private ProgressDialog progressDialog;
-    /**
-     * /family
-     */
-    private DatabaseReference familyRef;
-    private DatabaseReference requestRef;
+    @BindView(R.id.btn_join_family)
+    FloatingActionButton btnJoinFamily;
+
+    @BindView(R.id.btn_create_family)
+    Button btnCreateFamily;
+
+    @BindView(R.id.btn_logout)
+    Button btnLogout;
+
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
+
+    @BindView(R.id.txt_error_msg)
+    TextView txtErrorMsg;
+
+    @BindView(R.id.txt_welcome)
+    TextView txtWelcome;
+
+    private FirebaseDatabase fbDb;
+    private DatabaseReference familyRef, membersRef, requestRef;
+    private SharedPreferences sharedPref;
     private String familyId;
     private Member me;
-    private Toast toast;
-    private ValueEventListener requestListener, familyMembersListListener;
-    private int callbackCounter;
     private MemberDao memberDao;
-    private int taskStatus;
+    private Continuation<Void, Task<Void>> checkFamilyExistenceTask;
+    private Continuation<Void, Task<Integer>> checkForApprovedRequest;
+    private Continuation<Integer, Task<Integer>> createRequestTask;
+    private Continuation<Integer, Task<Integer>> fetchMembersTask;
+
+    private int USER_REQ_APPROVED = 0;
+    private int USER_REQ_SUBMITTED = 1;
+    private int USER_REQ_NOT_FOUND = 2;
 
     {
-        requestListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                callbackCounter--;
-                if (dataSnapshot == null || !dataSnapshot.exists()) {
-                    Log.d(TAG, "data does not exist");
-                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext()
-                    ).edit().remove("activeFamilyId").apply();
-                    if (callbackCounter == 0) {
-                        showMessageOnSnackBar(String.format("%s does not exist, select " +
-                                "another family", familyId));
-                        if (progressDialog != null) progressDialog.hide();
-                    }
-                    return;
-                }
-                Boolean blocked = dataSnapshot.child("blocked").getValue(Boolean.class);
-                if (blocked != null && blocked) {
-                    //You just got blocked :P LOL bad
-                    Log.d(TAG, "you are blocked");
-                    if (callbackCounter == 0) {
-                        showMessageOnSnackBar(String.format("You are blocked from %s, Contact" +
-                                " Moderator of the family", familyId));
-                    }
-                } else if (dataSnapshot.hasChild("approved")) {
-                    Boolean approved = dataSnapshot.child("approved").getValue(Boolean
-                            .class);
-                    if (approved == null)
-                        approved = false;
-                    if (approved) {
-                        //yeee you are approved start MainActivity
-                        taskStatus = taskStatus | 1;
-                        if (taskStatus == 3) {
-                            if (progressDialog != null) progressDialog.dismiss();
-                            startActivity(new Intent(SelectFamilyActivity.this, MainActivity
-                                    .class));
-                            finish();
-                            return;
+        checkFamilyExistenceTask = task -> {
+            // fetch the moderator ID to check is the familyID exists or not
+            TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
+            familyRef.child(familyId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            String moderatorID =
+                                    dataSnapshot.child("moderator").child("id").getValue(String.class);
+                            if (moderatorID != null)
+                                tcs.setResult(null);
+                            else
+                                tcs.setException(new Exception(getString(R.string.msg_family_id_not_exist)));
+                            Util.Log.d(TAG, "complete: fetched the moderator ID to check the " +
+                                    "existance of family %s", moderatorID);
+
                         }
-                    } else {
-                        //yet not approved do nothing
-                        Log.d(TAG, "not approved yet");
-                        if (callbackCounter == 0)
-                            showMessageOnSnackBar(String.format("your request to join %s is " +
-                                    "not yet approved", familyId));
-                    }
-                } else {
-                    //no such request
-                    Log.d(TAG, "no such request");
-                }
-                if (callbackCounter == 0) if (progressDialog != null) progressDialog.hide();
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "moderator request cancelled: " + databaseError.getMessage());
-                callbackCounter--;
-                if (callbackCounter == 0) {
-                    if (progressDialog != null) progressDialog.hide();
-                    showMessageOnSnackBar("An error occurred while contacting moderator, try " +
-                            "again !");
-                }
-            }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Util.Log.d(TAG, "fail: fetched the moderator ID to check the " +
+                                    "existence of family");
+                            tcs.setException(databaseError.toException());
+                        }
+                    });
+            return tcs.getTask();
         };
+        checkForApprovedRequest = task -> {
+            TaskCompletionSource<Integer> tcs = new TaskCompletionSource<>();
+            if (!task.isSuccessful()) {
+                Util.Log.d(TAG, "fail: previous task was not successful");
+                Exception ex = task.getException() == null ?
+                        new Exception(getString(R.string.msg_null_task)) : task.getException();
+                tcs.setException(ex);
+            } else {
+                // look up requests to see if users has access to the family
+                // Note: only moderator of family can write the requests.familyID.userID.approve or .block
+                requestRef.child(familyId).child(me.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (!dataSnapshot.exists()) {
+                            tcs.setResult(USER_REQ_NOT_FOUND);
+                        } else {
+                            Boolean approved =
+                                    dataSnapshot.child("approved").getValue(Boolean.class);
+                            Boolean blocked = dataSnapshot.child("blocked").getValue(Boolean.class);
+                            if (blocked != null && blocked) {
+                                tcs.setException(new Exception("You have been blocked on this " +
+                                        "family"));
+                            } else if (approved != null && approved) {
+                                tcs.setResult(USER_REQ_APPROVED);
+                            } else {
+                                tcs.setException(new Exception("Your request is pending for " +
+                                        "approval"));
+                            }
+                        }
+                    }
 
-        familyMembersListListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "members loaded");
-                callbackCounter--;
-                if (dataSnapshot == null) return;
-                Member member;
-                List<Member> members = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    if (ds == null) continue;
-                    member = ds.getValue(Member.class);
-                    if (member == null) continue;
-                    member.setId(ds.getKey());
-                    members.add(member);
-                }
-                new InsertTask<MemberDao, Member>(memberDao, null).execute(members.toArray(new
-                        Member[members.size
-                        ()]));
-                taskStatus = taskStatus | 2;
-                if (callbackCounter == 0)
-                    if (progressDialog != null) progressDialog.hide();
-                if (taskStatus == 3) {
-                    if (progressDialog != null) progressDialog.dismiss();
-                    startActivity(new Intent(SelectFamilyActivity.this, MainActivity
-                            .class));
-                    finish();
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        tcs.setException(databaseError.toException());
+                    }
+                });
+            }
+            return tcs.getTask();
+        };
+        createRequestTask = task -> {
+            TaskCompletionSource<Integer> tcs = new TaskCompletionSource<>();
+            Util.Log.d(TAG, "task: submit a request");
+            if (!task.isSuccessful()) {
+                Util.Log.d(TAG, "fail: previous task was not successful");
+                Exception ex = task.getException() == null ?
+                        new Exception(getString(R.string.msg_null_task)) : task.getException();
+                tcs.setException(ex);
+            } else {
+                // if the request was not found create it
+                if (task.getResult() == USER_REQ_NOT_FOUND) {
+                    Map<String, Object> updates = new HashMap<>();
+
+                    String basepath = "requests/" + familyId + "/" + me.getId();
+                    // add a request in request node for the moderator
+                    updates.put(basepath + "/requestedOn", ServerValue.TIMESTAMP);
+                    updates.put(basepath + "/updatedOn", ServerValue.TIMESTAMP);
+                    updates.put(basepath + "/name", me.getName());
+                    updates.put(basepath + "/email", me.getEmail());
+                    updates.put(basepath + "/profilePic", me.getProfilePic());
+
+                    basepath = "users/" + me.getId() + "/requests/" + familyId;
+
+                    // add a request item in personal list under users/UID path
+                    updates.put(basepath + "/familyId", familyId);
+                    updates.put(basepath + "/requestedOn", ServerValue.TIMESTAMP);
+                    updates.put(basepath + "/updatedOn", ServerValue.TIMESTAMP);
+                    fbDb.getReference().updateChildren(updates,
+                            (databaseError, databaseReference) -> {
+                                if (databaseError == null) {
+                                    // User's request to join the
+                                    // family has been submitted
+                                    // successfully
+                                    tcs.setResult(USER_REQ_SUBMITTED);
+                                } else {
+                                    // User's request to join the
+                                    // family failed
+                                    tcs.setException(databaseError.toException());
+                                }
+                            });
+                } else {
+                    // otherwise forward the result of previous task to next task
+                    tcs.setResult(task.getResult());
                 }
             }
+            return tcs.getTask();
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "members request cancelled: " + databaseError.getMessage());
-                callbackCounter--;
-                if (callbackCounter == 0) {
-                    if (progressDialog != null) progressDialog.hide();
-                    showMessageOnSnackBar("An error occurred while fetching members of family, " +
-                            "try " +
-                            "again!");
+        };
+        fetchMembersTask = task -> {
+            // fetching member list of familyID to check if the user is there in the list or not.
+            TaskCompletionSource<Integer> tcs = new TaskCompletionSource<>();
+            if (!task.isSuccessful()) {
+                Util.Log.d(TAG, "fail: previous task was not successful");
+                Exception ex = task.getException() == null ?
+                        new Exception(getString(R.string.msg_null_task)) : task.getException();
+                tcs.setException(ex);
+            } else {
+                if (task.getResult() == USER_REQ_APPROVED) {
+                    // download and save members list
+                    membersRef.child(familyId)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    Member member;
+                                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                        if (ds == null) continue;
+                                        member = ds.getValue(Member.class);
+                                        if (member != null) {
+                                            member.setId(ds.getKey());
+                                            Util.Log.d(TAG, "inserting member: %s",
+                                                    member.toString());
+                                            memberDao.insertOrReplace(member);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Util.Log.d(TAG, "fail: fetched the members of the family to " +
+                                            "check the user is a member or not");
+                                    Util.Log.e(TAG, databaseError.getMessage());
+                                }
+                            });
                 }
+                tcs.setResult(task.getResult());
             }
+            return tcs.getTask();
         };
     }
 
@@ -193,113 +251,37 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_family);
         ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
-        memberDao = ((App) getApplication()).getDaoSession().getMemberDao();
+
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser == null) {
-            Log.d(TAG, "user not logged in ");
-            Toast.makeText(getApplicationContext(), "You are not logged in", Toast
-                    .LENGTH_SHORT).show();
+            toastText(getString(R.string.msg_user_no_logged_in));
             finish();
             return;
         }
-        me = ((App) getApplication()).getDaoSession().getMemberDao().load(fbUser.getUid());
-        if (me == null) {
-            Log.d(TAG, "member not found in local db");
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user == null) {
-                Log.d(TAG, "user not logged in");
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
-                return;
-            }
-            String photoUrl = null;
-            if (user.getPhotoUrl() != null)
-                photoUrl = user.getPhotoUrl().toString();
-            me = new Member(user.getUid(),
-                    user.getDisplayName(),
-                    user.getEmail(),
-                    Calendar.getInstance().getTimeInMillis(),
-                    false,
-                    photoUrl);
-            memberDao.insertOrReplace(me);
-        }
-        familyRef = FirebaseDatabase.getInstance().getReference("family");
-        requestRef = FirebaseDatabase.getInstance().getReference("requests");
+        txtWelcome.setText(getString(R.string.welcome, fbUser.getDisplayName()));
+        insertMeInLocalDb(fbUser);
 
-        SendRequestListAdapter sendRequestListAdapter = new SendRequestListAdapter((App)
-                getApplication(), me, this);
-        requestList.setLayoutManager(new LinearLayoutManager(this));
-        requestList.setAdapter(sendRequestListAdapter);
+        fbDb = FirebaseDatabase.getInstance();
+        familyRef = fbDb.getReference("family");
+        requestRef = fbDb.getReference("requests");
+        membersRef = fbDb.getReference("members");
 
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     }
 
-
-    private void showMessageOnSnackBar(String message) {
-        final Snackbar snackbar = Snackbar.make(toolbar, message, Snackbar.LENGTH_LONG);
-        snackbar.setAction("OK", new View
-                .OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackbar.dismiss();
-            }
-        }).show();
-    }
-
-    @OnClick({R.id.start_new, R.id.join_family})
-    public void onClick(Button button) {
+    @OnClick({R.id.btn_join_family, R.id.btn_create_family, R.id.btn_logout})
+    public void onClick(View button) {
+        showMessage("", false);
         familyId = edtTxtFamilyId.getText().toString().trim();
         switch (button.getId()) {
-            case R.id.join_family:
-                progressDialog = ProgressDialog.show(this, null, "Please wait verifying " +
-                        "family ...", true, false);
-
-                familyRef.child(familyId)
-                        .addListenerForSingleValueEvent(this);
-                Log.d(TAG, "joinFamily: " + familyId);
+            case R.id.btn_join_family:
+                joinFamilyBtnAction();
                 break;
-            case R.id.start_new:
-                //todo start new from family
-                if (familyId.length() <= 5) {
-                    showMessageOnSnackBar("At least 5 characters are required");
-                    return;
-                }
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("family/" + familyId + "/moderator", me);
-                updates.put("requests/" + familyId + "/" + me.getId() + "/approved", true);
-                updates.put("requests/" + familyId + "/" + me.getId() + "/name", me.getName());
-                updates.put("requests/" + familyId + "/" + me.getId() + "/email", me.getEmail());
-                updates.put("requests/" + familyId + "/" + me.getId() + "/profilePic", me
-                        .getProfilePic());
-                updates.put("requests/" + familyId + "/" + me.getId() + "/requestedOn", Calendar
-                        .getInstance().getTimeInMillis());
-                updates.put("requests/" + familyId + "/" + me.getId() + "/updatedOn", Calendar
-                        .getInstance().getTimeInMillis());
-
-                updates.put("users/" + me.getId() + "/requests/" + familyId + "/approved", true);
-                updates.put("users/" + me.getId() + "/requests/" + familyId + "/familyId",
-                        familyId);
-                updates.put("users/" + me.getId() + "/requests/" + familyId + "/requestedOn",
-                        Calendar.getInstance().getTimeInMillis());
-                updates.put("users/" + me.getId() + "/requests/" + familyId + "/updatedOn", Calendar
-                        .getInstance().getTimeInMillis());
-
-                updates.put("members/" + familyId + "/" + me.getId(), me); // add myself to list
-                // of members
-
-                FirebaseDatabase.getInstance().getReference().updateChildren(updates)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful())
-                                    showMessageOnSnackBar("Family created, tab the family to join");
-                                else
-                                    showMessageOnSnackBar("Family Id already taken try a another ");
-                            }
-                        });
-                Log.d(TAG, "startNew family " + familyId);
+            case R.id.btn_create_family:
+                startFamilyBtnAction();
+                break;
+            case R.id.btn_logout:
+                signOut();
                 break;
         }
     }
@@ -307,149 +289,172 @@ public class SelectFamilyActivity extends AppCompatActivity implements ValueEven
     @Override
     protected void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
-        checkActiveFamily(false);
+        checkActiveFamily();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
+    private void signOut() {
+        FirebaseAuth.getInstance().signOut();
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
-    @Override
-    protected void onDestroy() {
-        if (progressDialog != null) progressDialog.hide();
-        super.onDestroy();
+    private void insertMeInLocalDb(@NonNull FirebaseUser fbUser) {
+        memberDao = ((App) getApplication()).getDaoSession().getMemberDao();
+        me = ((App) getApplication()).getDaoSession().getMemberDao().load(fbUser.getUid());
+        if (me == null) {
+            // logged in user is not in local db, insert it
+            String photoUrl = null;
+            if (fbUser.getPhotoUrl() != null)
+                photoUrl = fbUser.getPhotoUrl().toString();
+            me = new Member(fbUser.getUid(),
+                    fbUser.getDisplayName(),
+                    fbUser.getEmail(),
+                    Calendar.getInstance().getTimeInMillis(),
+                    false,
+                    photoUrl);
+            memberDao.insertOrReplace(me);
+        }
     }
 
     /**
-     * called after user clicks on send request button in UI
-     * the function checks if the familyId provided in UI exists or not, if the family exists
-     * then send a request to add this user to the family
-     *
-     * @param dataSnapshot
+     * implements the following things
+     * 1 - The FamilyID should exist - if not show him message to create a new family
+     * 2 - User must be present in members list of family - if not then create a request and show
+     * him a message
      */
-    @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
-        String moderatorId = null;
-        if (dataSnapshot != null)
-            moderatorId = dataSnapshot.child("moderator").child("id").getValue(String.class);
-        if (moderatorId == null) {
-            showMessageOnSnackBar("Invalid Family Id");
-        } else {
-            //the family does exists. Send a request to moderatorId
-            boolean isModeratorOfFamily = moderatorId.equals(me.getId());
-            long now = Calendar.getInstance().getTimeInMillis();
-            Map<String, Object> updates = new HashMap<>();
+    private void joinFamilyBtnAction() {
 
-            String partialNode = "requests/" + familyId + "/" + me.getId();
-            //add a request in request node for the moderator
-            updates.put(partialNode + "/requestedOn", now);
-            updates.put(partialNode + "/updatedOn", now);
-            updates.put(partialNode + "/name", me.getName());
-            updates.put(partialNode + "/email", me.getEmail());
-            updates.put(partialNode + "/profilePic", me.getProfilePic());
-            //auto approve if I am the moderator
-            if (isModeratorOfFamily) updates.put(partialNode + "/approved", true);
-
-            partialNode = "users/" + me.getId() + "/requests/" + familyId;
-
-            //add a request item in personal list unders users/Uid node
-            updates.put(partialNode + "/familyId", familyId);
-            updates.put(partialNode + "/requestedOn", now);
-            updates.put(partialNode + "/updatedOn", now);
-            //auto approve if I am the moderator
-            if (isModeratorOfFamily) {
-                updates.put(partialNode + "/approved", true);
-                //add myself to the members list
-                updates.put("members/" + familyId + "/" + me.getId(), me);
-            }
-
-            FirebaseDatabase.getInstance().getReference().updateChildren(updates);
-
-            showMessageOnSnackBar(isModeratorOfFamily ? "Request approved, tap the family to " +
-                    "join" : "Request send to moderator of the family");
-        }
-        if (progressDialog != null) progressDialog.hide();
+        setLoadingUi(true);
+        Tasks.<Void>forResult(null)
+                .continueWithTask(checkFamilyExistenceTask)
+                .continueWithTask(checkForApprovedRequest)
+                .continueWithTask(createRequestTask)
+                .continueWithTask(fetchMembersTask)
+                .addOnSuccessListener(status -> {
+                    setLoadingUi(false);
+                    if (status == USER_REQ_APPROVED) {
+                        startHomeActivity();
+                        sharedPref.edit().putString(getString(R.string.pref_family_id), familyId).apply();
+                        showMessage(getString(R.string.msg_request_approved));
+                    } else if (status == USER_REQ_SUBMITTED) {
+                        showMessage(getString(R.string.msg_request_submitted));
+                    }
+                }).addOnFailureListener(exception -> {
+            Util.Log.d(TAG, "fail: User is Member ?: %s", exception.getMessage());
+            setLoadingUi(false);
+            showMessage(exception.getLocalizedMessage(), true);
+        });
     }
-
-    @Override
-    public void onCancelled(DatabaseError databaseError) {
-        Log.d(TAG, "cancelled");
-    }
-
 
     /**
-     * Check whether I am a moderator or an approved member of this familyId
+     * - family ID is unique else show error message
+     * - create a new family with user and moderator
+     * - add an approved request in new family from moderator
+     * - add an request in users personal list of requests
+     * - start the joinFamilyAction with new family
      */
-    public void checkActiveFamily(boolean showProgressBar) {
-        familyId = PreferenceManager.getDefaultSharedPreferences(this).getString
-                ("activeFamilyId", null);
-        Log.d(TAG, "switching to: " + familyId + "/" + me.getId());
-        if (showProgressBar) {
-            progressDialog = ProgressDialog.show(this, null, String.format("Checking %s " +
-                    "details", familyId), true, false);
-        }
-        if (familyId == null) {
-            //if no active family is set then fail silently and let the user choose the family
-            if (progressDialog != null) progressDialog.hide();
+    private void startFamilyBtnAction() {
+        if (familyId.length() <= 5) {
+            showMessage("At least 5 characters are required", true);
             return;
         }
+        Map<String, Object> updates = new HashMap<>();
+
+        // set moderator of the new family
+        updates.put("family/" + familyId + "/moderator", me);
+
+        // add an approved request under that family
+        updates.put("requests/" + familyId + "/" + me.getId() + "/approved", true);
+        updates.put("requests/" + familyId + "/" + me.getId() + "/name", me.getName());
+        updates.put("requests/" + familyId + "/" + me.getId() + "/email", me.getEmail());
+        updates.put("requests/" + familyId + "/" + me.getId() + "/profilePic", me.getProfilePic());
+        updates.put("requests/" + familyId + "/" + me.getId() + "/requestedOn",
+                ServerValue.TIMESTAMP);
+        updates.put("requests/" + familyId + "/" + me.getId() + "/updatedOn",
+                ServerValue.TIMESTAMP);
+
+        // add a request to personal list of requests
+        updates.put("users/" + me.getId() + "/requests/" + familyId + "/approved", true);
+        updates.put("users/" + me.getId() + "/requests/" + familyId + "/familyId", familyId);
+        updates.put("users/" + me.getId() + "/requests/" + familyId + "/requestedOn",
+                ServerValue.TIMESTAMP);
+        updates.put("users/" + me.getId() + "/requests/" + familyId + "/updatedOn",
+                ServerValue.TIMESTAMP);
+
+        // add myself to list of members
+        updates.put("members/" + familyId + "/" + me.getId(), me);
+
+        fbDb.getReference().updateChildren(updates)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        joinFamilyBtnAction();
+                    } else
+                        showMessage("Family ID is already in use! Try another one", true);
+                });
+    }
+
+    private void startHomeActivity() {
+        startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+        finish();
+    }
+
+    private void toastText(String text) {
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setLoadingUi(boolean loading) {
+        edtTxtFamilyId.setEnabled(!loading);
+        btnCreateFamily.setEnabled(!loading);
+        btnJoinFamily.setEnabled(!loading);
+        progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
+    }
+
+    private void showMessage(String message) {
+        showMessage(message, false);
+    }
+
+    private void showMessage(String message, boolean error) {
+        if (error) {
+            // handle style of error message
+            edtTxtFamilyId.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.errorColor)));
+            txtErrorMsg.setTextColor(getResources().getColor(R.color.textError));
+        } else {
+            edtTxtFamilyId.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+            txtErrorMsg.setTextColor(getResources().getColor(R.color.textDark));
+        }
+        txtErrorMsg.setText(message);
+    }
+
+
+    /**
+     * if a familyID is saved in preferences, initiate the join Family action, otherwise do nothing
+     */
+    private void checkActiveFamily() {
+        familyId = sharedPref.getString(getString(R.string.pref_family_id), null);
+        if (familyId == null) {
+            // if no active familyID is set then let the user choose the family
+            truncateLocalDb();
+            return;
+        }
+        joinFamilyBtnAction();
+    }
+
+    private void truncateLocalDb() {
+        Util.Log.d(TAG, "deleting local database");
         DaoSession daoSession = ((App) getApplication()).getDaoSession();
-//        DeleteQuery<Member> query = daoSession.getMemberDao().queryBuilder().buildDelete();
-//        new DeleteTask<>(query, null);
+
         daoSession.getMemberDao().queryBuilder().where(MemberDao.Properties.Id.notEq(me
                 .getId())).buildDelete().executeDeleteWithoutDetachingEntities();
         daoSession.getRequestDao().queryBuilder().where(RequestDao.Properties.UserId.notEq(me
                 .getId())).buildDelete().executeDeleteWithoutDetachingEntities();
+
         daoSession.deleteAll(CCard.class);
         daoSession.deleteAll(Account.class);
-        callbackCounter = 2;
-        FirebaseDatabase.getInstance().getReference("members").child(familyId)
-                .addListenerForSingleValueEvent(familyMembersListListener);
-        requestRef.child(familyId).child(me.getId())
-                .addListenerForSingleValueEvent(requestListener);
+        daoSession.deleteAll(DCard.class);
+        daoSession.deleteAll(AddonCard.class);
+        daoSession.deleteAll(Credential.class);
+        daoSession.deleteAll(Wallet.class);
+        daoSession.deleteAll(Message.class);
     }
 
-    @Override
-    public void deleteRequest(Request request) {
-        DialogFragmentConfirm<Request> dialogFragmentConfirm = new DialogFragmentConfirm<>();
-        Bundle args = new Bundle();
-        args.putString(DialogFragmentConfirm.ARG_TITLE, "Do you want to revoke request from " +
-                request.getFamilyId());
-        args.putParcelable(DialogFragmentConfirm.ARG_ITEM, request);
-        dialogFragmentConfirm.setArguments(args);
-        dialogFragmentConfirm.show(getSupportFragmentManager(), DialogFragmentConfirm.TAG);
-    }
-
-    @Override
-    public void switchFamily(Request request) {
-        if (!request.getBlocked() && request.getApproved()) {
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putString
-                    ("activeFamilyId", request.getFamilyId()).apply();
-            checkActiveFamily(true);
-        } else {
-            toast.setText(String.format("Cannot join %s right now!", request.getFamilyId()));
-            toast.show();
-            Log.d(TAG, "cannot join");
-        }
-    }
-
-    @Subscribe()
-    public void confirmRequestDelete(DeleteConfirmedEvent<Request> deleteConfirmedEvent) {
-        String familyId = deleteConfirmedEvent.getItem().getFamilyId();
-        //remove the item from firebase this will trigger the remove mechanism coded in adapter
-//        DeleteQuery<Request> deleteQuery =
-//                ((App) getApplication()).getDaoSession().getRequestDao().queryBuilder().where
-//                        (RequestDao
-//                        .Properties.UserId.eq(me.getId()), RequestDao.Properties.FamilyId.eq
-//                                (familyId)).buildDelete();
-//        new DeleteTask<>(deleteQuery).execute();
-//        sendRequestListAdapter.removeRequest(deleteConfirmedEvent.getItem());
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("users/" + me.getId() + "/requests/" + familyId, null);
-        updates.put("requests/" + familyId + "/" + me.getId(), null);
-        FirebaseDatabase.getInstance().getReference().updateChildren(updates);
-    }
 }

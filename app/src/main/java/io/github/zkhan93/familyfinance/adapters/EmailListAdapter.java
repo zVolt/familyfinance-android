@@ -20,7 +20,7 @@ import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.callbacks.SubscribeEmailCallback;
 import io.github.zkhan93.familyfinance.models.Email;
 import io.github.zkhan93.familyfinance.viewholders.EmailVH;
-import io.github.zkhan93.familyfinance.viewholders.EmptyVH;
+import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
 import io.github.zkhan93.familyfinance.viewholders.SubscribeEmailVH;
 
 /**
@@ -50,7 +50,7 @@ public class EmailListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         Log.d(TAG, "itemType:" + viewType);
         switch (viewType) {
             case ITEM_TYPE.EMPTY:
-                return new EmptyVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
+                return new NoItemVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
                         .listitem_empty, parent, false), "blankEmail");
             case ITEM_TYPE.SUBSCRIBE:
                 return new SubscribeEmailVH(LayoutInflater.from(parent.getContext()).inflate(R
@@ -132,28 +132,27 @@ public class EmailListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             Log.d(TAG, "cannot construct email from" + dataSnapshot.toString());
             return;
         }
-        Log.d(TAG, "email added" + email.toString());
         emails.add(email);
         notifyItemInserted(emails.size());
     }
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        Log.d(TAG, "onChildChanged: " + dataSnapshot.toString());
+        Log.d(TAG, "onChildChanged");
     }
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-        Log.d(TAG, "onChildRemoved: " + dataSnapshot.toString());
+        Log.d(TAG, "onChildRemoved");
     }
 
     @Override
     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-        Log.d(TAG, "onChildMoved: " + dataSnapshot.toString());
+        Log.d(TAG, "onChildMoved: " );
     }
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
-        Log.d(TAG, "onCacelled: " + databaseError.toString());
+        Log.d(TAG, "onCacelled: ");
     }
 }

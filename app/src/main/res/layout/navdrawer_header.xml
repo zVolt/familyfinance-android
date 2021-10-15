@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="190dp"
+    android:background="@drawable/bg_navdrawer_header"
+    android:paddingStart="@dimen/medium"
+    android:padding="@dimen/small">
+
+    <LinearLayout
+        android:id="@+id/avatar_wrapper"
+        android:layout_width="59dp"
+        android:layout_height="59dp"
+        android:layout_marginBottom="@dimen/medium"
+        android:gravity="center"
+        android:background="@drawable/bg_circle"
+        android:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@id/logout"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_bank_sbi" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/heading"
+        style="@style/AppTheme.Text.Dark.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/avatar_wrapper"
+        app:layout_constraintStart_toEndOf="@id/avatar_wrapper"
+        app:layout_constraintTop_toTopOf="@id/avatar_wrapper"
+        app:layout_constraintVertical_bias="0.2"
+        tools:text="Zeeshan Khan" />
+
+    <TextView
+        android:id="@+id/subheading"
+        style="@style/AppTheme.Text.Dark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium"
+        android:gravity="center"
+        app:layout_constraintStart_toEndOf="@id/avatar_wrapper"
+        app:layout_constraintTop_toBottomOf="@id/heading"
+        tools:text="famiky-02" />
+
+    <ImageButton
+        android:id="@+id/logout"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:src="@drawable/ic_exit"
+        android:background="?selectableItemBackgroundBorderless"
+        android:tint="@color/colorPrimary"
+        android:layout_width="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/switch_family"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"/>
+
+    <ImageButton
+        android:id="@+id/switch_family"
+        style="@style/Widget.MaterialComponents.Button"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_group"
+        android:tint="@color/colorPrimary"
+        android:layout_width="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/logout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/logout"
+        android:layout_height="wrap_content"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_home"
+        android:title="@string/title_home" />
+    <item
+        android:id="@+id/summary"
+        android:icon="@drawable/ic_summary"
+        android:title="@string/title_summary" />
+    <item
+        android:id="@+id/ccards"
+        android:icon="@drawable/ic_card"
+        android:title="@string/title_ccards" />
+    <item
+        android:id="@+id/accounts"
+        android:icon="@drawable/ic_account"
+        android:title="@string/title_accounts" />
+    <item
+        android:id="@+id/messages"
+        android:icon="@drawable/ic_message"
+        android:title="@string/title_messages" />
+    <item
+        android:id="@+id/dcards"
+        android:icon="@drawable/ic_card"
+        android:title="@string/title_dcards" />
+    <item
+        android:id="@+id/credentials"
+        android:icon="@drawable/ic_lock"
+        android:title="@string/title_credentials" />
+    <item
+        android:id="@+id/members"
+        android:icon="@drawable/ic_group"
+        android:title="@string/title_members" />
+
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/action_settings" />
+</menu>

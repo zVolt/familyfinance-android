@@ -37,7 +37,7 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
     TextView name;
     @BindView(R.id.card_number)
     TextView number;
-    @BindView(R.id.mob_number)
+    @BindView(R.id.phone_number)
     TextView mobNumber;
     @BindView(R.id.expires_on)
     TextView expiresOn;

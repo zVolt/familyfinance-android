@@ -6,15 +6,14 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.PreferenceFragment;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.preference.SwitchPreference;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
+
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreference;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -22,7 +21,7 @@ import static android.app.Activity.RESULT_OK;
  * Created by zeeshan on 21/10/17.
  */
 
-public class FragmentSetting extends PreferenceFragment implements Preference
+public class FragmentSetting extends PreferenceFragmentCompat implements Preference
         .OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String TAG = FragmentSetting.class.getSimpleName();
@@ -34,72 +33,65 @@ public class FragmentSetting extends PreferenceFragment implements Preference
      * to reflect its new value.
      */
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener =
-            new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object value) {
-                    String stringValue = value.toString();
-                    Log.d(TAG, preference.getKey() + " preference summary with value " +
-                            stringValue);
-                    switch (preference.getKey()) {
-                        case "pref_key_notification":
-                            preference.setSummary((boolean) value ? R.string
-                                    .pref_notification_enable : R.string.pref_notification_disable);
-                            return true;
-                        case "pref_key_ringtone":
-                            // For ringtone preferences, look up the correct display value
-                            // using RingtoneManager.
-                            if (TextUtils.isEmpty(stringValue)) {
-                                // Empty values correspond to 'silent' (no ringtone).
-                                preference.setSummary(R.string.pref_ringtone_silent);
+            (preference, value) -> {
+                String stringValue = value.toString();
+                Log.d(TAG, preference.getKey() + " preference summary with value " +
+                        stringValue);
+                switch (preference.getKey()) {
+                    case "pref_key_notification":
+                        preference.setSummary((boolean) value ? R.string
+                                .pref_notification_enable : R.string.pref_notification_disable);
+                        return true;
+                    case "pref_key_ringtone":
+                        // For ringtone preferences, look up the correct display value
+                        // using RingtoneManager.
+                        if (TextUtils.isEmpty(stringValue)) {
+                            // Empty values correspond to 'silent' (no ringtone).
+                            preference.setSummary(R.string.pref_ringtone_silent);
 
+                        } else {
+                            Ringtone ringtone = RingtoneManager.getRingtone(
+                                    preference.getContext(), Uri.parse(stringValue));
+
+                            if (ringtone == null) {
+                                // Clear the summary if there was a lookup error.
+                                preference.setSummary(null);
                             } else {
-                                Ringtone ringtone = RingtoneManager.getRingtone(
-                                        preference.getContext(), Uri.parse(stringValue));
-
-                                if (ringtone == null) {
-                                    // Clear the summary if there was a lookup error.
-                                    preference.setSummary(null);
-                                } else {
-                                    // Set the summary to reflect the new ringtone display
-                                    // name.
-                                    String name = ringtone.getTitle(preference.getContext());
-                                    preference.setSummary(name);
-                                }
+                                // Set the summary to reflect the new ringtone display
+                                // name.
+                                String name = ringtone.getTitle(preference.getContext());
+                                preference.setSummary(name);
                             }
-                            return true;
-                        case "pref_key_vibrate":
-                            //no summary for vibrate preference
-                            return true;
-                        case "pref_key_copy":
-                            preference.setSummary((boolean) value ? R.string.pref_copy_enable : R
-                                    .string.pref_copy_disable);
-                            return true;
-                        case "pref_key_pin":
-                            preference.setSummary((boolean) value ? R.string.pref_pin_enable : R
-                                    .string.pref_pin_disable);
-                            return true;
-                        case "pref_key_autolock":
-                            int index = ((ListPreference) preference).findIndexOfValue(stringValue);
-                            preference.setSummary(preference.getContext().getString(R.string
-                                    .pref_autolock, ((ListPreference) preference).getEntries()
-                                    [index]));
-                            return true;
-                        case "pref_key_allsms":
-                            preference.setSummary((boolean) value ? R.string.pref_allsms_enable : R
-                                    .string.pref_allsms_disable);
-                            return true;
-                        case "pref_key_notification_only_otp":
-                            preference.setSummary((boolean) value ? R.string
-                                    .pref_notificationOnlyOtp_enable : R
-                                    .string.pref_notificationOnlyOtp_disable);
-                            return true;
-                        case "pref_key_no_of_sms":
-                            preference.setSummary(preference.getContext().getString(R.string
-                                    .pref_no_of_sms, value));
-                            return true;
-                        default:
-                            return false;
-                    }
+                        }
+                        return true;
+                    case "pref_key_vibrate":
+                        //no summary for vibrate preference
+                        return true;
+                    case "pref_key_copy":
+                        preference.setSummary((boolean) value ? R.string.pref_copy_enable : R
+                                .string.pref_copy_disable);
+                        return true;
+                    case "pref_key_pin":
+                        preference.setSummary((boolean) value ? R.string.pref_pin_enable : R
+                                .string.pref_pin_disable);
+                        return true;
+                    case "pref_key_autolock":
+                        int index = ((ListPreference) preference).findIndexOfValue(stringValue);
+                        preference.setSummary(preference.getContext().getString(R.string
+                                .pref_autolock, ((ListPreference) preference).getEntries()
+                                [index]));
+                        return true;
+                    case "pref_key_allsms":
+                        preference.setSummary((boolean) value ? R.string.pref_allsms_enable : R
+                                .string.pref_allsms_disable);
+                        return true;
+                    case "pref_key_notification_only_otp":
+                        preference.setSummary((boolean) value ? R.string
+                                .pref_notificationOnlyOtp_enable : R
+                                .string.pref_notificationOnlyOtp_disable);
+                        return true;
+                    default:
+                        return false;
                 }
             };
 
@@ -124,37 +116,30 @@ public class FragmentSetting extends PreferenceFragment implements Preference
                     PreferenceManager
                             .getDefaultSharedPreferences(preference.getContext())
                             .getBoolean(preference.getKey(), false));
-        else if (preference instanceof RingtonePreference || preference instanceof ListPreference)
+        else if (preference instanceof ListPreference)
             sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
                     PreferenceManager
                             .getDefaultSharedPreferences(preference.getContext())
                             .getString(preference.getKey(), ""));
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        addPreferencesFromResource(R.xml.pref_general);
-        setHasOptionsMenu(true);
 
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        setPreferencesFromResource(R.xml.pref_general, rootKey);
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences
         // to their values. When their values change, their summaries are
         // updated to reflect the new value, per the Android Design
         // guidelines.
-
-
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_copy)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_notification)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string
                 .pref_key_notification_only_otp)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_ringtone)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_vibrate)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_autolock)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_allsms)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_no_of_sms)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_pin)));
-
         Preference pinPreference = findPreference(getString(R.string.pref_key_pin));
         pinPreference.setOnPreferenceChangeListener(this);
         ((SwitchPreference) pinPreference).setChecked(sharedPreferences.getBoolean(getString
@@ -178,22 +163,6 @@ public class FragmentSetting extends PreferenceFragment implements Preference
         findPreference(getString(R.string.pref_key_pin)).setOnPreferenceClickListener(null);
         Log.d(TAG, "listener removed");
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            startActivity(new Intent(getActivity(), SettingsActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-//    @Override
-//    public boolean onPreferenceChange(Preference preference, Object o) {
-//        Log.d(TAG, "this is value: " + o.toString());
-//        return false;
-//    }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object o) {

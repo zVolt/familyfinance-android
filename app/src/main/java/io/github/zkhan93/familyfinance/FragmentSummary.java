@@ -1,10 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
-import android.content.Context;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +22,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.BalanceByBankAdapter;
@@ -35,10 +35,7 @@ import io.github.zkhan93.familyfinance.util.Constants;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentSummary.OnFragmentInteractionListener} interface
- * to handle interaction events.
+ * A {@link Fragment} subclass.
  * Use the {@link FragmentSummary#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -55,14 +52,12 @@ public class FragmentSummary extends Fragment {
     public TextView consumedCCTotal;
     @BindView(R.id.total_cc_limit)
     public TextView totalCCTotal;
-    //    @BindView(R.id.remaining_cc_limit)
-//    public TextView remainingCCTotal;
+
     @BindView(R.id.account_title)
     public TextView accountTitle;
     @BindView(R.id.card_title)
     public TextView cardTitle;
-//    @BindView(R.id.pichart)
-//    public PieChart pieChart;
+
     @BindView(R.id.card_limit_bar)
     public ProgressBar cardLimitbar;
 
@@ -78,13 +73,12 @@ public class FragmentSummary extends Fragment {
     public RecyclerView balanceBybankList;
 
     private String familyId;
-    private OnFragmentInteractionListener mListener;
     boolean ccLoaded, accountLoaded;
     private float amountTotal, amountConsumedCC, amountRemainingCC, amountAccount;
     private List<CCard> cCards;
     private List<Account> accounts;
     private ChildEventListener ccardChildEventListener, accountChildEventListener;
-
+    private int count = 0;
     public FragmentSummary() {
         // Required empty public constructor
         accounts = new ArrayList<>();
@@ -216,7 +210,6 @@ public class FragmentSummary extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
      * @return A new instance of fragment FragmentSummary.
      */
 
@@ -234,6 +227,10 @@ public class FragmentSummary extends Fragment {
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID);
         }
+        if (familyId == null) {
+            familyId =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        }
     }
 
     @Override
@@ -241,13 +238,12 @@ public class FragmentSummary extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_summary, container, false);
         ButterKnife.bind(this, rootView);
-        DaoSession daoSession = ((App) getActivity().getApplication()).getDaoSession();
         if (savedInstanceState != null) {
             amountTotal = savedInstanceState.getFloat("amountTotal", amountTotal);
             amountAccount = savedInstanceState.getFloat("amountAccount", amountAccount);
             amountConsumedCC = savedInstanceState.getFloat("amountConsumedCC", amountConsumedCC);
             amountRemainingCC = savedInstanceState.getFloat("amountRemainingCC", amountRemainingCC);
-            familyId = savedInstanceState.getString("familyId", familyId);
+            familyId = savedInstanceState.getString(getString(R.string.pref_family_id), familyId);
             consumedCCTotal.setText(NumberFormat.getCurrencyInstance().format
                     (amountConsumedCC));
             totalCCTotal.setText(NumberFormat.getCurrencyInstance().format
@@ -260,26 +256,6 @@ public class FragmentSummary extends Fragment {
         balanceBybankList.setAdapter(new BalanceByBankAdapter(familyId));
         return rootView;
     }
-
-//    private void setChart(float remainingAmount, float consumedAmount) {
-//        List<PieEntry> entries = new ArrayList<>();
-//        float total = remainingAmount + consumedAmount;
-//        if (total == 0) return;
-//        consumedAmount = consumedAmount / total;
-//        Log.d(TAG, String.format("lalal: %f", consumedAmount));
-//        entries.add(new PieEntry(consumedAmount * 100));
-//        entries.add(new PieEntry((1 - consumedAmount) * 100));
-//        PieDataSet set = new PieDataSet(entries, null);
-//        set.setColors(new int[]{R.color.md_deep_orange_300, R.color.md_green_200}, getActivity()
-//                .getApplicationContext());
-//        PieData data = new PieData(set);
-//        pieChart.setData(data);
-//        pieChart.setClickable(false);
-//        pieChart.setTouchEnabled(false);
-//        pieChart.getDescription().setText("");
-//        pieChart.getLegend().setEnabled(false);
-//        pieChart.invalidate(); // refresh
-//    }
 
     @Override
     public void onStart() {
@@ -315,7 +291,6 @@ public class FragmentSummary extends Fragment {
                         Log.d(TAG, "count=cards: " + dataSnapshot.getChildrenCount() + "=" +
                                 cCards.size());
                         recalculate();
-//                        ccLoaded = true;
                     }
 
                     @Override
@@ -332,7 +307,6 @@ public class FragmentSummary extends Fragment {
                         Log.d(TAG, "count=account: " + dataSnapshot.getChildrenCount() + "=" +
                                 accounts.size());
                         recalculate();
-//                        accountLoaded = true;
                     }
 
                     @Override
@@ -342,12 +316,8 @@ public class FragmentSummary extends Fragment {
                 });
     }
 
-    int count = 0;
-
     private void recalculate() {
-        //for cards
         Log.d(TAG, "count=" + ++count);
-//        setChart(amountRemainingCC, amountConsumedCC);
         int cardCount = cCards.size();
         cardTitle.setText(String.format(Locale.ENGLISH, "%d Cards", cardCount));
 
@@ -383,7 +353,7 @@ public class FragmentSummary extends Fragment {
 
             str = String.format("%s - %s", cCard.getCardholder(), cCard.getBank());
             txtView.setText(str);
-            txtView = view .findViewById(R.id.date);
+            txtView = view.findViewById(R.id.date);
             txtView.setText(Constants.PAYMENT_DATE.format(cCard.getPaymentDate()));
             views[i].setVisibility(View.VISIBLE);
         }
@@ -401,17 +371,6 @@ public class FragmentSummary extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putFloat("amountTotal", amountTotal);
@@ -419,21 +378,5 @@ public class FragmentSummary extends Fragment {
         outState.putFloat("amountConsumedCC", amountConsumedCC);
         outState.putFloat("amountRemainingCC", amountRemainingCC);
         outState.putString("familyId", familyId);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnFragmentInteractionListener {
-
     }
 }

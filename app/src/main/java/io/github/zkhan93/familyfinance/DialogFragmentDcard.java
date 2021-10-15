@@ -47,7 +47,7 @@ import static io.github.zkhan93.familyfinance.models.DCard.EXPIRE_ON;
 public class DialogFragmentDcard extends DialogFragment implements DialogInterface
         .OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher, View.OnClickListener {
     public static final String TAG = DialogFragmentDcard.class.getSimpleName();
-    public static final String ARG_FAMILY_ID = "familyID";
+    public static final String ARG_FAMILY_ID = "familyId";
     public static final String ARG_CARD = "ccard";
 
     @BindView(R.id.name)

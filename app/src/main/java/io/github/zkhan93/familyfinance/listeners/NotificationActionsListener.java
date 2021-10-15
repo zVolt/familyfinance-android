@@ -44,7 +44,6 @@ public class NotificationActionsListener extends BroadcastReceiver {
             String otpId = bundle.getString("otpId");
             String familyId = bundle.getString("familyId");
             String meId = bundle.getString("meId");
-            Util.Log.d(TAG, "%s | %s | %s", otpId, familyId, meId);
             if (familyId != null && otpId != null && meId != null)
                 FirebaseDatabase.getInstance().getReference("otps")
                         .child(familyId)

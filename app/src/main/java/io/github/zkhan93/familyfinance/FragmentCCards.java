@@ -1,12 +1,8 @@
 package io.github.zkhan93.familyfinance;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +14,12 @@ import android.view.ViewGroup;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
@@ -30,9 +32,6 @@ import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentCCards.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link FragmentCCards#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -40,13 +39,12 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         SearchView.OnQueryTextListener {
 
     public static final String TAG = FragmentCCards.class.getSimpleName();
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_FAMILY_ID = "familyId";
-    //private static final String ARG_PARAM2 = "param2";
 
-    //private String mParam1;
+    private static final String ARG_FAMILY_ID = "familyId";
+
+
+
     private String familyId;
-    private OnFragmentInteractionListener mListener;
     private CCardListAdapter cCardListAdapter;
 
     @BindView(R.id.list)
@@ -77,6 +75,9 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
             Bundle bundle = getArguments();
             familyId = bundle.getString(ARG_FAMILY_ID, null);
         }
+        if(familyId == null){
+            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        }
     }
 
     @Override
@@ -95,7 +96,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_ccard, menu);
+        inflater.inflate(R.menu.fragment_cards, menu);
         SearchView searchView =
                 (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(this);
@@ -113,29 +114,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         super.onStop();
         EventBus.getDefault().unregister(this);
         cCardListAdapter.unregisterForEvent();
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            //call the function inside the interface
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     @Override
@@ -163,8 +141,11 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void onView(CCard cCard) {
-        DialogFragmentViewCard.newInstance(cCard, familyId).show(getFragmentManager(),
-                DialogFragmentCcard.TAG);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("card", cCard);
+        NavController navController = Navigation.findNavController(getActivity(),
+                R.id.nav_host_fragment);
+        navController.navigate(R.id.ccard_detail, bundle);
     }
 
     @Override
@@ -210,16 +191,5 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         cCardListAdapter.onSearch(newText);
         return true;
     }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnFragmentInteractionListener {
-
-    }
-
 
 }

@@ -1,238 +1,237 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
-import android.text.format.DateUtils;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.NumberFormat;
+import java.lang.ref.WeakReference;
 import java.util.Date;
-import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.palette.graphics.Palette;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.CCard;
-import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
 
 /**
  * Created by zeeshan on 7/7/17.
  */
 
-public class CCardVH extends RecyclerView.ViewHolder implements PopupMenu
-        .OnMenuItemClickListener, View.OnClickListener, View.OnLongClickListener {
+public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickListener,
+        View.OnLongClickListener {
 
     public static final String TAG = CCardVH.class.getSimpleName();
 
-    @BindView(R.id.number)
-    TextView number;
-    @BindView(R.id.date)
-    TextView date;
+
+    @BindView(R.id.bank_icon)
+    ImageView bankLogo;
+
+    @BindView(R.id.card_type)
+    ImageView cardType;
+
+    @BindView(R.id.bank_name)
+    TextView bankName;
+
     @BindView(R.id.cardholder)
     TextView cardholder;
-    @BindView(R.id.bank)
-    ImageView bank;
-    @BindView(R.id.limit)
-    ProgressBar limit;
-    @BindView(R.id.remaining_limit)
-    TextView remainingLimit;
-    @BindView(R.id.updated_by)
-    ImageView updatedBy;
-    @BindView(R.id.updated_on)
-    TextView updatedOn;
-    @BindView(R.id.menu)
-    ImageButton menu;
-    @BindView(R.id.consumed_limit)
-    TextView consumedLimit;
+
+    @BindView(R.id.number)
+    TextView number;
     @BindView(R.id.expires_on)
     TextView expiresOn;
-    @BindView(R.id.addons_title)
-    TextView addonTitle;
+    @BindView(R.id.tv_expires_on)
+    TextView tvExpiresOn;
+
+    @BindView(R.id.cvv)
+    TextView cvv;
+    @BindView(R.id.tv_cvv)
+    TextView tvCvv;
+    @BindView(R.id.container)
+    ConstraintLayout container;
 
 
     private Context context;
-    private PopupMenu popup;
-    private ItemInteractionListener itemInteractionListener;
+
+    private WeakReference<ItemInteractionListener> itemInteractionListener;
     private CCard cCard;
-    private ValueEventListener bankImageLinkListener;
+    private MyValueEventListener bankImageLinkListener, cardTypeImageLinkListener, bankNameListener;
 
     {
-        bankImageLinkListener = new ValueEventListener() {
+        bankImageLinkListener = new MyValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String url = dataSnapshot.getValue(String.class);
                 if (url == null)
-                    url = String.format("http://via.placeholder" +
+                    url = String.format("https://via.placeholder" +
                             ".com/200x200/f0f0f0/2c2c2c?text=%s", dataSnapshot.getKey());
+//                Glide.with(context)
+//                        .load(url)
+//                        .apply(RequestOptions.placeholderOf(R.drawable.ic_bank_grey_600_18dp))
+//                        .into(bankLogo);
                 Glide.with(context)
+                        .asBitmap()
                         .load(url)
                         .apply(RequestOptions.placeholderOf(R.drawable.ic_bank_grey_600_18dp))
-                        .into(bank);
-            }
+                        .into(new CustomTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(@NonNull Bitmap resource,
+                                                        @Nullable Transition<? super Bitmap> transition) {
+                                createPaletteAsync(resource);
+                                bankLogo.setImageBitmap(resource);
+                            }
 
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                            }
+                        });
+            }
+        };
+        cardTypeImageLinkListener = new MyValueEventListener() {
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "bank image loading cancelled");
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String url = dataSnapshot.getValue(String.class);
+                if (url != null) {
+                    Glide.with(context)
+                            .load(url)
+                            .into(cardType);
+                }
+            }
+        };
+        bankNameListener = new MyValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.getValue(String.class);
+                bankName.setText(name);
             }
         };
     }
 
     public CCardVH(View itemView, @NonNull ItemInteractionListener itemInteractionListener) {
         super(itemView);
-        this.itemInteractionListener = itemInteractionListener;
+        this.itemInteractionListener = new WeakReference<>(itemInteractionListener);
         context = itemView.getContext();
         ButterKnife.bind(this, itemView);
-        limit.setIndeterminate(false);
-
-        popup = new PopupMenu(itemView.getContext(), menu);
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
-
-        menu.setOnClickListener(this);
-        addonTitle.setOnClickListener(this);
-
-        MenuInflater inflater = popup.getMenuInflater();
-        popup.setOnMenuItemClickListener(this);
-        inflater.inflate(R.menu.ccard_item, popup.getMenu());
     }
 
-
+    private void createPaletteAsync(Bitmap bitmap) {
+        Palette.from(bitmap).generate(p -> {
+            // Use generated instance
+            if (p != null) {
+                Palette.Swatch swatch = p.getVibrantSwatch();
+                if (swatch != null) {
+                    container.setBackgroundColor(Util.manipulateColor(swatch.getRgb(), 0.5f));
+                }
+            }
+        });
+    }
     public void setCCard(CCard cCard) {
+        setCCard(cCard, true);
+    }
+    public void setCCard(CCard cCard, boolean secure) {
         this.cCard = cCard;
 
-        number.setText(cCard.getFormattedNumber(' ', true));
+        number.setText(cCard.getFormattedNumber(' ', secure));
+        bankName.setText(cCard.getBank());
 
-        date.setText(Util.getBillingCycleString(cCard.getBillingDay(),
-                cCard.getPaymentDay(), "%s - %s"));
+        if (cCard.getCardholder() == null || cCard.getCardholder().equals("")) {
+            cardholder.setText("UNKNOWN");
+        } else {
+            cardholder.setText(cCard.getCardholder().toUpperCase());
+        }
 
-        cardholder.setText(cCard.getCardholder());
         FirebaseDatabase.getInstance().getReference("images")
                 .child("banks")
                 .child(cCard.getBank().toUpperCase())
                 .addListenerForSingleValueEvent(bankImageLinkListener);
 
-        limit.setMax((int) cCard.getMaxLimit());
-        limit.setProgress((int) cCard.getConsumedLimit());
-        //set progress color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.25f)
-                limit.setProgressTintList(ColorStateList
-                        .valueOf(ContextCompat.getColor(context, R.color.md_red_500)));
-            else if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.5f)
-                limit.setProgressTintList(ColorStateList
-                        .valueOf(ContextCompat.getColor(context, R.color.md_orange_500)));
-            else
-                limit.setProgressTintList(ColorStateList
-                        .valueOf(ContextCompat.getColor(context, R.color.md_green_500)));
+        FirebaseDatabase.getInstance().getReference("banks")
+                .child(cCard.getBank().toUpperCase())
+                .addListenerForSingleValueEvent(bankNameListener);
+
+        String cardType = cCard.getType();
+        if (cardType == null)
+            cardType = Util.getCardBrand(cCard.getNumber());
+        if (cardType != null)
+            FirebaseDatabase.getInstance().getReference("images")
+                    .child("card_types")
+                    .child(cardType.toUpperCase())
+                    .addListenerForSingleValueEvent(cardTypeImageLinkListener);
+
+        if (cCard.getExpireOn() == -1) {
+            expiresOn.setVisibility(View.GONE);
+            tvExpiresOn.setVisibility(View.GONE);
         } else {
-            int color;
-            if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.25f)
-                color = ContextCompat.getColor(context, R.color.md_red_500);
-            else if (cCard.getRemainingLimit() <= cCard.getMaxLimit() * 0.5f)
-                color = ContextCompat.getColor(context, R.color.md_orange_500);
-            else
-                color = ContextCompat.getColor(context, R.color.md_green_500);
-            limit.getProgressDrawable()
-                    .setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
+            expiresOn.setVisibility(View.VISIBLE);
+            tvExpiresOn.setVisibility(View.VISIBLE);
+            expiresOn.setText(CCard.EXPIRE_ON.format(new Date(cCard.getExpireOn())));
         }
-        consumedLimit.setText(NumberFormat.getCurrencyInstance()
-                .format(cCard.getConsumedLimit()));
-        remainingLimit.setText(NumberFormat.getCurrencyInstance()
-                .format(cCard.getRemainingLimit()));
-
-        Member _updatedBy = cCard.getUpdatedBy();
-
-        if (_updatedBy != null &&
-                _updatedBy.getProfilePic() != null &&
-                !_updatedBy.getProfilePic().isEmpty())
-            Glide.with(context)
-                    .load(_updatedBy.getProfilePic())
-                    .apply(RequestOptions
-                            .circleCropTransform()
-                            .placeholder(R.drawable.ic_person_grey_600_24dp))
-                    .into(updatedBy);
-
-        if (cCard.getAddonCards() != null && cCard.getAddonCards().size() > 0) {
-            addonTitle.setVisibility(View.VISIBLE);
-            addonTitle.setText(String
-                    .format(Locale.ENGLISH, "%d Addon Cards", cCard.getAddonCards().size()));
+        if (cCard.getCvv() == null || cCard.getCvv().isEmpty()) {
+            cvv.setVisibility(View.GONE);
+            tvCvv.setVisibility(View.GONE);
         } else {
-            addonTitle.setVisibility(View.GONE);
+            cvv.setVisibility(View.VISIBLE);
+            tvCvv.setVisibility(View.VISIBLE);
+            cvv.setText(cCard.getCvv());
         }
-        updatedOn.setText(DateUtils.getRelativeTimeSpanString(context, cCard.getUpdatedOn(), true));
-        //Constants.DATE_FORMAT.format(cCard.getUpdatedOn())
-
-        expiresOn.setText(CCard.EXPIRE_ON.format(new Date(cCard.getExpireOn())));
     }
 
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.menu:
-                popup.show();
-                break;
-            default:
-                itemInteractionListener.onView(cCard);
-        }
+        if (itemInteractionListener.get() != null)
+            itemInteractionListener.get().onView(cCard);
     }
 
     @Override
     public boolean onLongClick(View view) {
-        if(itemInteractionListener!=null) {
-            itemInteractionListener.onLongPress(cCard);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_delete:
-                itemInteractionListener.delete(cCard);
-                return true;
-            case R.id.action_edit:
-                itemInteractionListener.edit(cCard);
-                return true;
-            case R.id.action_add_addoncard:
-                itemInteractionListener.addAddonCard(cCard);
-            default:
-                return false;
-        }
+        if (itemInteractionListener.get() != null)
+            itemInteractionListener.get().onLongPress(cCard);
+        return true;
     }
 
     public interface ItemInteractionListener {
 
+        @Deprecated
         void delete(CCard cCard);
 
+        @Deprecated
         void edit(CCard cCard);
 
+        @Deprecated
         void addAddonCard(CCard cCard);
 
         void onView(CCard cCard);
 
         void onLongPress(CCard cCard);
 
+    }
+
+    public abstract static class MyValueEventListener implements ValueEventListener {
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            Log.d(TAG, "loading cancelled");
+        }
     }
 }

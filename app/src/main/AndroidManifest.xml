@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="io.github.zkhan93.familyfinance">
-
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.READ_PROFILE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    xmlns:tools="http://schemas.android.com/tools"
+    package="io.github.zkhan93.familyfinance">
 
     <application
         android:name=".App"
@@ -20,30 +10,27 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:replace="android:allowBackup"
-        tools:ignore="GoogleAppIndexingWarning">
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"
-            tools:replace="android:value"/>
-
+        android:theme="@style/AppTheme.NoActionBar"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:allowBackup">
+        <activity
+            android:name=".HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar.Login">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_settings"
@@ -51,30 +38,12 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.MainActivity"/>
+                android:value="io.github.zkhan93.familyfinance.MainActivity" />
         </activity>
         <activity
             android:name=".SelectFamilyActivity"
             android:label="@string/title_activity_select_family"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <service
-            android:name=".services.MessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-
-        <receiver
-            android:name=".listeners.SmsReceiver"
-            android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
-            </intent-filter>
-        </receiver>
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddMemberActivity"
             android:label="@string/title_activity_add_member"
@@ -82,7 +51,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.MainActivity"/>
+                android:value="io.github.zkhan93.familyfinance.MainActivity" />
         </activity>
         <activity
             android:name=".PinActivity"
@@ -91,22 +60,17 @@
             android:theme="@style/AppTheme.Dark">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.MainActivity"/>
+                android:value="io.github.zkhan93.familyfinance.MainActivity" />
         </activity>
-
-        <receiver
-            android:name=".listeners.NotificationActionsListener"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="NotificationActionsListener.COPY_OTP"/>
-                <action android:name="NotificationActionsListener.CLAIM_OTP"/>
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".listeners.ClearNotificationRecevier"
-            android:exported="false">
-        </receiver>
-
+        <activity
+            android:name=".CardDetailActivity"
+            android:label="@string/title_activity_about"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.github.zkhan93.familyfinance.MainActivity" />
+        </activity>
         <activity
             android:name=".AboutActivity"
             android:label="@string/title_activity_about"
@@ -114,8 +78,50 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.MainActivity"/>
+                android:value="io.github.zkhan93.familyfinance.MainActivity" />
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"
+            tools:replace="android:value" />
+
+        <receiver
+            android:name=".listeners.SmsReceiver"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".listeners.NotificationActionsListener"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="NotificationActionsListener.COPY_OTP" />
+                <action android:name="NotificationActionsListener.CLAIM_OTP" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".listeners.ClearNotificationRecevier"
+            android:exported="false" />
+
+        <service
+            android:name=".services.MessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

@@ -12,6 +12,8 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
+import java.util.Objects;
+
 /**
  * Created by zeeshan on 12/23/17.
  */
@@ -110,7 +112,7 @@ public class Credential implements Parcelable {
     @Keep
     public Member getUpdatedBy() {
         String __key = this.updatedByMemberId;
-        if (updatedBy__resolvedKey == null || updatedBy__resolvedKey != __key) {
+        if (updatedBy__resolvedKey == null || !Objects.equals(updatedBy__resolvedKey, __key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
@@ -213,7 +215,7 @@ public class Credential implements Parcelable {
     @Keep
     public CredentialType getType() {
         String __key = this.typeId;
-        if (type__resolvedKey == null || type__resolvedKey != __key) {
+        if (type__resolvedKey == null || !Objects.equals(type__resolvedKey, __key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
