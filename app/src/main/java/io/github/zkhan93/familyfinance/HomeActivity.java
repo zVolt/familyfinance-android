@@ -24,15 +24,16 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import io.github.zkhan93.familyfinance.util.FabHost;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 import static io.github.zkhan93.familyfinance.FragmentMembers.PERMISSION_REQUEST_CODE;
 
-public class HomeActivity extends AppCompatActivity implements AppBarConfiguration.OnNavigateUpListener, FabHost {
+public class HomeActivity extends AppCompatActivity implements AppBarConfiguration.OnNavigateUpListener {
 
     public static String TAG = HomeActivity.class.getSimpleName();
     Toolbar toolbar;
@@ -52,10 +53,12 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
 
     private View.OnClickListener fabClickListener;
     private NavController navController;
+    private AppState appState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        appState = new ViewModelProvider(this).get(AppState.class);
         setContentView(R.layout.activity_home);
         familyId =
                 PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_family_id), null);
@@ -64,6 +67,13 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         setSupportActionBar(toolbar);
         setUpNavigationDrawer();
         setUpHeaderContent();
+        appState.getFabIcon().observe(this, icon -> fab.setImageResource(icon));
+        appState.getFabShow().observe(this, show -> {
+            if (show)
+                fab.show();
+            else
+                fab.hide();
+        });
     }
 
     @Override
@@ -116,13 +126,13 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
             }
         };
         fabClickListener = view -> {
+            // send click event back to registered listeners (Fragments)
+            appState.setFabAction();
+
             if (navController.getCurrentDestination() == null)
                 return;
             int activeNavItemId = navController.getCurrentDestination().getId();
-            if (activeNavItemId == R.id.ccards) {
-                DialogFragmentCcard.newInstance(familyId).show(getSupportFragmentManager
-                        (), DialogFragmentCcard.TAG);
-            } else if (activeNavItemId == R.id.dcards) {
+            if (activeNavItemId == R.id.dcards) {
                 DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
                         (), DialogFragmentCcard.TAG);
             } else if (activeNavItemId == R.id.credentials) {
@@ -188,26 +198,4 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
                 || super.onSupportNavigateUp();
     }
 
-    /**
-     * implementing methods from @FabHost
-     */
-    @Override
-    public void showFab() {
-        if (fab != null)
-            fab.show();
-    }
-
-    @Override
-    public void showFab(int icon) {
-        if (fab != null) {
-            fab.setImageResource(icon);
-            fab.show();
-        }
-    }
-
-    @Override
-    public void hideFab() {
-        if (fab != null)
-            fab.hide();
-    }
 }

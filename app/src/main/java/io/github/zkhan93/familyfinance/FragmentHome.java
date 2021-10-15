@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -18,8 +19,7 @@ import io.github.zkhan93.familyfinance.util.Util;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FragmentHome#newInstance} factory method to
- * create an instance of this fragment.
+ *
  */
 public class FragmentHome extends Fragment {
     private static final String TAG = FragmentHome.class.getSimpleName();
@@ -50,8 +50,8 @@ public class FragmentHome extends Fragment {
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         if(getActivity()!=null)
             navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
     }

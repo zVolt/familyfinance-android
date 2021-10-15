@@ -1,6 +1,6 @@
 package io.github.zkhan93.familyfinance.util;
 
-public class CardUtil {
+public class CardUtil{
     public static String formatCardNumber(String number, char delimiter, boolean hideDigits){
         String replace4 = String.format("$0%c", delimiter);
         String replace6 = String.format("$0%c", delimiter);

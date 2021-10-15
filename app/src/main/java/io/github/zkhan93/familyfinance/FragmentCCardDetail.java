@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,7 +24,9 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +36,8 @@ import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.models.DaoSession;
-import io.github.zkhan93.familyfinance.util.FabHost;
+import io.github.zkhan93.familyfinance.util.Util;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 
 /**
@@ -62,6 +64,8 @@ public class FragmentCCardDetail extends Fragment {
     LineChart chart;
 
     private CCardDao cCardDao;
+    private AppState appState;
+    private String familyId;
 
     public FragmentCCardDetail() {
     }
@@ -95,6 +99,7 @@ public class FragmentCCardDetail extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_ccard_detail, container, false);
         cards = rootView.findViewById(R.id.cards);
 
@@ -112,23 +117,35 @@ public class FragmentCCardDetail extends Fragment {
             card = bundle.getParcelable("card");
             if (card != null)
                 card.__setDaoSession((DaoSession) cCardDao.getSession());
+            familyId = bundle.getString("familyId");
         }
         setCardDetails();
         setUpCards();
         setUpChart();
+        setUpFab();
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Activity parentActivity = getActivity();
-        if (parentActivity != null) {
-            FabHost fab = (FabHost) parentActivity;
-            if (fab != null)
-                fab.hideFab();
-        }
+    private void setUpFab() {
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
+        appState.getFabIcon().setValue(R.drawable.ic_edit);
+        appState.getFabShow().setValue(true);
+        appState.getFabActionID().setValue(TAG);
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        appState.getFabAction().observe(getViewLifecycleOwner(), id -> {
+            if (id.equals(TAG)) {
+                Util.Log.d(TAG, "click: %s", id);
+                DialogFragmentCcard.newInstance(familyId, card).show(getParentFragmentManager(),
+                        DialogFragmentCcard.TAG);
+            }
+        });
+    }
+
 
     private void setUpChart() {
         List<Entry> entries = new ArrayList<>();
@@ -248,4 +265,5 @@ public class FragmentCCardDetail extends Fragment {
         }
         return null;
     }
+
 }

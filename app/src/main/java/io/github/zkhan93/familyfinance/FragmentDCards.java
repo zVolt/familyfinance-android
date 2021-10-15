@@ -24,14 +24,15 @@ import org.greenrobot.eventbus.Subscribe;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.DCardListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.DCard;
-import io.github.zkhan93.familyfinance.util.FabHost;
 import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.DCardVH;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,6 +52,7 @@ public class FragmentDCards extends Fragment {
 
     RecyclerView dCardsList;
     ImageView noContent;
+    AppState appState;
 
     public FragmentDCards() {
         // Required empty public constructor
@@ -134,12 +136,7 @@ public class FragmentDCards extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Activity parentActivity = getActivity();
-        if (parentActivity != null) {
-            FabHost fab = (FabHost) parentActivity;
-            if (fab != null)
-                fab.showFab();
-        }
+        appState.getFabActionID().setValue(TAG);
     }
 
     @Override
@@ -173,9 +170,14 @@ public class FragmentDCards extends Fragment {
                 .getReference()
                 .child("images")
                 .child("blank").child("ccard").addListenerForSingleValueEvent(noContentImageUrlListener);
+        setUpFab();
         return rootView;
     }
-
+    private void setUpFab(){
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
+        appState.getFabIcon().setValue(R.drawable.ic_add_white_24dp);
+        appState.getFabShow().setValue(true);
+    }
     private void setupCardAdapter(Query query) {
         if (dCardListAdapter != null)
             dCardListAdapter.stopListening();
