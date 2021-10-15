@@ -14,7 +14,7 @@ jobs:
         id: decode_google_services
         uses: timheuer/base64-to-file@v1
         with:
-          fileName: './app/src/release/google-services.json'
+          fileName: './app/google-services.json'
           encodedString: ${{ secrets.GOOGLE_SERVICES }}
       - name: Decode Keystore
         id: decode_keystore
