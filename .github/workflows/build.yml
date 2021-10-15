@@ -22,14 +22,15 @@ jobs:
           GOOGLE_SERVICES: ${{secrets.GOOGLE_SERVICES}}
       - name: Decode Keystore
         id: decode_keystore
-        uses: timheuer/base64-to-file@v1
+        uses: timheuer/base64-to-file@v1.1
         with:
-          fileName: 'keystore/your_signing_keystore.jks'
+          fileDir: ./app/keystore
+          fileName: 'keystore.jks'
           encodedString: ${{ secrets.KEYSTORE }}
       - name: Make gradlew executable
         run: chmod +x ./gradlew
       - name: Build APK
-        run: ./gradlew app:bundleRelease
+        run: ./gradlew app:assembleRelease
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}

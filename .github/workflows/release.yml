@@ -22,20 +22,37 @@ jobs:
           GOOGLE_SERVICES: ${{secrets.GOOGLE_SERVICES}}
       - name: Decode Keystore
         id: decode_keystore
-        uses: timheuer/base64-to-file@v1
+        uses: timheuer/base64-to-file@v1.1
         with:
-          fileName: 'keystore/your_signing_keystore.jks'
+          fileDir: ./app/keystore
+          fileName: 'keystore.jks'
           encodedString: ${{ secrets.KEYSTORE }}
       - name: Make gradlew executable
         run: chmod +x ./gradlew
       - name: Build APK
-        run: ./gradlew app:bundleRelease
+        run: ./gradlew app:assembleRelease
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-      - name: Upload
-        uses: actions/upload-artifact@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Build Artifacts
-          path: app/build/outputs/
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing its ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: app/build/outputs/apk/release/app-release.apk
+          asset_name: io.github.zkhan93.familyfinance.apk
+          asset_content_type: application/apk # not sure about this bit, double-check this
+
