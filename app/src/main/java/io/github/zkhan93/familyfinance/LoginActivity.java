@@ -27,7 +27,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -171,7 +170,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 updates.put(prefix + "email", member.getEmail());
                 updates.put(prefix + "profilePic", member.getProfilePic());
                 updates.put(prefix + "smsEnabled", member.getSmsEnabled());
-                updates.put(prefix + "token", FirebaseInstanceId.getInstance().getToken());
+//                this was server token that can be used to perform tasks on behalf of user
+//                updates.put(prefix + "token", FirebaseInstanceId.getInstance().getToken());
                 updates.put(prefix + "serverAuth", account.getServerAuthCode());
                 progressMsg.setText(getString(R.string.progress_updating_details));
                 FirebaseDatabase.getInstance()
