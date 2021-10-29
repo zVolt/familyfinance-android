@@ -58,6 +58,7 @@ public static java.lang.String TABLENAME;
 -keepclassmembers class io.github.zkhan93.familyfinance.models.** {
   *;
 }
+-keep class io.github.zkhan93.familyfinance.models.** { *; }
 
 #Glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
@@ -76,4 +77,3 @@ public static java.lang.String TABLENAME;
 -dontnote
 -dontwarn com.google.errorprone.**
 -dontwarn com.google.common.**
--keep class android.support.v7.widget.SearchView { *; }
