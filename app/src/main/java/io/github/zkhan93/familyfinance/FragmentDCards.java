@@ -175,9 +175,9 @@ public class FragmentDCards extends Fragment {
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+
+    private void initFab() {
+        appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
         appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
             String id = event.getContentIfNotHandled();
             Util.Log.d(TAG, "fab click for: %s", id);
@@ -185,10 +185,6 @@ public class FragmentDCards extends Fragment {
                 DialogFragmentDcard.newInstance(familyId).show(getParentFragmentManager()
                         , DialogFragmentDcard.TAG);
         });
-    }
-
-    private void initFab() {
-        appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
     }
 
     private void setupCardAdapter(Query query) {

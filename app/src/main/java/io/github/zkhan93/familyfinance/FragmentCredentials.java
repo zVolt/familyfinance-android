@@ -84,17 +84,6 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
-            String id = event.getContentIfNotHandled();
-            Util.Log.d(TAG, "fab click for: %s", id);
-            if (id != null && id.equals(TAG))
-                DialogFragmentCredential.getInstance(null, familyId)
-                        .show(getParentFragmentManager(), DialogFragmentViewCard.TAG);
-        });
-    }
 
     @Override
     public void onResume() {
@@ -117,5 +106,12 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
 
     private void initFab() {
         appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
+            String id = event.getContentIfNotHandled();
+            Util.Log.d(TAG, "fab click for: %s", id);
+            if (id != null && id.equals(TAG))
+                DialogFragmentCredential.getInstance(null, familyId)
+                        .show(getParentFragmentManager(), DialogFragmentViewCard.TAG);
+        });
     }
 }

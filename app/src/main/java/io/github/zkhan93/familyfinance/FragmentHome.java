@@ -54,6 +54,7 @@ public class FragmentHome extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         int[] viewIds = new int[]{
                 R.id.ccards,
+                R.id.summary,
                 R.id.dcards,
                 R.id.accounts,
                 R.id.messages,

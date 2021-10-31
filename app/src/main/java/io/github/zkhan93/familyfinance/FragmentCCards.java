@@ -95,20 +95,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
-
-            String id = event.getContentIfNotHandled();
-            Util.Log.d(TAG, "fab click for: %s", id);
-            if (id != null && id.equals(TAG))
-                DialogFragmentCcard.newInstance(familyId).show(getParentFragmentManager(),
-                        DialogFragmentCcard.TAG);
-        });
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         initFab();
@@ -139,6 +125,14 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     private void initFab() {
         appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
+
+            String id = event.getContentIfNotHandled();
+            Util.Log.d(TAG, "fab click for: %s", id);
+            if (id != null && id.equals(TAG))
+                DialogFragmentCcard.newInstance(familyId).show(getParentFragmentManager(),
+                        DialogFragmentCcard.TAG);
+        });
     }
 
     @Override
