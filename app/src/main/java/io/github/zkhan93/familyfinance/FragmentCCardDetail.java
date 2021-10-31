@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -122,24 +121,17 @@ public class FragmentCCardDetail extends Fragment {
         setCardDetails();
         setUpCards();
         setUpChart();
-        setUpFab();
+        initFab();
         return rootView;
     }
 
-    private void setUpFab() {
+    private void initFab() {
         appState = new ViewModelProvider(requireActivity()).get(AppState.class);
-        appState.getFabIcon().setValue(R.drawable.ic_edit);
-        appState.getFabShow().setValue(true);
-        appState.getFabActionID().setValue(TAG);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        appState.getFabAction().observe(getViewLifecycleOwner(), id -> {
-            if (id.equals(TAG)) {
-                Util.Log.d(TAG, "click: %s", id);
+        appState.enableFab(R.drawable.ic_edit, TAG);
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
+            String id = event.getContentIfNotHandled();
+            Util.Log.d(TAG, "fab click for: %s", id);
+            if (id !=null && id.equals(TAG)) {
                 DialogFragmentCcard.newInstance(familyId, card).show(getParentFragmentManager(),
                         DialogFragmentCcard.TAG);
             }
