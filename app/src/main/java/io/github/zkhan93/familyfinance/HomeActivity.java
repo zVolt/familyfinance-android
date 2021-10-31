@@ -138,10 +138,6 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
                 Intent intent = new Intent(getApplicationContext(), AddMemberActivity.class);
                 intent.putExtra(getString(R.string.pref_family_id), familyId);
                 startActivity(intent);
-            } else if (activeNavItemId == R.id.accounts) {
-                DialogFragmentAddAccount.newInstance(familyId).show
-                        (getSupportFragmentManager(),
-                                DialogFragmentAddAccount.TAG);
             }
         };
     }
