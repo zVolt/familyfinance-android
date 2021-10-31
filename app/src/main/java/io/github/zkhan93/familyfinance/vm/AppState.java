@@ -18,7 +18,7 @@ public class AppState extends ViewModel {
         return fabAction;
     }
 
-    public void setFabAction() {
+    public void onFabAction() {
         fabAction.setValue(fabActionId.getValue());
     }
 

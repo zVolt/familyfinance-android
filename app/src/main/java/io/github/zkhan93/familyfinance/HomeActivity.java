@@ -19,6 +19,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -26,6 +28,7 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -82,6 +85,7 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         checkRequiredPermissions();
     }
 
+
     private void checkRequiredPermissions() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest
                 .permission.RECEIVE_SMS) & ContextCompat.checkSelfPermission(this, android.Manifest
@@ -127,8 +131,9 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         };
         fabClickListener = view -> {
             // send click event back to registered listeners (Fragments)
-            appState.setFabAction();
+            appState.onFabAction();
 
+//            TODO: Move the following to the respective fragment classes
             if (navController.getCurrentDestination() == null)
                 return;
             int activeNavItemId = navController.getCurrentDestination().getId();
@@ -166,6 +171,11 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
                         .setOpenableLayout(drawerLayout).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            AppState appState = new ViewModelProvider(HomeActivity.this).get(AppState.class);
+            appState.disableFab();
+        });
     }
 
     private void setUpViewRef() {
