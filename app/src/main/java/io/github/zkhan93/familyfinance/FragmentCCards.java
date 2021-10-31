@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -78,6 +77,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
             familyId =
                     PreferenceManager.getDefaultSharedPreferences(requireActivity()).getString(ARG_FAMILY_ID, null);
         }
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         ccardsList.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);
         setHasOptionsMenu(true);
-        setUpFab();
+        showFab();
         return rootView;
     }
 
@@ -100,6 +100,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         super.onViewCreated(view, savedInstanceState);
         appState.getFabAction().observe(getViewLifecycleOwner(), id -> {
             Util.Log.d(TAG, "click: %s", id);
+//          TODO: probably we have to ignore the first trigger
             if (id.equals(TAG))
                 DialogFragmentCcard.newInstance(familyId).show(getParentFragmentManager(),
                         DialogFragmentCcard.TAG);
@@ -109,7 +110,13 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     @Override
     public void onResume() {
         super.onResume();
-        appState.getFabActionID().setValue(TAG);
+        showFab();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        appState.disableFab();
     }
 
     @Override
@@ -135,16 +142,8 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-
-    }
-
-    private void setUpFab(){
-        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
-        appState.getFabIcon().setValue(R.drawable.ic_add_white_24dp);
-        appState.getFabShow().setValue(true);
+    private void showFab() {
+        appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
     }
 
     @Override

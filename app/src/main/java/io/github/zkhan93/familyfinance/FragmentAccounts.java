@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,7 +43,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     private String familyId;
     private AccountListAdapter accountListAdapter;
-    private Toast toast;
     RecyclerView accountsList;
     ValueEventListener connectionEventListener = new ValueEventListener() {
         @Override
@@ -53,15 +51,9 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
                 return;
             Boolean connected = snapshot.getValue(Boolean.class);
             if (connected != null && connected) {
-                toast.cancel();
-                toast.setText("connected");
-                toast.setDuration(Toast.LENGTH_SHORT);
-                toast.show();
+                Log.d(TAG, "connected");
             } else {
-                toast.cancel();
-                toast.setText("not connected");
-                toast.setDuration(Toast.LENGTH_SHORT);
-                toast.show();
+                Log.d(TAG, "not connected");
             }
         }
 
@@ -107,7 +99,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_accounts, container, false);
         accountsList = rootView.findViewById(R.id.list);
-        toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
+
         FirebaseDatabase.getInstance().getReference(".info/connected").addValueEventListener
                 (connectionEventListener);
         accountListAdapter = new AccountListAdapter((App) getActivity().getApplication(), familyId,

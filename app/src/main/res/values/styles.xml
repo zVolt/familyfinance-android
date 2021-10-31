@@ -77,19 +77,9 @@
     <style name="AppTheme.Text.Dark.Large">
         <item name="android:textSize">@dimen/text_size_lg</item>
     </style>
-    <style name="AppTheme.Text.Dark.CardNumber">
-        <item name="android:fontFamily">@font/robotomono_light</item>
-        <item name="android:textSize">@dimen/text_size_xl</item>
-    </style>
 
     <style name="AppTheme.Text.Muted">
         <item name="android:textColor">@color/textMuted</item>
-    </style>
-    <style name="AppTheme.Text.Muted.Small">
-        <item name="android:textSize">@dimen/text_size_sm</item>
-    </style>
-    <style name="AppTheme.Text.Muted.Large">
-        <item name="android:textSize">@dimen/text_size_lg</item>
     </style>
 
     <style name="AppTheme.Text.Error">
@@ -97,9 +87,6 @@
     </style>
     <style name="AppTheme.Text.Error.Small">
         <item name="android:textSize">@dimen/text_size_sm</item>
-    </style>
-    <style name="AppTheme.Text.Error.Large">
-        <item name="android:textSize">@dimen/text_size_lg</item>
     </style>
 
 </resources>

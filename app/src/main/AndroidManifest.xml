@@ -28,17 +28,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".SettingsActivity"
             android:label="@string/title_settings"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.MainActivity" />
+                android:value="io.github.zkhan93.familyfinance.HomeActivity" />
         </activity>
         <activity
             android:name=".SelectFamilyActivity"
@@ -47,11 +43,11 @@
         <activity
             android:name=".AddMemberActivity"
             android:label="@string/title_activity_add_member"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.MainActivity" />
+                android:value="io.github.zkhan93.familyfinance.HomeActivity" />
         </activity>
         <activity
             android:name=".PinActivity"
@@ -60,25 +56,25 @@
             android:theme="@style/AppTheme.Dark">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.MainActivity" />
+                android:value="io.github.zkhan93.familyfinance.HomeActivity" />
         </activity>
         <activity
             android:name=".CardDetailActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.MainActivity" />
+                android:value="io.github.zkhan93.familyfinance.HomeActivity" />
         </activity>
         <activity
             android:name=".AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.MainActivity" />
+                android:value="io.github.zkhan93.familyfinance.HomeActivity" />
         </activity>
 
         <meta-data

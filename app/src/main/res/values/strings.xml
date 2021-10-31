@@ -2,50 +2,40 @@
     <string name="app_name">Family Finance</string>
 
     <!-- Labels -->
-    <string name="label_signin">Sign in</string>
 
 
     <!-- activity titles -->
     <string name="title_home">Home</string>
     <string name="title_summary">Summary</string>
-    <string name="title_emails">Emails</string>
     <string name="title_accounts">Accounts</string>
     <string name="title_members">Members</string>
     <string name="title_sms">SMS</string>
     <string name="title_messages">Messages</string>
     <string name="title_ccards">Credit Cards</string>
     <string name="title_dcards">Debit Cards</string>
-    <string name="title_wallets">Wallets</string>
     <string name="title_settings">Settings</string>
     <string name="title_new_account">Add Account</string>
     <string name="title_new_card">Add Card</string>
     <string name="title_activity_select_family">Family</string>
     <string name="title_activity_add_member">Requests</string>
     <string name="title_activity_pin">@string/app_name</string>
-    <string name="title_chat_room">Chat Room</string>
     <string name="title_filter_sms">Show SMS only from</string>
     <string name="title_billing_cycle">Billing Cycle</string>
     <string name="title_credentials">Credentials</string>
     <string name="title_credentials_create">Create Credentials</string>
-    <string name="title_credentials_update">Update Credentials</string>
 
     <!--Menu Titles-->
     <string name="action_settings">Settings</string>
     <string name="action_logout">Sign out</string>
     <string name="action_filter_sms">Filter SMS</string>
-    <string name="action_copy">Copy to clipboard</string>
     <string name="action_edit">Edit</string>
-    <string name="action_update">Update</string>
     <string name="action_share">Share</string>
     <string name="action_delete">Delete</string>
-    <string name="action_add_addoncard">Add Addon Card</string>
-    <string name="action_remove">Remove</string>
     <string name="action_switch_family">Switch Family</string>
     <string name="action_about">About</string>
 
 
     <!--hints -->
-    <string name="hint_account_name">Account\'s Name</string>
     <string name="hint_account_holder_name">Account holder\'s name</string>
     <string name="hint_account_number">Account Number</string>
 
@@ -55,14 +45,11 @@
     <string name="hint_ccard_limit">Max Limit</string>
     <string name="hint_ccard_consumed">Consumed</string>
 
-    <string name="hint_name">Name</string>
     <string name="userid">User ID</string>
     <string name="hint_pin">PIN</string>
     <string name="password">Password</string>
     <string name="hint_bank">Bank Name</string>
     <string name="hint_ifsc">Branch IFSC Code</string>
-    <string name="hint_balance">Balance</string>
-    <string name="hint_family_id">Family ID</string>
     <string name="phone_number">Phone Number</string>
     <string name="hint_email">Email</string>
     <string name="hint_username">Username</string>
@@ -70,9 +57,7 @@
     <string name="hint_unique_id">Unique Family ID</string>
 
 
-    <string name="progress_logging_you_in">Logging you in..</string>
     <string name="progress_select_account">Select an account..</string>
-    <string name="progress_cancelled">Login attempt cancelled</string>
     <string name="progress_no_internet">Please check your internet connection and try again</string>
     <string name="progress_null_response">Invalid response from server, Please try again</string>
     <string name="progress_failed_signin">Sign in failed, Please try again</string>
@@ -84,7 +69,6 @@
     <string name="msg_family_id_not_exist">Family with this ID does not exist! click "Create New Family" to start a new family with this ID</string>
     <string name="msg_user_no_logged_in">Please login to continue</string>
     <string name="msg_null_task">Previous task was not given</string>
-    <string name="msg_user_not_member">You are not a member in this family</string>
     <string name="msg_request_submitted">Your request to join the family has been sent to the moderator of the family</string>
     <string name="msg_request_approved">Your request is approved</string>
 
@@ -94,21 +78,14 @@
     <!-- Strings related to Settings -->
 
     <!--Contants-->
-    <string name="rs">\u20B9</string>
     <string name="more">Show more</string>
     <string name="less">Show less</string>
     <string name="clear">clear</string>
-    <string name="add">Add</string>
     <string name="subscribe">Allow read emails</string>
     <string name="email_subscribe">Allow us to read your email and show it to everyone in this family.</string>
     <string name="create">Create</string>
     <string name="update">Update</string>
-    <string name="join">Join</string>
     <string name="online">Online</string>
-    <string name="send_request">Send Request</string>
-    <string name="requests">Your Request</string>
-    <string name="or">OR</string>
-    <string name="start_new_family">Start New Family</string>
     <string name="copy_message"> %1$s copied</string>
     <string name="no_otp_found">Oops! cannot find OTP</string>
     <string name="error_clipboard"> %1$s cannot copy to clipboard</string>
@@ -118,7 +95,6 @@
     <string name="cvv">CVV</string>
     <string name="billing_date">Next Bill</string>
     <string name="card_limit">Card Limit</string>
-    <string name="addon_cards">Add-on Cards</string>
     <string name="card_type">Card Type</string>
     <string name="card_information">Card Information</string>
     <string name="transaction_history">Transaction History</string>
@@ -128,8 +104,6 @@
     <string name="edit">Edit</string>
 
     <!--    card types-->
-    <string name="card_type_primary">Primary Card</string>
-    <string name="card_type_addon">Add-on Card</string>
 
     <!--Category title-->
     <string name="pref_header_general">General</string>
@@ -139,13 +113,10 @@
     <string name="pref_title_notifications">Notification</string>
     <string name="pref_title_notifications_only_otp">Only OTP SMS</string>
     <string name="pref_title_copy">Auto Copy</string>
-    <string name="pref_title_ringtone">Ringtone</string>
     <string name="pref_title_vibrate">Vibrate</string>
-    <string name="pref_title_vibrate_duration">Vibrate Duration</string>
     <string name="pref_title_pin">Secure PIN</string>
     <string name="pref_title_autolock">Auto-Lock</string>
     <string name="pref_title_allsms">SMS Sync</string>
-    <string name="pref_title_no_of_sms">Number of SMS</string>
 
     <string name="pref_copy_enable">Incoming OTP will get copied to your clipboard automatically</string>
     <string name="pref_copy_disable">Do not copy incoming OTP automatically to clipboard</string>
@@ -163,14 +134,12 @@
     <string name="pref_key_notification" translatable="false">pref_key_notification</string>
     <string name="pref_key_notification_only_otp" translatable="false">pref_key_notification_only_otp</string>
     <string name="pref_key_vibrate" translatable="false">pref_key_vibrate</string>
-    <string name="pref_key_vibrate_duration" translatable="false">pref_key_vibrate_duration</string>
     <string name="pref_key_ringtone" translatable="false">pref_key_ringtone</string>
     <string name="pref_key_copy" translatable="false">pref_key_copy</string>
     <string name="pref_key_pin" translatable="false">pref_key_pin</string>
     <string name="pref_key_pin_value" translatable="false">pref_key_pin_value</string>
     <string name="pref_key_autolock" translatable="false">pref_key_autolock</string>
     <string name="pref_key_allsms">pref_key_allsms</string>
-    <string name="pref_key_no_of_sms">pref_key_no_of_sms</string>
     <string name="pref_family_id">familyId</string>
 
 
@@ -188,7 +157,6 @@
 
     <string name="version">Version Info</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string-array name="pref_autolock_values">
         <item>10</item>
         <item>60</item>
