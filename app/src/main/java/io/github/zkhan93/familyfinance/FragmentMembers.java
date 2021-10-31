@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,11 +15,13 @@ import com.google.firebase.database.ServerValue;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.MemberListAdapter;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 
 /**
@@ -41,6 +44,7 @@ public class FragmentMembers extends Fragment {
 
     private Member enableSmsFor;
     private MemberListAdapter memberListAdapter;
+    private AppState appState;
 
     public FragmentMembers() {
         // Required empty public constructor
@@ -71,6 +75,7 @@ public class FragmentMembers extends Fragment {
         if(familyId == null){
             familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
     }
 
     @Override
@@ -83,6 +88,7 @@ public class FragmentMembers extends Fragment {
         membersList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
         membersList.setAdapter(memberListAdapter);
+        initFab();
         return rootView;
     }
 
@@ -96,8 +102,22 @@ public class FragmentMembers extends Fragment {
                     ("checkPresence").setValue(ServerValue.TIMESTAMP);
         } else
             Log.d(TAG, "seeking presence condiftion failed");
+        initFab();
     }
+    private void initFab() {
+        appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
 
+            String id = event.getContentIfNotHandled();
+            Util.Log.d(TAG, "fab click for: %s", id);
+            if (id != null && id.equals(TAG))
+            {
+                Intent intent = new Intent(requireActivity().getApplicationContext(), AddMemberActivity.class);
+                intent.putExtra(getString(R.string.pref_family_id), familyId);
+                startActivity(intent);
+            }
+        });
+    }
 //    @Override
 //    public void toggleSms(Member member) {
 //        Log.d(TAG, "toggleSms: " + member.toString());
