@@ -19,8 +19,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -28,7 +26,6 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -136,10 +133,7 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
             if (navController.getCurrentDestination() == null)
                 return;
             int activeNavItemId = navController.getCurrentDestination().getId();
-            if (activeNavItemId == R.id.dcards) {
-                DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
-                        (), DialogFragmentCcard.TAG);
-            } else if (activeNavItemId == R.id.credentials) {
+            if (activeNavItemId == R.id.credentials) {
                 DialogFragmentCredential.getInstance(null, familyId)
                         .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
             } else if (activeNavItemId == R.id.members) {

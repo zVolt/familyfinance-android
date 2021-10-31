@@ -101,7 +101,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
 
             String id = event.getContentIfNotHandled();
-            Util.Log.d(TAG, "click: %s", id);
+            Util.Log.d(TAG, "fab click for: %s", id);
             if (id != null && id.equals(TAG))
                 DialogFragmentCcard.newInstance(familyId).show(getParentFragmentManager(),
                         DialogFragmentCcard.TAG);
