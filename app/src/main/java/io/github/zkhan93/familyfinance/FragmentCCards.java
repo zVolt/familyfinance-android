@@ -45,7 +45,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     private String familyId;
     private CCardListAdapter cCardListAdapter;
     AppState appState;
-
     RecyclerView ccardsList;
 
     public FragmentCCards() {
@@ -98,10 +97,12 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        appState.getFabAction().observe(getViewLifecycleOwner(), id -> {
+
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
+
+            String id = event.getContentIfNotHandled();
             Util.Log.d(TAG, "click: %s", id);
-//          TODO: probably we have to ignore the first trigger
-            if (id.equals(TAG))
+            if (id != null && id.equals(TAG))
                 DialogFragmentCcard.newInstance(familyId).show(getParentFragmentManager(),
                         DialogFragmentCcard.TAG);
         });
