@@ -132,7 +132,6 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         fabClickListener = view -> {
             // send click event back to registered listeners (Fragments)
             appState.onFabAction();
-
 //            TODO: Move the following to the respective fragment classes
             if (navController.getCurrentDestination() == null)
                 return;

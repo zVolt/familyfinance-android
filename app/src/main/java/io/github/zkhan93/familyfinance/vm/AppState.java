@@ -40,6 +40,7 @@ public class AppState extends ViewModel {
 
     public void enableFab(@DrawableRes int icon, String id){
         setFabShow(true);
+        fabIcon.setValue(icon);
         fabActionId.setValue(id);
     }
     public void disableFab(){

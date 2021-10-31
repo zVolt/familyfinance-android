@@ -90,7 +90,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         ccardsList.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);
         setHasOptionsMenu(true);
-        showFab();
+        initFab();
         return rootView;
     }
 
@@ -111,7 +111,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     @Override
     public void onResume() {
         super.onResume();
-        showFab();
+        initFab();
     }
 
     @Override
@@ -143,7 +143,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     }
 
 
-    private void showFab() {
+    private void initFab() {
         appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
     }
 
