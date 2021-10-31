@@ -133,10 +133,8 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
             if (navController.getCurrentDestination() == null)
                 return;
             int activeNavItemId = navController.getCurrentDestination().getId();
-            if (activeNavItemId == R.id.credentials) {
-                DialogFragmentCredential.getInstance(null, familyId)
-                        .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
-            } else if (activeNavItemId == R.id.members) {
+
+            if (activeNavItemId == R.id.members) {
                 Intent intent = new Intent(getApplicationContext(), AddMemberActivity.class);
                 intent.putExtra(getString(R.string.pref_family_id), familyId);
                 startActivity(intent);

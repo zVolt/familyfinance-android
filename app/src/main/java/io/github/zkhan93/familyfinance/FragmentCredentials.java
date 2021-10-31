@@ -7,12 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.CredentialListAdapter;
 import io.github.zkhan93.familyfinance.models.Credential;
+import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.CredentialVH;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 
 /**
@@ -31,6 +36,7 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
 
     private String familyId;
 
+    private AppState appState;
 
     public FragmentCredentials() {
         // Required empty public constructor
@@ -57,9 +63,11 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID);
         }
-        if(familyId == null){
-            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        if (familyId == null) {
+            familyId =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
     }
 
     @Override
@@ -72,9 +80,27 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
         credentialList.setLayoutManager(new LinearLayoutManager(getActivity()
                 .getApplicationContext()));
         credentialList.setAdapter(credentialListAdapter);
+        initFab();
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
+            String id = event.getContentIfNotHandled();
+            Util.Log.d(TAG, "fab click for: %s", id);
+            if (id != null && id.equals(TAG))
+                DialogFragmentCredential.getInstance(null, familyId)
+                        .show(getParentFragmentManager(), DialogFragmentViewCard.TAG);
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initFab();
+    }
 
     @Override
     public void onCredentialClicked(Credential credential) {
@@ -87,5 +113,9 @@ public class FragmentCredentials extends Fragment implements CredentialVH.Creden
         DialogFragmentCredential.
                 getInstance(credential, familyId).
                 show(getActivity().getSupportFragmentManager(), DialogFragmentCredential.TAG);
+    }
+
+    private void initFab() {
+        appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
     }
 }

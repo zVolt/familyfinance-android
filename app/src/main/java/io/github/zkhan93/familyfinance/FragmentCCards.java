@@ -115,12 +115,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        appState.disableFab();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_cards, menu);
         SearchView searchView =
