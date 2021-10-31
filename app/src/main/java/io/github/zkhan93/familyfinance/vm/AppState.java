@@ -37,4 +37,13 @@ public class AppState extends ViewModel {
     public void setFabShow(boolean show) {
         fabShow.setValue(show);
     }
+
+    public void enableFab(@DrawableRes int icon, String id){
+        setFabShow(true);
+        fabActionId.setValue(id);
+    }
+    public void disableFab(){
+        setFabShow(false);
+        fabActionId.setValue(null);
+    }
 }

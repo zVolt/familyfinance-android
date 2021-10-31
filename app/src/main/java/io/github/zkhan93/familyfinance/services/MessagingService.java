@@ -28,7 +28,7 @@ import java.util.Set;
 
 import androidx.core.app.NotificationCompat;
 import io.github.zkhan93.familyfinance.App;
-import io.github.zkhan93.familyfinance.MainActivity;
+import io.github.zkhan93.familyfinance.HomeActivity;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.Member;
 import io.github.zkhan93.familyfinance.util.Util;
@@ -122,8 +122,9 @@ public class MessagingService extends FirebaseMessagingService {
                 .pref_key_vibrate), false);
         Log.d(TAG, "vibration setting: " + vibrate);
 
-        Intent resultIntent = new Intent(context, MainActivity.class);
-        resultIntent.putExtra("FragmentPosition", MainActivity.PAGE_POSITION.SMS);
+        Intent resultIntent = new Intent(context, HomeActivity.class);
+//        MainActivity.PAGE_POSITION.SMS
+        resultIntent.putExtra("FragmentPosition", 2);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 

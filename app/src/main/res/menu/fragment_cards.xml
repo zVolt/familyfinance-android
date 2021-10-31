@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="io.github.zkhan93.familyfinance.MainActivity">
+      tools:context="io.github.zkhan93.familyfinance.HomeActivity">
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search_grey_50_24dp"
