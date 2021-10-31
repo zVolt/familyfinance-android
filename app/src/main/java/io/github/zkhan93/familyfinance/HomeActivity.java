@@ -82,6 +82,7 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         checkRequiredPermissions();
     }
 
+
     private void checkRequiredPermissions() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest
                 .permission.RECEIVE_SMS) & ContextCompat.checkSelfPermission(this, android.Manifest
@@ -127,26 +128,7 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
         };
         fabClickListener = view -> {
             // send click event back to registered listeners (Fragments)
-            appState.setFabAction();
-
-            if (navController.getCurrentDestination() == null)
-                return;
-            int activeNavItemId = navController.getCurrentDestination().getId();
-            if (activeNavItemId == R.id.dcards) {
-                DialogFragmentDcard.newInstance(familyId).show(getSupportFragmentManager
-                        (), DialogFragmentCcard.TAG);
-            } else if (activeNavItemId == R.id.credentials) {
-                DialogFragmentCredential.getInstance(null, familyId)
-                        .show(getSupportFragmentManager(), DialogFragmentViewCard.TAG);
-            } else if (activeNavItemId == R.id.members) {
-                Intent intent = new Intent(getApplicationContext(), AddMemberActivity.class);
-                intent.putExtra(getString(R.string.pref_family_id), familyId);
-                startActivity(intent);
-            } else if (activeNavItemId == R.id.accounts) {
-                DialogFragmentAddAccount.newInstance(familyId).show
-                        (getSupportFragmentManager(),
-                                DialogFragmentAddAccount.TAG);
-            }
+            appState.onFabAction();
         };
     }
 
@@ -166,6 +148,11 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
                         .setOpenableLayout(drawerLayout).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            AppState appState = new ViewModelProvider(HomeActivity.this).get(AppState.class);
+            appState.disableFab();
+        });
     }
 
     private void setUpViewRef() {

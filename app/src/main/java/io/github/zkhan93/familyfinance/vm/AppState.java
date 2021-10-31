@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class AppState extends ViewModel {
+    private final MutableLiveData<Event<String>> fabAction = new MutableLiveData<>();
     private final MutableLiveData<String> fabActionId = new MutableLiveData<>();
-    private final MutableLiveData<String> fabAction = new MutableLiveData<>();
     private final MutableLiveData<Integer> fabIcon = new MutableLiveData<>();
     private final MutableLiveData<Boolean> fabShow = new MutableLiveData<>();
 
@@ -14,12 +14,12 @@ public class AppState extends ViewModel {
         return fabActionId;
     }
 
-    public MutableLiveData<String> getFabAction() {
+    public MutableLiveData<Event<String>> getFabAction() {
         return fabAction;
     }
 
-    public void setFabAction() {
-        fabAction.setValue(fabActionId.getValue());
+    public void onFabAction() {
+        fabAction.setValue(new Event<>(fabActionId.getValue()));
     }
 
     public MutableLiveData<Integer> getFabIcon() {
@@ -40,6 +40,7 @@ public class AppState extends ViewModel {
 
     public void enableFab(@DrawableRes int icon, String id){
         setFabShow(true);
+        fabIcon.setValue(icon);
         fabActionId.setValue(id);
     }
     public void disableFab(){

@@ -45,7 +45,6 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     private String familyId;
     private CCardListAdapter cCardListAdapter;
     AppState appState;
-
     RecyclerView ccardsList;
 
     public FragmentCCards() {
@@ -91,32 +90,14 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         ccardsList.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext()));
         ccardsList.setAdapter(cCardListAdapter);
         setHasOptionsMenu(true);
-        showFab();
+        initFab();
         return rootView;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        appState.getFabAction().observe(getViewLifecycleOwner(), id -> {
-            Util.Log.d(TAG, "click: %s", id);
-//          TODO: probably we have to ignore the first trigger
-            if (id.equals(TAG))
-                DialogFragmentCcard.newInstance(familyId).show(getParentFragmentManager(),
-                        DialogFragmentCcard.TAG);
-        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        showFab();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        appState.disableFab();
+        initFab();
     }
 
     @Override
@@ -142,8 +123,16 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     }
 
 
-    private void showFab() {
+    private void initFab() {
         appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
+
+            String id = event.getContentIfNotHandled();
+            Util.Log.d(TAG, "fab click for: %s", id);
+            if (id != null && id.equals(TAG))
+                DialogFragmentCcard.newInstance(familyId).show(getParentFragmentManager(),
+                        DialogFragmentCcard.TAG);
+        });
     }
 
     @Override

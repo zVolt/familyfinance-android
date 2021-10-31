@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -96,13 +95,13 @@ public class FragmentDCards extends Fragment {
 
             @Override
             public void edit(DCard dCard) {
-                DialogFragmentDcard.newInstance(familyId, dCard).show(getFragmentManager(),
+                DialogFragmentDcard.newInstance(familyId, dCard).show(getParentFragmentManager(),
                         DialogFragmentDcard.TAG);
             }
 
             @Override
             public void onView(DCard dCard) {
-                DialogFragmentViewDCard.newInstance(dCard, familyId).show(getFragmentManager(),
+                DialogFragmentViewDCard.newInstance(dCard, familyId).show(getParentFragmentManager(),
                         DialogFragmentDcard.TAG);
             }
 
@@ -128,15 +127,17 @@ public class FragmentDCards extends Fragment {
             Bundle bundle = getArguments();
             familyId = bundle.getString(ARG_FAMILY_ID, null);
         }
-        if(familyId == null){
-            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        if (familyId == null) {
+            familyId =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        appState.getFabActionID().setValue(TAG);
+        initFab();
     }
 
     @Override
@@ -170,14 +171,22 @@ public class FragmentDCards extends Fragment {
                 .getReference()
                 .child("images")
                 .child("blank").child("ccard").addListenerForSingleValueEvent(noContentImageUrlListener);
-        setUpFab();
+        initFab();
         return rootView;
     }
-    private void setUpFab(){
-        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
-        appState.getFabIcon().setValue(R.drawable.ic_add_white_24dp);
-        appState.getFabShow().setValue(true);
+
+
+    private void initFab() {
+        appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
+            String id = event.getContentIfNotHandled();
+            Util.Log.d(TAG, "fab click for: %s", id);
+            if (id != null && id.equals(TAG))
+                DialogFragmentDcard.newInstance(familyId).show(getParentFragmentManager()
+                        , DialogFragmentDcard.TAG);
+        });
     }
+
     private void setupCardAdapter(Query query) {
         if (dCardListAdapter != null)
             dCardListAdapter.stopListening();

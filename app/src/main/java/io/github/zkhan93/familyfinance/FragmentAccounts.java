@@ -19,6 +19,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
@@ -26,6 +27,7 @@ import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 
 /**
@@ -44,6 +46,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     private String familyId;
     private AccountListAdapter accountListAdapter;
     RecyclerView accountsList;
+    private AppState appState;
     ValueEventListener connectionEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot snapshot) {
@@ -88,9 +91,11 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         if (getArguments() != null) {
             familyId = getArguments().getString(ARG_FAMILY_ID);
         }
-        if(familyId==null){
-            familyId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
+        if (familyId == null) {
+            familyId =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(ARG_FAMILY_ID, null);
         }
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
     }
 
     @Override
@@ -108,8 +113,10 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
                 ()));
         accountsList.setAdapter(accountListAdapter);
         setHasOptionsMenu(true);
+        initFab();
         return rootView;
     }
+
 
     @Override
     public void onStart() {
@@ -127,11 +134,30 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        initFab();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_cards, menu);
         SearchView searchView =
                 (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(this);
+    }
+
+    private void initFab() {
+        appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
+            String id = event.getContentIfNotHandled();
+            Util.Log.d(TAG, "fab click for: %s", id);
+            if (id != null && id.equals(TAG))
+                DialogFragmentAddAccount.newInstance(familyId).show
+                        (getParentFragmentManager(),
+                                DialogFragmentAddAccount.TAG);
+        });
+
     }
 
     @Override
