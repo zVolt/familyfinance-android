@@ -126,6 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void startSignIn() {
+//        TODO: show loading/waiting for google auth on UI, perhaps a loader on google sign in button itself
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -207,15 +208,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 try {
                     // Google Sign In was successful, authenticate with Firebase
                     account = task.getResult(ApiException.class);
-                    if (account!=null) {
+                    AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken()
+                            , null);
+                    mAuth.signInWithCredential(credential).addOnCompleteListener(this);
 
-                        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken()
-                                , null);
-                        mAuth.signInWithCredential(credential).addOnCompleteListener(this);
-                    }else{
-                        Util.Log.d(TAG, "sign in attempt failed");
-                        progressMsg.setText(getString(R.string.progress_failed_signin));
-                    }
                 } catch (ApiException e) {
                     Util.Log.d(TAG, "sign in attempt failed");
                     progressMsg.setText(getString(R.string.progress_failed_signin));
