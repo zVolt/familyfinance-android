@@ -102,10 +102,12 @@ public class App extends Application {
 
         BiometricPrompt.PromptInfo.Builder builder = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Biometric login for my app")
-                .setSubtitle("Log in using your biometric credential")
-                .setNegativeButtonText(getString(R.string.cancel));
+                .setSubtitle("Log in using your biometric credential");
+
         if (Build.VERSION.SDK_INT > 29) {
             builder = builder.setAllowedAuthenticators(BIOMETRIC_STRONG | DEVICE_CREDENTIAL);
+        }else{
+            builder = builder.setNegativeButtonText(getString(R.string.cancel));
         }
         promptInfo = builder.build();
 
