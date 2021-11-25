@@ -28,15 +28,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_settings"
-            android:parentActivityName=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.github.zkhan93.familyfinance.HomeActivity" />
-        </activity>
-        <activity
             android:name=".SelectFamilyActivity"
             android:label="@string/title_activity_select_family"
             android:theme="@style/AppTheme.NoActionBar" />

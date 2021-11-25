@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private GoogleSignInAccount account;
-    private OnCompleteListener<Void> saveUserDataListener;
+    final private OnCompleteListener<Void> saveUserDataListener;
     Button btnLogin;
     ProgressBar progressBar;
     TextView progressMsg;
