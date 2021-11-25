@@ -16,27 +16,6 @@
             android:title="@string/pref_title_allsms"/>
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="security_setting"
-        android:title="@string/pref_header_security">
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="@string/pref_key_pin"
-            android:icon="@drawable/ic_lock"
-            android:enabled="true"
-            android:summary="@string/pref_pin_disable"
-            android:title="@string/pref_title_pin"/>
-        <ListPreference
-            android:defaultValue="10"
-            android:icon="@drawable/ic_update"
-            android:dependency="@string/pref_key_pin"
-            android:entries="@array/pref_autolock_keys"
-            android:entryValues="@array/pref_autolock_values"
-            android:key="@string/pref_key_autolock"
-            android:summary="@string/pref_autolock"
-            android:title="@string/pref_title_autolock"/>
-    </PreferenceCategory>
-    <PreferenceCategory
         android:key="notification"
         android:title="@string/pref_header_notifications">
         <SwitchPreference

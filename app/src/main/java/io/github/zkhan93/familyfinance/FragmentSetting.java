@@ -21,13 +21,9 @@ import static android.app.Activity.RESULT_OK;
  * Created by zeeshan on 21/10/17.
  */
 
-public class FragmentSetting extends PreferenceFragmentCompat implements Preference
-        .OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class FragmentSetting extends PreferenceFragmentCompat {
 
     public static final String TAG = FragmentSetting.class.getSimpleName();
-    private SharedPreferences sharedPreferences;
-    private static int REQUEST_CODE_SET_PIN = 102;
-    private static int REQUEST_CODE_CHECK_PIN = 103;
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -70,16 +66,6 @@ public class FragmentSetting extends PreferenceFragmentCompat implements Prefere
                     case "pref_key_copy":
                         preference.setSummary((boolean) value ? R.string.pref_copy_enable : R
                                 .string.pref_copy_disable);
-                        return true;
-                    case "pref_key_pin":
-                        preference.setSummary((boolean) value ? R.string.pref_pin_enable : R
-                                .string.pref_pin_disable);
-                        return true;
-                    case "pref_key_autolock":
-                        int index = ((ListPreference) preference).findIndexOfValue(stringValue);
-                        preference.setSummary(preference.getContext().getString(R.string
-                                .pref_autolock, ((ListPreference) preference).getEntries()
-                                [index]));
                         return true;
                     case "pref_key_allsms":
                         preference.setSummary((boolean) value ? R.string.pref_allsms_enable : R
@@ -126,7 +112,7 @@ public class FragmentSetting extends PreferenceFragmentCompat implements Prefere
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireActivity());
         setPreferencesFromResource(R.xml.pref_general, rootKey);
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences
         // to their values. When their values change, their summaries are
@@ -137,102 +123,8 @@ public class FragmentSetting extends PreferenceFragmentCompat implements Prefere
         bindPreferenceSummaryToValue(findPreference(getString(R.string
                 .pref_key_notification_only_otp)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_vibrate)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_autolock)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_allsms)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_pin)));
-        Preference pinPreference = findPreference(getString(R.string.pref_key_pin));
-        pinPreference.setOnPreferenceChangeListener(this);
-        ((SwitchPreference) pinPreference).setChecked(sharedPreferences.getBoolean(getString
-                        (R.string.pref_key_pin),
-                false));
         Log.d(TAG, "setting all set");
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .unregisterOnSharedPreferenceChangeListener(this);
-        findPreference(getString(R.string.pref_key_pin)).setOnPreferenceClickListener(null);
-        Log.d(TAG, "listener removed");
-    }
-
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object o) {
-        Log.d(TAG, "preferenceClick " + preference.getKey());
-        if (preference.getKey().equals(getString(R.string.pref_key_pin))) {
-            sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                    PreferenceManager
-                            .getDefaultSharedPreferences(preference.getContext())
-                            .getBoolean(preference.getKey(), false));
-            if (!((SwitchPreference) preference).isChecked()) {
-                Log.d(TAG, "set new PIN");
-                startActivityForResult(new Intent(PinActivity.ACTIONS.SET_PIN, null,
-                        getActivity(), PinActivity.class), REQUEST_CODE_SET_PIN);
-            } else {
-                Log.d(TAG, "check PIN then disable");
-                startActivityForResult(new Intent(PinActivity.ACTIONS.CHECK_PIN, null,
-                        getActivity(), PinActivity.class), REQUEST_CODE_CHECK_PIN);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (isAdded() && key.equals(getString(R.string.pref_key_pin)))
-            ((SwitchPreference) findPreference(getString(R.string.pref_key_pin))).setChecked
-                    (sharedPreferences
-                            .getBoolean(key, false));
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult req:" + requestCode + " res:" + resultCode);
-        //response for pin set
-        if (requestCode == REQUEST_CODE_SET_PIN) {
-            if (resultCode == RESULT_OK) {
-                Log.d(TAG, "set pin success");
-                sharedPreferences.edit().putBoolean
-                        (getString(R.string.pref_key_pin), true).apply();
-            } else {
-                //cancelled
-                Log.d(TAG, "set pin failed");
-                sharedPreferences.edit().putBoolean
-                        (getString(R.string.pref_key_pin), false).remove(getString(R.string
-                        .pref_key_pin_value)).apply();
-                ((SwitchPreference) findPreference(getString(R.string.pref_key_pin)))
-                        .setChecked(false);
-            }
-        }
-        //response for PIN check
-        if (requestCode == REQUEST_CODE_CHECK_PIN) {
-
-            if (resultCode == RESULT_OK) {
-                //pin checked now disable the pin
-                Log.d(TAG, "check pin success");
-                sharedPreferences.edit().putBoolean
-                        (getString(R.string.pref_key_pin), false).putString(getString(R.string
-                        .pref_key_pin_value), null)
-                        .remove(getString(R.string.pref_key_pin_value)).apply();
-            } else {
-                //pin verification failed keep the pin on
-                Log.d(TAG, "check pin failed");
-                sharedPreferences.edit().putBoolean
-                        (getString(R.string.pref_key_pin), true).apply();
-                ((SwitchPreference) findPreference(getString(R.string.pref_key_pin)))
-                        .setChecked(true);
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

@@ -141,6 +141,7 @@
     <string name="pref_key_autolock" translatable="false">pref_key_autolock</string>
     <string name="pref_key_allsms">pref_key_allsms</string>
     <string name="pref_family_id">familyId</string>
+    <string name="pref_success_biometric_auth_at">success_biometric_auth_at</string>
 
 
 
