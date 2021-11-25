@@ -1,7 +1,13 @@
 package io.github.zkhan93.familyfinance;
 
+import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG;
+import static androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+import static io.github.zkhan93.familyfinance.FragmentMembers.PERMISSION_REQUEST_CODE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -9,6 +15,20 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -19,19 +39,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import io.github.zkhan93.familyfinance.vm.AppState;
+import java.util.concurrent.Executor;
 
-import static io.github.zkhan93.familyfinance.FragmentMembers.PERMISSION_REQUEST_CODE;
+import io.github.zkhan93.familyfinance.vm.AppState;
 
 public class HomeActivity extends AppCompatActivity implements AppBarConfiguration.OnNavigateUpListener {
 
@@ -54,14 +64,15 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
     private View.OnClickListener fabClickListener;
     private NavController navController;
     private AppState appState;
+    private SharedPreferences spf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         appState = new ViewModelProvider(this).get(AppState.class);
         setContentView(R.layout.activity_home);
-        familyId =
-                PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_family_id), null);
+        spf = PreferenceManager.getDefaultSharedPreferences(this);
+        familyId = spf.getString(getString(R.string.pref_family_id), null);
         initListeners();
         setUpViewRef();
         setSupportActionBar(toolbar);
@@ -74,14 +85,22 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
             else
                 fab.hide();
         });
+
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         checkRequiredPermissions();
+        ((App)getApplication()).requestBiometricAuth(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ((App)getApplication()).requestBiometricAuth(this);
+    }
 
     private void checkRequiredPermissions() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest
@@ -92,7 +111,7 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest
                     .permission.RECEIVE_SMS)) {
                 //explain the need of this permission
-                //todo show a dialog and then on positive show request permission
+                //TODO: show a dialog and then on positive show request permission
                 Log.d(TAG, "lol we need it :D");
                 ActivityCompat.requestPermissions(this, new String[]{
                         android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission
