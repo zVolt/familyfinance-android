@@ -34,7 +34,7 @@ public class DeleteTask<T extends BaseModel> extends AsyncTask<Void, Void, Void>
     @Override
     protected void onPostExecute(Void aVoid) {
         if (listener == null) {
-            EventBus.getDefault().post(new DeleteEvent());
+//            EventBus.getDefault().post(new DeleteEvent());
             return;
         }
         listener.onDeleteTaskComplete();

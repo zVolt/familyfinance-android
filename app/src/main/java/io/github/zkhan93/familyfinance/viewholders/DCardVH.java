@@ -1,11 +1,17 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
+import static io.github.zkhan93.familyfinance.LoginActivity.TAG;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -16,14 +22,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.DCard;
 import io.github.zkhan93.familyfinance.util.Util;
-
-import static io.github.zkhan93.familyfinance.LoginActivity.TAG;
 
 
 public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
@@ -39,7 +40,6 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
     private DCard dCard;
     private Context context;
-    private PopupMenu popup;
     private ItemInteractionListener itemInteractionListener;
     private ValueEventListener bankImageLinkListener, bankNameListener, cardTypeImageLinkListener;
 
@@ -115,7 +115,8 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
     }
 
     public void setDCard(DCard dCard) {
-        String cardType = Util.getCardBrand(dCard.getNumber());;
+        String cardType = Util.getCardBrand(dCard.getNumber());
+        ;
         Log.d(TAG, String.format("card type: %s", cardType));
         if (cardType != null) {
             FirebaseDatabase.getInstance().getReference("images")
@@ -154,19 +155,13 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.menu:
-                popup.show();
-                break;
-            default:
-                itemInteractionListener.onView(dCard);
-        }
+        itemInteractionListener.onView(dCard);
     }
 
     @Override
     public boolean onLongClick(View view) {
         if (itemInteractionListener != null) {
-            itemInteractionListener.onCopyCardToClipboard(dCard);
+            itemInteractionListener.edit(dCard);
             return true;
         }
         return false;

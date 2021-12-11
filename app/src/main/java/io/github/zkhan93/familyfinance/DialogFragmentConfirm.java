@@ -11,7 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
+import io.github.zkhan93.familyfinance.events.DeleteEvent;
 import io.github.zkhan93.familyfinance.models.BaseModel;
+import io.github.zkhan93.familyfinance.models.DCard;
 
 /**
  * Created by zeeshan on 15/7/17.
@@ -55,7 +57,7 @@ public class DialogFragmentConfirm<T extends BaseModel> extends DialogFragment i
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
-                EventBus.getDefault().post(new DeleteConfirmedEvent<>(item));
+                EventBus.getDefault().post(new DeleteEvent<>(item));
                 break;
         }
     }

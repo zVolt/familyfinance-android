@@ -17,10 +17,14 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.greendao.database.Database;
 
 import java.util.concurrent.Executor;
 
+import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
+import io.github.zkhan93.familyfinance.models.AddonCard;
+import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.DaoMaster;
 import io.github.zkhan93.familyfinance.models.DaoSession;
 
@@ -116,4 +120,5 @@ public class App extends Application {
         // if needed by your app.
         biometricPrompt.authenticate(promptInfo);
     }
+
 }

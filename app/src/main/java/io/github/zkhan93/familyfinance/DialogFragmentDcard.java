@@ -1,5 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
+import static io.github.zkhan93.familyfinance.models.DCard.EXPIRE_ON;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -15,6 +17,12 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,19 +32,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
+import io.github.zkhan93.familyfinance.events.CreateEvent;
+import io.github.zkhan93.familyfinance.events.DeleteEvent;
+import io.github.zkhan93.familyfinance.events.UpdateEvent;
 import io.github.zkhan93.familyfinance.models.DCard;
-
-import static io.github.zkhan93.familyfinance.models.DCard.EXPIRE_ON;
+import io.github.zkhan93.familyfinance.util.SimpleTextWatcher;
 
 /**
  * Created by zeeshan on 19/7/17.
@@ -76,17 +83,7 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
     private ValueEventListener cardNumberChecker;
 
     {
-        expiresOnTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+        expiresOnTextWatcher = new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 String value = s.toString();
@@ -166,7 +163,8 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
 
         builder.setTitle(R.string.title_new_card);
         builder.setPositiveButton(R.string.create, this)
-                .setNegativeButton(android.R.string.cancel, this);
+                .setNegativeButton(android.R.string.cancel, this)
+        .setNeutralButton(R.string.delete, this);
 
         rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_dcard,
                 null);
@@ -249,64 +247,52 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
         outState.putString(ARG_FAMILY_ID, familyId);
     }
 
+    private DCard buildUpdatedDCard() {
+        String number = this.number.getText().toString().trim();
+        //no card can be created without a valid number
+        if (number.isEmpty()) return null;
+        DCard newDCard = new DCard();
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null)
+            newDCard.setUpdatedByMemberId(fbUser.getUid());
+        newDCard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
+        selectedBankId = selectedBankId.equals(BankSpinnerAdapter.OTHER_BANK) ?
+                otherBank.getText().toString() : selectedBankId;
+        newDCard.setBank(selectedBankId);
+        newDCard.setName(cardName.getText().toString());
+        newDCard.setNumber(number);
+        newDCard.setCardholder(cardHolder.getText().toString());
+
+        newDCard.setCvv(cvv.getText().toString());
+        newDCard.setPhoneNumber(phoneNumber.getText().toString());
+        try {
+            newDCard.setExpireOn(EXPIRE_ON.
+                    parse(expiresOn.getText().toString())
+                    .getTime());
+        } catch (ParseException ex) {
+            newDCard.setExpireOn(-1);
+        }
+        newDCard.setUsername(username.getText().toString());
+        newDCard.setPassword(password.getText().toString());
+        return newDCard;
+    }
+
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        String amount;
+
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
-                String number = this.number.getText().toString().trim();
-                //no card can be created without a valid number
-                if (number.isEmpty()) return;
-                DCard newDCard = new DCard();
-                FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (fbUser != null)
-                    newDCard.setUpdatedByMemberId(fbUser.getUid());
-                newDCard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
-                selectedBankId = selectedBankId.equals(BankSpinnerAdapter.OTHER_BANK) ?
-                        otherBank.getText().toString() : selectedBankId;
-                newDCard.setBank(selectedBankId);
-                newDCard.setName(cardName.getText().toString());
-                newDCard.setNumber(number);
-                newDCard.setCardholder(cardHolder.getText().toString());
-
-                newDCard.setCvv(cvv.getText().toString());
-                newDCard.setPhoneNumber(phoneNumber.getText().toString());
-                try {
-                    newDCard.setExpireOn(EXPIRE_ON.
-                            parse(expiresOn.getText().toString())
-                            .getTime());
-                } catch (ParseException ex) {
-                    newDCard.setExpireOn(-1);
-                }
-                newDCard.setUsername(username.getText().toString());
-                newDCard.setPassword(password.getText().toString());
-                createCard(newDCard);
+                DCard card = buildUpdatedDCard();
+                EventBus.getDefault().post(new UpdateEvent<>(card));
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
+                break;
+            case DialogInterface.BUTTON_NEUTRAL:
+                EventBus.getDefault().post(new DeleteEvent<>(dCard));
                 break;
             default:
                 Log.d(TAG, "action not implemented/invalid action");
         }
-    }
-
-    /**
-     * can have 2 case
-     * case I : Create new card - noting to worry about, just make sure you do not override an
-     * existing card
-     * case II: Update a exsisting card details, make sure that the update does not include
-     * change in card number because that will cause a new card to get created
-     *
-     * @param newDcard
-     */
-    public void createCard(DCard newDcard) {
-        if (newDcard == null)
-            return;
-        if (dCard == null || newDcard.getNumber().trim().equals(dCard.getNumber().trim()))
-            FirebaseDatabase.getInstance()
-                    .getReference("dcards")
-                    .child(familyId)
-                    .child(newDcard.getNumber())
-                    .setValue(newDcard);
     }
 
     @Override

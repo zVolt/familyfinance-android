@@ -1,6 +1,7 @@
 package io.github.zkhan93.familyfinance.adapters;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -9,6 +10,7 @@ import com.google.firebase.database.DatabaseError;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.CCardDao;
@@ -35,8 +37,9 @@ public class DCardListAdapter extends FirebaseRecyclerAdapter<DCard, RecyclerVie
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new DCardVH(LayoutInflater.from(parent.getContext()).inflate(R.layout
-                .listitem_ccard, parent, false), itemInteractionListener);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout
+                .listitem_ccard, parent, false);
+        return new DCardVH(view, itemInteractionListener);
     }
 
     @Override

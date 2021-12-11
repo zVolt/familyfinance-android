@@ -8,6 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -20,14 +27,10 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.DCardListAdapter;
-import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
+import io.github.zkhan93.familyfinance.events.CreateEvent;
+import io.github.zkhan93.familyfinance.events.DeleteEvent;
+import io.github.zkhan93.familyfinance.events.UpdateEvent;
 import io.github.zkhan93.familyfinance.models.DCard;
 import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.viewholders.DCardVH;
@@ -95,8 +98,10 @@ public class FragmentDCards extends Fragment {
 
             @Override
             public void edit(DCard dCard) {
-                DialogFragmentDcard.newInstance(familyId, dCard).show(getParentFragmentManager(),
+                DialogFragmentDcard dialog = DialogFragmentDcard.newInstance(familyId, dCard);
+                dialog.show(getParentFragmentManager(),
                         DialogFragmentDcard.TAG);
+
             }
 
             @Override
@@ -202,12 +207,31 @@ public class FragmentDCards extends Fragment {
     /**
      * Events fired from DialogFragmentConfirm
      */
+
     @Subscribe()
-    public void deleteActiveDcardConfirmed(DeleteConfirmedEvent event) {
+    public void deleteDCard(DeleteEvent event) {
         if (event == null || event.getItem() == null) return;
         if (event.getItem() instanceof DCard) {
             DCard dCard = (DCard) event.getItem();
             baseCardRef.child(dCard.getNumber()).setValue(null);
+        }
+    }
+
+    @Subscribe()
+    public void createDCard(CreateEvent event) {
+        if (event == null || event.getItem() == null) return;
+        if (event.getItem() instanceof DCard) {
+            DCard dCard = (DCard) event.getItem();
+            baseCardRef.child(dCard.getNumber()).setValue(dCard);
+        }
+    }
+
+    @Subscribe()
+    public void updateDCard(UpdateEvent event) {
+        if (event == null || event.getItem() == null) return;
+        if (event.getItem() instanceof DCard) {
+            DCard dCard = (DCard) event.getItem();
+            baseCardRef.child(dCard.getNumber()).setValue(dCard);
         }
     }
 }

@@ -196,9 +196,10 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     @Subscribe()
     public void deleteActiveAccountConfirmed(DeleteConfirmedEvent<Account> event) {
         if (event.getItem() != null) {
+            Account account = (Account)event.getItem();
             ((App) getActivity().getApplication()).getDaoSession().getAccountDao().deleteByKey
-                    (event.getItem().getAccountNumber());
-            accountListAdapter.deleteAccount(event.getItem().getAccountNumber());
+                    (account.getAccountNumber());
+            accountListAdapter.deleteAccount(account.getAccountNumber());
         }
 
     }
