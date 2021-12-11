@@ -1,5 +1,7 @@
 package io.github.zkhan93.familyfinance;
 
+import static io.github.zkhan93.familyfinance.models.DCard.EXPIRE_ON;
+
 import android.app.Dialog;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -14,6 +16,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -26,14 +33,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.models.DCard;
 import io.github.zkhan93.familyfinance.util.Util;
-
-import static io.github.zkhan93.familyfinance.models.DCard.EXPIRE_ON;
 
 /**
  * Created by zeeshan on 11/11/17.
@@ -96,6 +97,7 @@ public class DialogFragmentViewDCard extends DialogFragment implements DialogInt
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
+
         if (bundle != null) {
             dCard = bundle.getParcelable(ARG_CARD);
             familyId = bundle.getString(ARG_FAMILY_ID);
