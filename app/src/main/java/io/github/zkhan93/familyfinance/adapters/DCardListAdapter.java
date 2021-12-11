@@ -11,7 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
+import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.models.DCard;
+import io.github.zkhan93.familyfinance.models.DCardDao;
+import io.github.zkhan93.familyfinance.models.DaoSession;
 import io.github.zkhan93.familyfinance.viewholders.DCardVH;
 
 public class DCardListAdapter extends FirebaseRecyclerAdapter<DCard, RecyclerView.ViewHolder> {
@@ -19,12 +22,14 @@ public class DCardListAdapter extends FirebaseRecyclerAdapter<DCard, RecyclerVie
 
     private DCardVH.ItemInteractionListener itemInteractionListener;
     private AdapterInteraction adapterInteraction;
+    private DaoSession daoSession;
 
     public DCardListAdapter(App app, DCardVH.ItemInteractionListener
             itemInteractionListener, FirebaseRecyclerOptions<DCard> options, AdapterInteraction adapterInteraction) {
         super(options);
         this.itemInteractionListener = itemInteractionListener;
         this.adapterInteraction = adapterInteraction;
+        daoSession = app.getDaoSession();
     }
 
     @NonNull
@@ -37,6 +42,7 @@ public class DCardListAdapter extends FirebaseRecyclerAdapter<DCard, RecyclerVie
     @Override
     protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position,
                                     @NonNull DCard dCard) {
+        dCard.__setDaoSession(daoSession);
         DCardVH dCardHolder = (DCardVH) holder;
         dCardHolder.setDCard(dCard);
     }
