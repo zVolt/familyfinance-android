@@ -39,9 +39,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
+import io.github.zkhan93.familyfinance.events.ConfirmDeleteEvent;
 import io.github.zkhan93.familyfinance.events.DeleteEvent;
 import io.github.zkhan93.familyfinance.events.UpdateEvent;
 import io.github.zkhan93.familyfinance.models.DCard;
+import io.github.zkhan93.familyfinance.util.ExpiryTextWatcher;
 import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 
 /**
@@ -76,37 +78,14 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
     private String familyId, selectedBankId;
     private String checkCardNumber;
     private DCard dCard;
-    private TextWatcher expiresOnTextWatcher;
+    private ExpiryTextWatcher expiresOnTextWatcher;
     private BankSpinnerAdapter bankSpinnerAdapter;
     private View rootView;
     private ValueEventListener cardNumberChecker;
 
     {
-        expiresOnTextWatcher = new TextWatcherProxy() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                String value = s.toString();
-                value = value.replace("/", "");
-                if (value.length() == 1) {
-                    int num = Integer.parseInt(value);
-                    if (num > 1)
-                        value = "1";
-                } else if (value.length() == 2) {
-                    int num = Integer.parseInt(value);
-                    if (num == 0)
-                        value = "1";
-                    else if (num > 12)
-                        value = "12";
-                }
-                if (value.length() > 2) {
-                    value = value.substring(0, 2) + "/" + value.substring(2);
-                }
-                expiresOn.removeTextChangedListener(this);
-                expiresOn.setText(value);
-                expiresOn.setSelection(value.length());
-                expiresOn.addTextChangedListener(this);
-            }
-        };
+
+
         cardNumberChecker = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -185,6 +164,8 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
         moreButton = rootView.findViewById(R.id.more_btn);
         moreTitle = rootView.findViewById(R.id.more_title);
         moreFields = rootView.findViewById(R.id.more_fields);
+
+        expiresOnTextWatcher = new ExpiryTextWatcher(expiresOn);
         expiresOn.addTextChangedListener(expiresOnTextWatcher);
         bank.setAdapter(bankSpinnerAdapter);
         bank.setOnItemSelectedListener(this);
@@ -287,7 +268,7 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
             case DialogInterface.BUTTON_NEGATIVE:
                 break;
             case DialogInterface.BUTTON_NEUTRAL:
-                EventBus.getDefault().post(new DeleteEvent<>(dCard));
+                EventBus.getDefault().post(new ConfirmDeleteEvent<>(dCard));
                 break;
             default:
                 Log.d(TAG, "action not implemented/invalid action");

@@ -9,11 +9,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,12 +16,21 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import io.github.zkhan93.familyfinance.adapters.CCardListAdapter;
-import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
+import io.github.zkhan93.familyfinance.events.ConfirmDeleteEvent;
+import io.github.zkhan93.familyfinance.events.CreateEvent;
+import io.github.zkhan93.familyfinance.events.DeleteEvent;
+import io.github.zkhan93.familyfinance.events.UpdateEvent;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.util.Util;
-import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 import io.github.zkhan93.familyfinance.vm.AppState;
 
 
@@ -35,7 +39,7 @@ import io.github.zkhan93.familyfinance.vm.AppState;
  * Use the {@link FragmentCCards#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionListener,
+public class FragmentCCards extends Fragment implements ItemInteractionListener<CCard>,
         SearchView.OnQueryTextListener {
 
     public static final String TAG = FragmentCCards.class.getSimpleName();
@@ -137,7 +141,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
 
     @Override
     public void delete(CCard cCard) {
-        String title = "You want to delete account " + cCard.getNumber();
+        String title = "You want to delete Credit Card " + cCard.getNumber();
         DialogFragmentConfirm<CCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
         Bundle bundle = new Bundle();
         bundle.putString(DialogFragmentConfirm.ARG_TITLE, title);
@@ -154,7 +158,7 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
     }
 
     @Override
-    public void onView(CCard cCard) {
+    public void view(CCard cCard) {
         Bundle bundle = new Bundle();
         bundle.putParcelable("card", cCard);
         bundle.putString("familyId", familyId);
@@ -163,35 +167,18 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         navController.navigate(R.id.ccard_detail, bundle);
     }
 
-    @Override
+    //TODO: call this from relevant place
     public void addAddonCard(CCard cCard) {
         DialogFragmentAddonCard.newInstance(familyId, cCard.getNumber()).show(getParentFragmentManager(),
                 DialogFragmentAddonCard.TAG);
     }
 
     @Override
-    public void onLongPress(CCard cCard) {
+    public void copyToClipboard(CCard cCard) {
         Util.quickCopy(requireActivity().getApplicationContext(), cCard);
     }
 
-    /**
-     * Events fired from DialogFragmentConfirm
-     */
-    @Subscribe()
-    public void deleteActiveCcardConfirmed(DeleteConfirmedEvent event) {
-        if (event == null || event.getItem() == null) return;
-        if (event.getItem() instanceof CCard) {
-            CCard cCard = (CCard) event.getItem();
-            ((App) requireActivity().getApplication()).getDaoSession().getCCardDao().deleteByKey
-                    (cCard.getNumber());
-            cCardListAdapter.deleteCcard(cCard.getNumber());
-        } else if (event.getItem() instanceof AddonCard) {
-            AddonCard addonCard = (AddonCard) event.getItem();
-            ((App) requireActivity().getApplication()).getDaoSession().getAddonCardDao().deleteByKey
-                    (addonCard.getNumber());
-            cCardListAdapter.deleteCcard(addonCard.getNumber(), true);
-        }
-    }
+
 
     @Override
     public boolean onQueryTextSubmit(String query) {
@@ -207,4 +194,54 @@ public class FragmentCCards extends Fragment implements CCardVH.ItemInteractionL
         return true;
     }
 
+    /**
+     * Events fired from DialogFragmentConfirm
+     */
+    @Subscribe()
+    public void deleteCCard(DeleteEvent event) {
+        if (event == null || event.getItem() == null) return;
+        if (event.getItem() instanceof CCard) {
+            CCard cCard = (CCard) event.getItem();
+            ((App) requireActivity().getApplication()).getDaoSession().getCCardDao().deleteByKey
+                    (cCard.getNumber());
+            cCardListAdapter.deleteCcard(cCard.getNumber());
+        } else if (event.getItem() instanceof AddonCard) {
+            AddonCard addonCard = (AddonCard) event.getItem();
+            ((App) requireActivity().getApplication()).getDaoSession().getAddonCardDao().deleteByKey
+                    (addonCard.getNumber());
+            cCardListAdapter.deleteCcard(addonCard.getNumber(), true);
+        }
+    }
+    @Subscribe()
+    public void confirmDelete(ConfirmDeleteEvent event) {
+        if (event == null || event.getItem() == null) return;
+        if (event.getItem() instanceof CCard) {
+            CCard card = (CCard) event.getItem();
+            delete(card);
+        }
+    }
+    @Subscribe()
+    public void createCCard(CreateEvent event) {
+        if (event == null || event.getItem() == null) return;
+        if (event.getItem() instanceof CCard) {
+            CCard card = (CCard) event.getItem();
+            FirebaseDatabase.getInstance()
+                    .getReference("ccards")
+                    .child(familyId)
+                    .child(card.getNumber())
+                    .setValue(card);
+        }
+    }
+    @Subscribe()
+    public void updateCCard(UpdateEvent event) {
+        if (event == null || event.getItem() == null) return;
+        if (event.getItem() instanceof CCard) {
+            CCard card = (CCard) event.getItem();
+            FirebaseDatabase.getInstance()
+                    .getReference("ccards")
+                    .child(familyId)
+                    .child(card.getNumber())
+                    .setValue(card);
+        }
+    }
 }

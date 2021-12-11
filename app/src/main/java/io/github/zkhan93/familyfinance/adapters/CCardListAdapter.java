@@ -4,6 +4,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.events.InsertEvent;
@@ -31,6 +32,7 @@ import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
@@ -46,13 +48,13 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public static final String TAG = CCardListAdapter.class.getSimpleName();
 
     private ArrayList<CCard> ccards;
-    private CCardVH.ItemInteractionListener itemInteractionListener;
+    private ItemInteractionListener<CCard> itemInteractionListener;
     private DatabaseReference ccardRef;
     private CCardDao cCardDao;
     private AddonCardDao addonCardDao;
     private boolean ignoreChildEvent;
 
-    public CCardListAdapter(App app, String familyId, CCardVH.ItemInteractionListener
+    public CCardListAdapter(App app, String familyId, ItemInteractionListener<CCard>
             itemInteractionListener) {
         cCardDao = app.getDaoSession().getCCardDao();
         addonCardDao = app.getDaoSession().getAddonCardDao();

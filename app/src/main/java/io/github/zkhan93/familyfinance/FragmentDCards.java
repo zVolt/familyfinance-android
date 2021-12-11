@@ -28,12 +28,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import io.github.zkhan93.familyfinance.adapters.DCardListAdapter;
+import io.github.zkhan93.familyfinance.events.ConfirmDeleteEvent;
 import io.github.zkhan93.familyfinance.events.CreateEvent;
 import io.github.zkhan93.familyfinance.events.DeleteEvent;
 import io.github.zkhan93.familyfinance.events.UpdateEvent;
+import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.DCard;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.util.Util;
-import io.github.zkhan93.familyfinance.viewholders.DCardVH;
 import io.github.zkhan93.familyfinance.vm.AppState;
 
 /**
@@ -50,7 +52,7 @@ public class FragmentDCards extends Fragment {
     private DatabaseReference baseCardRef;
     private DCardListAdapter.AdapterInteraction adapterInteraction;
     private ValueEventListener noContentImageUrlListener;
-    private DCardVH.ItemInteractionListener cardInteractionListener;
+    private ItemInteractionListener cardInteractionListener;
 
     RecyclerView dCardsList;
     ImageView noContent;
@@ -83,7 +85,7 @@ public class FragmentDCards extends Fragment {
                 Util.Log.d(TAG, "loading of no content URL cancelled");
             }
         };
-        cardInteractionListener = new DCardVH.ItemInteractionListener() {
+        cardInteractionListener = new ItemInteractionListener<DCard>() {
             @Override
             public void delete(DCard dCard) {
                 String title = "You want to delete Debit Card " + dCard.getNumber();
@@ -105,13 +107,13 @@ public class FragmentDCards extends Fragment {
             }
 
             @Override
-            public void onView(DCard dCard) {
+            public void view(DCard dCard) {
                 DialogFragmentViewDCard.newInstance(dCard, familyId).show(getParentFragmentManager(),
                         DialogFragmentDcard.TAG);
             }
 
             @Override
-            public void onCopyCardToClipboard(DCard dCard) {
+            public void copyToClipboard(DCard dCard) {
 
             }
         };
@@ -232,6 +234,14 @@ public class FragmentDCards extends Fragment {
         if (event.getItem() instanceof DCard) {
             DCard dCard = (DCard) event.getItem();
             baseCardRef.child(dCard.getNumber()).setValue(dCard);
+        }
+    }
+    @Subscribe()
+    public void confirmDelete(ConfirmDeleteEvent event) {
+        if (event == null || event.getItem() == null) return;
+        if (event.getItem() instanceof CCard) {
+            DCard card = (DCard) event.getItem();
+            cardInteractionListener.delete(card);
         }
     }
 }

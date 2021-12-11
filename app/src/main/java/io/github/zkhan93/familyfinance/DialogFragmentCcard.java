@@ -1,10 +1,11 @@
 package io.github.zkhan93.familyfinance;
 
+import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,12 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,28 +31,27 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
+import io.github.zkhan93.familyfinance.events.ConfirmDeleteEvent;
+import io.github.zkhan93.familyfinance.events.CreateEvent;
+import io.github.zkhan93.familyfinance.events.UpdateEvent;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.util.ExpiryTextWatcher;
 import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 import io.github.zkhan93.familyfinance.util.Util;
-
-import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
 
 /**
  * Created by zeeshan on 19/7/17.
  */
 
 public class DialogFragmentCcard extends DialogFragment implements DialogInterface
-        .OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher, View.OnClickListener,
+        .OnClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener,
         DialogFragmentBillingCycle.OnBillingCycleSelectListener {
     public static final String TAG = DialogFragmentCcard.class.getSimpleName();
     public static final String ARG_FAMILY_ID = "familyId";
@@ -74,37 +80,31 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
     private int billingDay, paymentDay;
     private String checkCardNumber;
     private CCard cCard;
-    private TextWatcher expiresOnTextWatcher;
+    private ExpiryTextWatcher expiresOnTextWatcher;
+    private TextWatcherProxy cardNumberTextWatcher;
     private BankSpinnerAdapter bankSpinnerAdapter;
     private View rootView;
     private ValueEventListener cardNumberChecker;
 
     {
-        expiresOnTextWatcher = new TextWatcherProxy() {
+        cardNumberTextWatcher = new TextWatcherProxy() {
             @Override
-            public void afterTextChanged(Editable s) {
-                String value = s.toString();
-                value = value.replace("/", "");
-                if (value.length() == 1) {
-                    int num = Integer.parseInt(value);
-                    if (num > 1)
-                        value = "1";
-                } else if (value.length() == 2) {
-                    int num = Integer.parseInt(value);
-                    if (num == 0)
-                        value = "1";
-                    else if (num > 12)
-                        value = "12";
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence == null || charSequence.toString().isEmpty()) {
+                    ((AlertDialog) getDialog())
+                            .getButton(DialogInterface.BUTTON_POSITIVE)
+                            .setEnabled(false);
+                } else {
+                    //card number check if the card already exists
+                    checkCardNumber = charSequence.toString();
+                    FirebaseDatabase.getInstance()
+                            .getReference("ccards")
+                            .child(familyId)
+                            .child(checkCardNumber).addListenerForSingleValueEvent(cardNumberChecker);
                 }
-                if (value.length() > 2) {
-                    value = value.substring(0, 2) + "/" + value.substring(2);
-                }
-                expiresOn.removeTextChangedListener(this);
-                expiresOn.setText(value);
-                expiresOn.setSelection(value.length());
-                expiresOn.addTextChangedListener(this);
             }
         };
+
         cardNumberChecker = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -160,7 +160,8 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
 
         builder.setTitle(R.string.title_new_card);
         builder.setPositiveButton(R.string.create, this)
-                .setNegativeButton(android.R.string.cancel, this);
+               .setNegativeButton(android.R.string.cancel, this)
+               .setNeutralButton(R.string.delete, this);
 
         rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_ccard,
                 null);
@@ -184,6 +185,7 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
         moreTitle = rootView.findViewById(R.id.more_title);
         moreFields = rootView.findViewById(R.id.more_fields);
 
+        expiresOnTextWatcher = new ExpiryTextWatcher(expiresOn);
         expiresOn.addTextChangedListener(expiresOnTextWatcher);
         bank.setAdapter(bankSpinnerAdapter);
         bank.setOnItemSelectedListener(this);
@@ -220,15 +222,9 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
             resetBillingCycleText();
             builder.setPositiveButton(R.string.update, this);
         } else {
-            number.addTextChangedListener(this);
+            number.addTextChangedListener(cardNumberTextWatcher);
             number.setVisibility(View.VISIBLE);
-            bankSpinnerAdapter.setOnLoadCompleteListener(new BankSpinnerAdapter
-                    .OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete() {
-                    bank.setSelection(0);
-                }
-            });
+            bankSpinnerAdapter.setOnLoadCompleteListener(() -> bank.setSelection(0));
         }
         builder.setView(rootView);
         return builder.create();
@@ -251,70 +247,64 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        String amount;
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
-                String number = this.number.getText().toString().trim();
-                //no card can be created without a valid number
-                if (number.isEmpty()) return;
-                CCard newCcard = new CCard();
-                FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (fbUser != null)
-                    newCcard.setUpdatedByMemberId(fbUser.getUid());
-                newCcard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
-                selectedBankId = selectedBankId.equals(BankSpinnerAdapter.OTHER_BANK) ?
-                        otherBank.getText().toString() : selectedBankId;
-                newCcard.setBank(selectedBankId);
-                newCcard.setName(cardName.getText().toString());
-                newCcard.setNumber(number);
-                newCcard.setBillingDay(billingDay);
-                newCcard.setPaymentDay(paymentDay);
-                newCcard.setCardholder(cardHolder.getText().toString());
-                amount = maxLimit.getText().toString().trim();
-                if (amount.length() == 0) amount = "0";
-                newCcard.setMaxLimit(Float.parseFloat(amount));
-                amount = consumedLimit.getText().toString().trim();
-                if (amount.length() == 0) amount = "0";
-                newCcard.setConsumedLimit(Float.parseFloat(amount));
-                newCcard.setCvv(cvv.getText().toString());
-                newCcard.setPhoneNumber(phoneNumber.getText().toString());
-                try {
-                    newCcard.setExpireOn(EXPIRE_ON.
-                            parse(expiresOn.getText().toString())
-                            .getTime());
-                } catch (ParseException ex) {
-                    newCcard.setExpireOn(-1);
+                CCard newCard = buildUpdatedCard();
+                if (cCard == null)
+                    EventBus.getDefault().post(new CreateEvent<>(newCard));
+                else{
+                    newCard.setNumber(cCard.getNumber());
+                    EventBus.getDefault().post(new UpdateEvent<>(newCard));
                 }
-                newCcard.setUserid(userid.getText().toString());
-                newCcard.setPassword(password.getText().toString());
-                createCard(newCcard);
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
+                break;
+            case DialogInterface.BUTTON_NEUTRAL:
+                dialog.cancel();
+                EventBus.getDefault().post(new ConfirmDeleteEvent<>(cCard));
                 break;
             default:
                 Log.d(TAG, "action not implemented/invalid action");
         }
     }
-
-    /**
-     * can have 2 case
-     * case I : Create new card - noting to worry about, just make sure you do not override an
-     * existing card
-     * case II: Update a exsisting card details, make sure that the update does not include
-     * change in card number because that will cause a new card to get created
-     *
-     * @param newCcard
-     */
-    public void createCard(CCard newCcard) {
-        if (newCcard == null)
-            return;
-        if (cCard == null || newCcard.getNumber().trim().equals(cCard.getNumber().trim()))
-            FirebaseDatabase.getInstance()
-                    .getReference("ccards")
-                    .child(familyId)
-                    .child(newCcard.getNumber())
-                    .setValue(newCcard);
+    private CCard buildUpdatedCard(){
+        String amount;
+        String number = this.number.getText().toString().trim();
+        //no card can be created without a valid number
+        if (number.isEmpty()) return null;
+        CCard newCcard = new CCard();
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null)
+            newCcard.setUpdatedByMemberId(fbUser.getUid());
+        newCcard.setUpdatedOn(Calendar.getInstance().getTimeInMillis());
+        selectedBankId = selectedBankId.equals(BankSpinnerAdapter.OTHER_BANK) ?
+                otherBank.getText().toString() : selectedBankId;
+        newCcard.setBank(selectedBankId);
+        newCcard.setName(cardName.getText().toString());
+        newCcard.setNumber(number);
+        newCcard.setBillingDay(billingDay);
+        newCcard.setPaymentDay(paymentDay);
+        newCcard.setCardholder(cardHolder.getText().toString());
+        amount = maxLimit.getText().toString().trim();
+        if (amount.length() == 0) amount = "0";
+        newCcard.setMaxLimit(Float.parseFloat(amount));
+        amount = consumedLimit.getText().toString().trim();
+        if (amount.length() == 0) amount = "0";
+        newCcard.setConsumedLimit(Float.parseFloat(amount));
+        newCcard.setCvv(cvv.getText().toString());
+        newCcard.setPhoneNumber(phoneNumber.getText().toString());
+        try {
+            newCcard.setExpireOn(EXPIRE_ON.
+                    parse(expiresOn.getText().toString())
+                    .getTime());
+        } catch (ParseException ex) {
+            newCcard.setExpireOn(-1);
+        }
+        newCcard.setUserid(userid.getText().toString());
+        newCcard.setPassword(password.getText().toString());
+        return newCcard;
     }
+
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
@@ -328,32 +318,6 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        if (charSequence == null || charSequence.toString().isEmpty()) {
-            ((AlertDialog) getDialog())
-                    .getButton(DialogInterface.BUTTON_POSITIVE)
-                    .setEnabled(false);
-        } else {
-            //card number check if the card already exists
-            checkCardNumber = charSequence.toString();
-            FirebaseDatabase.getInstance()
-                    .getReference("ccards")
-                    .child(familyId)
-                    .child(checkCardNumber).addListenerForSingleValueEvent(cardNumberChecker);
-        }
-    }
-
-    @Override
-    public void afterTextChanged(Editable editable) {
 
     }
 

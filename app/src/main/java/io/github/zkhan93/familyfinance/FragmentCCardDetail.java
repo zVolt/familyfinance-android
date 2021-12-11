@@ -121,23 +121,8 @@ public class FragmentCCardDetail extends Fragment {
         setCardDetails();
         setUpCards();
         setUpChart();
-        initFab();
         return rootView;
     }
-
-    private void initFab() {
-        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
-        appState.enableFab(R.drawable.ic_edit, TAG);
-        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
-            String id = event.getContentIfNotHandled();
-            Util.Log.d(TAG, "fab click for: %s", id);
-            if (id !=null && id.equals(TAG)) {
-                DialogFragmentCcard.newInstance(familyId, card).show(getParentFragmentManager(),
-                        DialogFragmentCcard.TAG);
-            }
-        });
-    }
-
 
     private void setUpChart() {
         List<Entry> entries = new ArrayList<>();

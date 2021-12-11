@@ -13,20 +13,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
-import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.models.DCard;
-import io.github.zkhan93.familyfinance.models.DCardDao;
 import io.github.zkhan93.familyfinance.models.DaoSession;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.viewholders.DCardVH;
 
 public class DCardListAdapter extends FirebaseRecyclerAdapter<DCard, RecyclerView.ViewHolder> {
     public static final String TAG = DCardListAdapter.class.getSimpleName();
 
-    private DCardVH.ItemInteractionListener itemInteractionListener;
+    private ItemInteractionListener itemInteractionListener;
     private AdapterInteraction adapterInteraction;
     private DaoSession daoSession;
 
-    public DCardListAdapter(App app, DCardVH.ItemInteractionListener
+    public DCardListAdapter(App app, ItemInteractionListener
             itemInteractionListener, FirebaseRecyclerOptions<DCard> options, AdapterInteraction adapterInteraction) {
         super(options);
         this.itemInteractionListener = itemInteractionListener;

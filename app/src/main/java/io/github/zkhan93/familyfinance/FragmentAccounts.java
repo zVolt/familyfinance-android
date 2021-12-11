@@ -9,6 +9,12 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -17,11 +23,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
 import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
 import io.github.zkhan93.familyfinance.models.Account;
@@ -190,6 +191,19 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         Util.quickCopy(getActivity().getApplicationContext(), account);
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        accountListAdapter.onSearch(query);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        accountListAdapter.onSearch(newText);
+        return true;
+    }
+
+
     /**
      * Events fired from DialogFragmentConfirm
      */
@@ -204,16 +218,6 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        accountListAdapter.onSearch(query);
-        return true;
-    }
 
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        accountListAdapter.onSearch(newText);
-        return true;
-    }
 
 }

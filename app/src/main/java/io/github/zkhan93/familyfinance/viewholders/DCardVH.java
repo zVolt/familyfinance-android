@@ -24,6 +24,7 @@ import java.util.Date;
 
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.DCard;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.util.Util;
 
 
@@ -97,7 +98,7 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
         };
     }
 
-    public DCardVH(View itemView, @NonNull DCardVH.ItemInteractionListener
+    public DCardVH(View itemView, @NonNull ItemInteractionListener
             itemInteractionListener) {
         super(itemView);
         this.itemInteractionListener = itemInteractionListener;
@@ -155,7 +156,7 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
     @Override
     public void onClick(View view) {
-        itemInteractionListener.onView(dCard);
+        itemInteractionListener.view(dCard);
     }
 
     @Override
@@ -165,18 +166,5 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
             return true;
         }
         return false;
-    }
-
-
-    public interface ItemInteractionListener {
-
-        void delete(DCard cCard);
-
-        void edit(DCard cCard);
-
-        void onView(DCard cCard);
-
-        void onCopyCardToClipboard(DCard cCard);
-
     }
 }
