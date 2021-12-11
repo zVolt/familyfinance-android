@@ -1,10 +1,10 @@
 package io.github.zkhan93.familyfinance;
 
+import static io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter.OTHER_BANK;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +13,12 @@ import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -23,16 +29,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Calendar;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
-
-import static io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter.OTHER_BANK;
+import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 
 
 /**
@@ -41,7 +41,7 @@ import static io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter.OTHER_
 
 public class DialogFragmentAddAccount extends DialogFragment implements DialogInterface
         .OnClickListener, InsertTask.Listener<Account>, AdapterView.OnItemSelectedListener, View
-        .OnClickListener, TextWatcher {
+        .OnClickListener {
 
     public static final String TAG = DialogFragmentAddAccount.class.getSimpleName();
     public static final String ARG_FAMILY_ID = "familyId";
@@ -68,6 +68,21 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     private BankSpinnerAdapter bankSpinnerAdapter;
     private String selectedBankId;
     private View rootView;
+    private TextWatcherProxy numberChangeWatcher;
+
+    {
+        numberChangeWatcher = new TextWatcherProxy() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence == null || charSequence.toString().isEmpty()) {
+                    ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled
+                            (false);
+                } else {
+                    ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                }
+            }
+        };
+    }
 
     public static DialogFragmentAddAccount newInstance(String familyId) {
         DialogFragmentAddAccount dialogFragmentAddAccount = new DialogFragmentAddAccount();
@@ -160,7 +175,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
                 }
             }, 100);
         }
-        number.addTextChangedListener(this);
+        number.addTextChangedListener(numberChangeWatcher);
         builder.setView(rootView);
         return builder.create();
     }
@@ -266,25 +281,6 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
         }
     }
 
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        if (charSequence == null || charSequence.toString().isEmpty()) {
-            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled
-                    (false);
-        } else {
-            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-        }
-    }
-
-    @Override
-    public void afterTextChanged(Editable editable) {
-
-    }
 
     @Override
     public void onInsertTaskComplete(List<Account> items) {

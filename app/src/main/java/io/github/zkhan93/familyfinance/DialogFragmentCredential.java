@@ -4,21 +4,22 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.google.firebase.database.FirebaseDatabase;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.firebase.database.FirebaseDatabase;
+
 import io.github.zkhan93.familyfinance.adapters.CredentialTypeSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.Credential;
 import io.github.zkhan93.familyfinance.models.CredentialType;
+import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 import io.github.zkhan93.familyfinance.util.Util;
 
 /**
@@ -42,20 +43,10 @@ public class DialogFragmentCredential extends DialogFragment implements DialogIn
     private CredentialTypeSpinnerAdapter typeAdapter;
     private Credential credential;
     private String familyId;
-    private TextWatcher allFieldsTextChangeWatcher;
+    private TextWatcherProxy allFieldsTextChangeWatcher;
 
     {
-        allFieldsTextChangeWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+        allFieldsTextChangeWatcher = new TextWatcherProxy() {
             @Override
             public void afterTextChanged(Editable editable) {
                 syncPositiveButton();

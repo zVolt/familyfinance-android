@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 import io.github.zkhan93.familyfinance.util.Util;
 
 import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
@@ -79,17 +80,7 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
     private ValueEventListener cardNumberChecker;
 
     {
-        expiresOnTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+        expiresOnTextWatcher = new TextWatcherProxy() {
             @Override
             public void afterTextChanged(Editable s) {
                 String value = s.toString();

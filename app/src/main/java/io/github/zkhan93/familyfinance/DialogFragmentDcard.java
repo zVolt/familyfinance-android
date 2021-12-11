@@ -39,11 +39,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
-import io.github.zkhan93.familyfinance.events.CreateEvent;
 import io.github.zkhan93.familyfinance.events.DeleteEvent;
 import io.github.zkhan93.familyfinance.events.UpdateEvent;
 import io.github.zkhan93.familyfinance.models.DCard;
-import io.github.zkhan93.familyfinance.util.SimpleTextWatcher;
+import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 
 /**
  * Created by zeeshan on 19/7/17.
@@ -83,7 +82,7 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
     private ValueEventListener cardNumberChecker;
 
     {
-        expiresOnTextWatcher = new SimpleTextWatcher() {
+        expiresOnTextWatcher = new TextWatcherProxy() {
             @Override
             public void afterTextChanged(Editable s) {
                 String value = s.toString();

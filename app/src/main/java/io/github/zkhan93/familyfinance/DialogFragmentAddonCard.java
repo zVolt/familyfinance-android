@@ -30,6 +30,7 @@ import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
+import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 
 import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
 
@@ -56,16 +57,7 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
     private TextWatcher expiresOnTextWatcher;
 
     {
-        expiresOnTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
+        expiresOnTextWatcher = new TextWatcherProxy() {
 
             @Override
             public void afterTextChanged(Editable s) {
