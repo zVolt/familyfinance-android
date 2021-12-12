@@ -50,7 +50,7 @@ public class DialogFragmentViewDCard extends DialogFragment implements DialogInt
     private String familyId;
     private DatabaseReference cardRef;
     private Map<String, Object> updateMap;
-    private ValueEventListener bankImageLinkListener;
+    private final ValueEventListener bankImageLinkListener;
 
     ImageView bank;
     TextView cardHolder;
@@ -65,7 +65,8 @@ public class DialogFragmentViewDCard extends DialogFragment implements DialogInt
     ImageView updateBy;
     TextView updatedOn;
 
-    {
+    public DialogFragmentViewDCard() {
+        super();
         bankImageLinkListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

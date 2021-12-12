@@ -60,9 +60,10 @@ public class FragmentSummary extends Fragment {
     private String familyId;
     boolean ccLoaded, accountLoaded;
     private float amountTotal, amountConsumedCC, amountRemainingCC, amountAccount;
-    private List<CCard> cCards;
-    private List<Account> accounts;
-    private ChildEventListener ccardChildEventListener, accountChildEventListener;
+    private final List<CCard> cCards;
+    private final List<Account> accounts;
+    private final ChildEventListener ccardChildEventListener;
+    private final ChildEventListener accountChildEventListener;
     private int count = 0;
     public FragmentSummary() {
         // Required empty public constructor
@@ -82,7 +83,7 @@ public class FragmentSummary extends Fragment {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                CCard oldCard = null;
+                CCard oldCard;
                 CCard cCard = dataSnapshot.getValue(CCard.class);
                 if (cCard == null) return;
                 cCard.setNumber(dataSnapshot.getKey());
@@ -144,7 +145,7 @@ public class FragmentSummary extends Fragment {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Account oldAccount = null;
+                Account oldAccount;
                 Account account = dataSnapshot.getValue(Account.class);
                 if (account == null) return;
                 account.setAccountNumber(dataSnapshot.getKey());

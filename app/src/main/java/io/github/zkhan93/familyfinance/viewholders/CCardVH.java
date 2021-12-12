@@ -8,6 +8,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.palette.graphics.Palette;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -20,13 +26,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.lang.ref.WeakReference;
 import java.util.Date;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.palette.graphics.Palette;
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.util.Util;
 
 /**
@@ -49,13 +51,15 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
     TextView tvCvv;
     ConstraintLayout container;
 
-    private Context context;
+    private final Context context;
 
-    private WeakReference<ItemInteractionListener> itemInteractionListener;
+    private final WeakReference<ItemInteractionListener<CCard>> itemInteractionListenerRef;
     private CCard cCard;
-    private MyValueEventListener bankImageLinkListener, cardTypeImageLinkListener, bankNameListener;
+    private MyValueEventListener bankImageLinkListener;
+    private MyValueEventListener cardTypeImageLinkListener;
+    private MyValueEventListener bankNameListener;
 
-    {
+    private void init() {
         bankImageLinkListener = new MyValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -106,9 +110,9 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
         };
     }
 
-    public CCardVH(View itemView, @NonNull ItemInteractionListener itemInteractionListener) {
+    public CCardVH(View itemView, @NonNull ItemInteractionListener<CCard> itemInteractionListener) {
         super(itemView);
-        this.itemInteractionListener = new WeakReference<>(itemInteractionListener);
+        this.itemInteractionListenerRef = new WeakReference<>(itemInteractionListener);
         context = itemView.getContext();
 
         bankLogo = itemView.findViewById(R.id.bank_icon);
@@ -123,6 +127,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
         container = itemView.findViewById(R.id.container);
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
+        this.init();
     }
 
     private void createPaletteAsync(Bitmap bitmap) {
@@ -136,9 +141,11 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
             }
         });
     }
+
     public void setCCard(CCard cCard) {
         setCCard(cCard, true);
     }
+
     public void setCCard(CCard cCard, boolean secure) {
         this.cCard = cCard;
 
@@ -190,36 +197,20 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        if (itemInteractionListener.get() != null)
-            itemInteractionListener.get().onView(cCard);
+        ItemInteractionListener<CCard> itemInteractionListener = itemInteractionListenerRef.get();
+        if (itemInteractionListener != null)
+            itemInteractionListener.view(cCard);
     }
 
     @Override
     public boolean onLongClick(View view) {
-        if (itemInteractionListener.get() != null)
-            itemInteractionListener.get().onLongPress(cCard);
+        ItemInteractionListener<CCard> itemInteractionListener = itemInteractionListenerRef.get();
+        if (itemInteractionListener != null)
+            itemInteractionListener.edit(cCard);
         return true;
     }
 
-    public interface ItemInteractionListener {
-
-        @Deprecated
-        void delete(CCard cCard);
-
-        @Deprecated
-        void edit(CCard cCard);
-
-        @Deprecated
-        void addAddonCard(CCard cCard);
-
-        void onView(CCard cCard);
-
-        void onLongPress(CCard cCard);
-
-    }
-
     public abstract static class MyValueEventListener implements ValueEventListener {
-
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
             Log.d(TAG, "loading cancelled");

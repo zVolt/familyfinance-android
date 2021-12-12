@@ -4,7 +4,6 @@ package io.github.zkhan93.familyfinance;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +29,7 @@ import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
+import io.github.zkhan93.familyfinance.util.ExpiryTextWatcher;
 
 import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
 
@@ -50,48 +50,9 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
     EditText cvv;
     TextInputEditText phoneNumber;
 
-
     private String familyId, mainCardNumber;
     private AddonCard addonCard;
     private TextWatcher expiresOnTextWatcher;
-
-    {
-        expiresOnTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String value = s.toString();
-                value = value.replace("/", "");
-                if (value.length() == 1) {
-                    int num = Integer.parseInt(value);
-                    if (num > 1)
-                        value = "1";
-                } else if (value.length() == 2) {
-                    int num = Integer.parseInt(value);
-                    if (num == 0)
-                        value = "1";
-                    else if (num > 12)
-                        value = "12";
-                }
-                if (value.length() > 2) {
-                    value = value.substring(0, 2) + "/" + value.substring(2);
-                }
-                expiresOn.removeTextChangedListener(this);
-                expiresOn.setText(value);
-                expiresOn.setSelection(value.length());
-                expiresOn.addTextChangedListener(this);
-            }
-        };
-    }
 
     public static DialogFragmentAddonCard newInstance(String familyId, String mainCardNumber) {
         DialogFragmentAddonCard dialogFragmentAddonCard = new DialogFragmentAddonCard();
@@ -141,6 +102,7 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
         expiresOn = rootView.findViewById(R.id.expires_on);
         cvv = rootView.findViewById(R.id.cvv);
         phoneNumber = rootView.findViewById(R.id.phone_number);
+        expiresOnTextWatcher = new ExpiryTextWatcher(expiresOn);
         expiresOn.addTextChangedListener(expiresOnTextWatcher);
         if (addonCard != null) {
             name.setText(addonCard.getName());
@@ -151,7 +113,6 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
             builder.setPositiveButton(R.string.update, this);
         }
         builder.setView(rootView);
-
         return builder.create();
     }
 

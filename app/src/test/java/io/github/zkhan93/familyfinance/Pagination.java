@@ -1,18 +1,13 @@
 package io.github.zkhan93.familyfinance;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.FirebaseDatabase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import io.github.zkhan93.familyfinance.adapters.OtpListAdapter;
 import io.github.zkhan93.familyfinance.models.DaoSession;
 import io.github.zkhan93.familyfinance.models.MemberDao;
 

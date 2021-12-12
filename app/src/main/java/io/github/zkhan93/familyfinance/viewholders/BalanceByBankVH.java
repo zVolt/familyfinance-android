@@ -25,7 +25,7 @@ public class BalanceByBankVH extends RecyclerView.ViewHolder implements ValueEve
     ImageView avatar;
     TextView balance;
 
-    private DatabaseReference imageRef;
+    private final DatabaseReference imageRef;
 
     public BalanceByBankVH(View itemView) {
         super(itemView);

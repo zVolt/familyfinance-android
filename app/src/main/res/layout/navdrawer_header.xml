@@ -56,23 +56,23 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:src="@drawable/ic_exit"
         android:background="?selectableItemBackgroundBorderless"
-        android:tint="@color/colorPrimary"
         android:layout_width="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/switch_family"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:tint="@color/colorPrimary" />
 
     <ImageButton
         android:id="@+id/switch_family"
         style="@style/Widget.MaterialComponents.Button"
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_group"
-        android:tint="@color/colorPrimary"
         android:layout_width="wrap_content"
         app:layout_constraintStart_toEndOf="@id/logout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/logout"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:tint="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

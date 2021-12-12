@@ -9,6 +9,12 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -17,16 +23,11 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import io.github.zkhan93.familyfinance.adapters.AccountListAdapter;
-import io.github.zkhan93.familyfinance.events.DeleteConfirmedEvent;
+import io.github.zkhan93.familyfinance.adapters.AccountListAdapterOld;
+import io.github.zkhan93.familyfinance.events.DeleteEvent;
 import io.github.zkhan93.familyfinance.models.Account;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.util.Util;
-import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 import io.github.zkhan93.familyfinance.vm.AppState;
 
 
@@ -35,7 +36,7 @@ import io.github.zkhan93.familyfinance.vm.AppState;
  * Use the {@link FragmentAccounts#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentAccounts extends Fragment implements AccountVH.ItemInteractionListener,
+public class FragmentAccounts extends Fragment implements ItemInteractionListener<Account>,
         SearchView.OnQueryTextListener {
 
     public static final String TAG = FragmentAccounts.class.getSimpleName();
@@ -44,7 +45,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
 
     private String familyId;
-    private AccountListAdapter accountListAdapter;
+    private AccountListAdapterOld accountListAdapter;
     RecyclerView accountsList;
     private AppState appState;
     ValueEventListener connectionEventListener = new ValueEventListener() {
@@ -107,7 +108,7 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
         FirebaseDatabase.getInstance().getReference(".info/connected").addValueEventListener
                 (connectionEventListener);
-        accountListAdapter = new AccountListAdapter((App) getActivity().getApplication(), familyId,
+        accountListAdapter = new AccountListAdapterOld((App) getActivity().getApplication(), familyId,
                 FragmentAccounts.this);
         accountsList.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext
                 ()));
@@ -128,9 +129,9 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
 
     @Override
     public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
         accountListAdapter.unregisterForEvents();
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -186,21 +187,8 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
     }
 
     @Override
-    public void onLongPress(Account account) {
+    public void copyToClipboard(Account account) {
         Util.quickCopy(getActivity().getApplicationContext(), account);
-    }
-
-    /**
-     * Events fired from DialogFragmentConfirm
-     */
-    @Subscribe()
-    public void deleteActiveAccountConfirmed(DeleteConfirmedEvent<Account> event) {
-        if (event.getItem() != null) {
-            ((App) getActivity().getApplication()).getDaoSession().getAccountDao().deleteByKey
-                    (event.getItem().getAccountNumber());
-            accountListAdapter.deleteAccount(event.getItem().getAccountNumber());
-        }
-
     }
 
     @Override
@@ -214,5 +202,36 @@ public class FragmentAccounts extends Fragment implements AccountVH.ItemInteract
         accountListAdapter.onSearch(newText);
         return true;
     }
+
+
+    /**
+     * Events fired from DialogFragmentConfirm
+     */
+    @Subscribe()
+    public void deleteAccount(DeleteEvent<Account> event) {
+        if (event.getItem() != null) {
+            Account account = (Account)event.getItem();
+            ((App) getActivity().getApplication()).getDaoSession().getAccountDao().deleteByKey
+                    (account.getAccountNumber());
+            accountListAdapter.deleteAccount(account.getAccountNumber());
+        }
+    }
+
+    @Subscribe()
+    public void createAccount(DeleteEvent<Account> event) {
+        if (event.getItem() != null) {
+            Account account = (Account)event.getItem();
+
+        }
+    }
+
+    @Subscribe()
+    public void updateAccount(DeleteEvent<Account> event) {
+        if (event.getItem() != null) {
+            Account account = (Account)event.getItem();
+
+        }
+    }
+
 
 }

@@ -20,7 +20,7 @@ import io.github.zkhan93.familyfinance.events.InsertEvent;
 public class InsertTask<D extends AbstractDao, T> extends AsyncTask<T, Void, List<T>> {
     public static final String TAG = InsertTask.class.getSimpleName();
 
-    private WeakReference<D> daoWeakReference;
+    private final WeakReference<D> daoWeakReference;
     private WeakReference<Listener<T>> listenerWeakReference;
     private boolean clean;
 

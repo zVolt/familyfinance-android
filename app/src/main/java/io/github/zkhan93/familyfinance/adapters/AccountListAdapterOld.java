@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.events.InsertEvent;
@@ -30,6 +31,7 @@ import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.models.AccountDao;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.tasks.LoadFromDbTask;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.viewholders.AccountVH;
 import io.github.zkhan93.familyfinance.viewholders.FooterVH;
 import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
@@ -38,14 +40,14 @@ import io.github.zkhan93.familyfinance.viewholders.NoItemVH;
  * Created by zeeshan on 8/7/17.
  */
 
-public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
+public class AccountListAdapterOld extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
         InsertTask.Listener<Account>, LoadFromDbTask.Listener<Account>,
         ChildEventListener, ValueEventListener {
-    public static final String TAG = AccountListAdapter.class.getSimpleName();
+    public static final String TAG = AccountListAdapterOld.class.getSimpleName();
     private ArrayList<Account> accounts;
-    private AccountVH.ItemInteractionListener itemInteractionListener;
-    private DatabaseReference accountsRef;
-    private AccountDao accountDao;
+    private final ItemInteractionListener<Account> itemInteractionListener;
+    private final DatabaseReference accountsRef;
+    private final AccountDao accountDao;
     /**
      * Ignore OnChildAdded() calls if its value is true else add/update the new item received
      * from firebase,
@@ -53,7 +55,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      */
     private boolean ignoreChildEvents;
 
-    public AccountListAdapter(App app, String familyId, AccountVH.ItemInteractionListener
+    public AccountListAdapterOld(App app, String familyId, ItemInteractionListener<Account>
             itemInteractionListener) {
         accountDao = app.getDaoSession().getAccountDao();
         this.accounts = new ArrayList<>();

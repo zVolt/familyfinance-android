@@ -52,7 +52,7 @@ public class DialogFragmentViewAccount extends DialogFragment implements DialogI
     private DatabaseReference accountRef;
     private FirebaseUser firebaseUser;
     private Map<String, Object> updateMap;
-    private ValueEventListener bankImageLinkListener;
+    private final ValueEventListener bankImageLinkListener;
 
     ImageView bank;
     TextView accountNumber;
@@ -67,7 +67,8 @@ public class DialogFragmentViewAccount extends DialogFragment implements DialogI
     ImageView updatedBy;
     TextView updatedOn;
 
-    {
+    public DialogFragmentViewAccount() {
+        super();
         bankImageLinkListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

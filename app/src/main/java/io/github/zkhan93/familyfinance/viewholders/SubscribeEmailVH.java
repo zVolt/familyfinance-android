@@ -11,7 +11,7 @@ import io.github.zkhan93.familyfinance.callbacks.SubscribeEmailCallback;
  */
 
 public class SubscribeEmailVH extends RecyclerView.ViewHolder {
-    private SubscribeEmailCallback subscribeEmailCallback;
+    private final SubscribeEmailCallback subscribeEmailCallback;
 
     public SubscribeEmailVH(View itemView, SubscribeEmailCallback subscribeEmailCallback) {
         super(itemView);

@@ -54,20 +54,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     ProgressBar progressBar;
     TextView progressMsg;
 
-    {
-        saveUserDataListener = new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                progressBar.setVisibility(View.GONE);
-                progressMsg.setText(getString(R.string.progress_success));
-                if (task.isSuccessful()) {
-                    startMainActivity();
-                } else {
-                    //writing to firebase failed for some reason
-                    if (task.getException() != null)
-                        Log.d(TAG, "failed write operation" + task.getException()
-                                .getLocalizedMessage());
-                }
+    public LoginActivity() {
+        super();
+        saveUserDataListener = task -> {
+            progressBar.setVisibility(View.GONE);
+            progressMsg.setText(getString(R.string.progress_success));
+            if (task.isSuccessful()) {
+                startMainActivity();
+            } else {
+                //writing to firebase failed for some reason
+                if (task.getException() != null)
+                    Log.d(TAG, "failed write operation" + task.getException()
+                            .getLocalizedMessage());
             }
         };
     }

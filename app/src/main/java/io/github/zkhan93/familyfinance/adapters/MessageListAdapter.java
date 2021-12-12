@@ -32,11 +32,11 @@ import io.github.zkhan93.familyfinance.viewholders.MessageVH;
 public class MessageListAdapter extends RecyclerView.Adapter<MessageVH> implements LoadFromDbTask
         .Listener<Message>, InsertTask.Listener<BaseModel>, ChildEventListener,
         ValueEventListener {
-    private List<Message> messageList;
-    private String meId;
-    private String familyId;
-    private MessageDao messageDao;
-    private MessageListener messageListener;
+    private final List<Message> messageList;
+    private final String meId;
+    private final String familyId;
+    private final MessageDao messageDao;
+    private final MessageListener messageListener;
 
     public MessageListAdapter(Context context, String familyId, MessageListener messageListener) {
         messageList = new ArrayList<>();

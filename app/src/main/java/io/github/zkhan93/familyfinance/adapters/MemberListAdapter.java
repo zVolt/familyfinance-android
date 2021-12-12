@@ -36,9 +36,9 @@ public class MemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public static final String TAG = MemberListAdapter.class.getSimpleName();
     protected List<Member> members;
     protected Comparator<Member> comparator;
-    private DatabaseReference membersRef;
+    private final DatabaseReference membersRef;
     private boolean ignoreChildEvents;
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
 
     public MemberListAdapter(App app, String familyId) {
         this.members = new ArrayList<>();

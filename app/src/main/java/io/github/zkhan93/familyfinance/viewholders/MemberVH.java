@@ -29,7 +29,7 @@ public class MemberVH extends RecyclerView.ViewHolder {
     ImageView avatar;
     ImageView state;
 
-    private Context context;
+    private final Context context;
 
     public MemberVH(View itemView) {
         super(itemView);

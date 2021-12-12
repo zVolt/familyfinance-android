@@ -142,26 +142,26 @@
                     <TextView
                         android:id="@+id/tv_phone_number"
                         style="@style/AppTheme.Text.Muted"
-                        android:drawableStart="@drawable/ic_phone_black_24dp"
                         android:drawablePadding="@dimen/small"
                         android:backgroundTint="@color/colorPrimary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/phone_number"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/phone_number" />
+                        app:layout_constraintTop_toTopOf="@+id/phone_number"
+                        app:drawableStartCompat="@drawable/ic_phone_black_24dp" />
 
                     <TextView
                         android:id="@+id/tv_bill_date"
                         style="@style/AppTheme.Text.Muted"
-                        android:drawableStart="@drawable/ic_today"
                         android:drawablePadding="@dimen/small"
-                        android:drawableTint="@color/colorPrimary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/billing_date"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/bill_date" />
+                        app:layout_constraintTop_toTopOf="@+id/bill_date"
+                        app:drawableTint="@color/colorPrimary"
+                        app:drawableStartCompat="@drawable/ic_today" />
 
                     <TextView
                         android:id="@+id/tv_user_id"
@@ -169,11 +169,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/userid"
-                        android:drawableStart="@drawable/ic_person"
                         android:drawablePadding="@dimen/small"
-                        android:drawableTint="@color/colorPrimary"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/userid" />
+                        app:layout_constraintTop_toTopOf="@+id/userid"
+                        app:drawableTint="@color/colorPrimary"
+                        app:drawableStartCompat="@drawable/ic_person" />
 
                     <TextView
                         android:id="@+id/tv_password"
@@ -181,11 +181,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/password"
-                        android:drawableStart="@drawable/ic_eye"
                         android:drawablePadding="@dimen/small"
-                        android:drawableTint="@color/colorPrimary"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/password" />
+                        app:layout_constraintTop_toTopOf="@+id/password"
+                        app:drawableTint="@color/colorPrimary"
+                        app:drawableStartCompat="@drawable/ic_eye" />
 
                     <TextView
                         android:id="@+id/tv_card_limit"
@@ -193,11 +193,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/card_limit"
-                        android:drawableStart="@drawable/ic_money"
                         android:drawablePadding="@dimen/small"
-                        android:drawableTint="@color/colorPrimary"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/card_limit" />
+                        app:layout_constraintTop_toTopOf="@+id/card_limit"
+                        app:drawableTint="@color/colorPrimary"
+                        app:drawableStartCompat="@drawable/ic_money" />
 
 
                     <androidx.constraintlayout.widget.Guideline

@@ -11,12 +11,13 @@ public class InsertEvent<T> extends BaseEvent {
     private List<T> items;
 
     public InsertEvent() {
-        items = new ArrayList<>();
+        this.items = new ArrayList<>();
     }
 
     public InsertEvent(List<T> items) {
         if (items == null)
-            items = new ArrayList<>();
+            //noinspection UnusedAssignment
+            this.items = new ArrayList<>();
         else
             this.items = items;
     }

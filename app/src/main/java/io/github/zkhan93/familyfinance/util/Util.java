@@ -90,7 +90,7 @@ public class Util {
     }
 
     public static String copyToClipboard(Context context, ClipboardManager clipboard, String otp) {
-        String message = null;
+        String message;
         if (otp == null)
             message = context.getString(R.string.no_otp_found);
         else {
@@ -169,7 +169,7 @@ public class Util {
             Toast.makeText(context, "Account number copied to clipboard", Toast.LENGTH_SHORT)
                     .show();
         } else {
-            strb.append(String.valueOf(account.getAccountNumber()));
+            strb.append(account.getAccountNumber());
             strb.append('\n');
         }
         strb.append("Name: ");
@@ -189,14 +189,14 @@ public class Util {
             clipboardManager.setPrimaryClip(clip);
             Toast.makeText(context, "Card number copied to clipboard", Toast.LENGTH_SHORT).show();
         } else {
-            strb.append(String.valueOf(addonCard.getNumber()));
+            strb.append(addonCard.getNumber());
             strb.append('\n');
         }
         strb.append("Expiry: ");
         strb.append(CCard.EXPIRE_ON.format(new Date(addonCard.getExpiresOn())));
         strb.append('\n');
         strb.append("CVV: ");
-        strb.append(String.valueOf(addonCard.getCvv()));
+        strb.append(addonCard.getCvv());
         showSimpleNotification(context, "Card details", strb.toString());
     }
 
@@ -209,14 +209,14 @@ public class Util {
             clipboardManager.setPrimaryClip(clip);
             Toast.makeText(context, "Card number copied to clipboard", Toast.LENGTH_SHORT).show();
         } else {
-            strb.append(String.valueOf(cCard.getNumber()));
+            strb.append(cCard.getNumber());
             strb.append('\n');
         }
         strb.append("Expiry: ");
         strb.append(CCard.EXPIRE_ON.format(new Date(cCard.getExpireOn())));
         strb.append('\n');
         strb.append("CVV: ");
-        strb.append(String.valueOf(cCard.getCvv()));
+        strb.append(cCard.getCvv());
         showSimpleNotification(context, "Card details", strb.toString());
     }
 
@@ -318,8 +318,8 @@ public class Util {
                         JSONArray lengths = branRegex.optJSONArray(startingDigit);
                         for (int i = 0; i < lengths.length(); i++) {
                             String length = lengths.optString(i);
-                            int lenRangeStart = 0;
-                            int lenRangeEnd = 0;
+                            int lenRangeStart;
+                            int lenRangeEnd;
                             if (length.contains("-")) {
                                 String[] segs = length.split("-");
                                 lenRangeStart = Integer.parseInt(segs[0]);

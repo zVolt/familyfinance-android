@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -34,21 +33,17 @@ public class FragmentSms extends Fragment implements
 
     private String familyId;
     private OtpListAdapter otpListAdapter;
-    private InfiniteScrollListener infiniteScrollListener;
+    private final InfiniteScrollListener infiniteScrollListener;
 
     RecyclerView otpsList;
 
-    {
+    public FragmentSms() {
         infiniteScrollListener = new InfiniteScrollListener(10) {
             @Override
             public boolean onLoadMore(int totalItemsCount) {
                 return otpListAdapter.loadNextPage();
             }
         };
-    }
-
-    public FragmentSms() {
-        // Required empty public constructor
     }
 
     /**

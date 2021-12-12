@@ -191,7 +191,7 @@ public class MessagingService extends FirebaseMessagingService {
         if (Looper.myLooper() == null) {
             Looper.prepare();
         }
-        String toastMessage = null;
+        String toastMessage;
         if (!otp.isEmpty()) {
             toastMessage = Util.copyToClipboard(context, (ClipboardManager)
                     context.getSystemService(Context.CLIPBOARD_SERVICE), otp);

@@ -41,8 +41,8 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
     private PopupMenu popup;
     private AddonCard addonCard;
-    private ItemInteractionListener itemInteractionListener;
-    private Context context;
+    private final ItemInteractionListener itemInteractionListener;
+    private final Context context;
 
     public AddonCardVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);

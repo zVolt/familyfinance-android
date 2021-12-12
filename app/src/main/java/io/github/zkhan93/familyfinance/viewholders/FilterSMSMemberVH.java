@@ -20,8 +20,8 @@ import io.github.zkhan93.familyfinance.models.Member;
 public class FilterSMSMemberVH extends RecyclerView.ViewHolder implements View.OnClickListener {
     TextView name;
     ImageView avatar;
-    private Context context;
-    private ItemInteractionListener itemInteractionListener;
+    private final Context context;
+    private final ItemInteractionListener itemInteractionListener;
     private Member member;
 
     public FilterSMSMemberVH(View itemView, ItemInteractionListener itemInteractionListener) {

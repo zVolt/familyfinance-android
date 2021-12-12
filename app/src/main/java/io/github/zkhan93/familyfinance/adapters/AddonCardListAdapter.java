@@ -10,6 +10,7 @@ import java.util.List;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.CCard;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
 /**
@@ -18,10 +19,10 @@ import io.github.zkhan93.familyfinance.viewholders.CCardVH;
 
 public class AddonCardListAdapter extends RecyclerView.Adapter<CCardVH> {
     public static String TAG = AddonCardListAdapter.class.getSimpleName();
-    private List<CCard> addonCards;
-    private CCardVH.ItemInteractionListener itemInteractionListener;
-    private int recycler_width;
-    public AddonCardListAdapter(CCardVH.ItemInteractionListener itemInteractionListener, RecyclerView recyclerView) {
+    private final List<CCard> addonCards;
+    private final ItemInteractionListener<CCard> itemInteractionListener;
+    private final int recycler_width;
+    public AddonCardListAdapter(ItemInteractionListener itemInteractionListener, RecyclerView recyclerView) {
         this.itemInteractionListener = itemInteractionListener;
         this.addonCards = new ArrayList<>();
         this.recycler_width =recyclerView.getWidth();

@@ -1,10 +1,10 @@
 package io.github.zkhan93.familyfinance;
 
+import static io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter.OTHER_BANK;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +13,12 @@ import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -23,16 +29,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Calendar;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.Account;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
-
-import static io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter.OTHER_BANK;
+import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 
 
 /**
@@ -41,7 +41,7 @@ import static io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter.OTHER_
 
 public class DialogFragmentAddAccount extends DialogFragment implements DialogInterface
         .OnClickListener, InsertTask.Listener<Account>, AdapterView.OnItemSelectedListener, View
-        .OnClickListener, TextWatcher {
+        .OnClickListener {
 
     public static final String TAG = DialogFragmentAddAccount.class.getSimpleName();
     public static final String ARG_FAMILY_ID = "familyId";
@@ -68,6 +68,18 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     private BankSpinnerAdapter bankSpinnerAdapter;
     private String selectedBankId;
     private View rootView;
+    private final TextWatcherProxy numberChangeWatcher;
+
+    public DialogFragmentAddAccount() {
+        super();
+        numberChangeWatcher = new TextWatcherProxy() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled
+                        (charSequence != null && !charSequence.toString().isEmpty());
+            }
+        };
+    }
 
     public static DialogFragmentAddAccount newInstance(String familyId) {
         DialogFragmentAddAccount dialogFragmentAddAccount = new DialogFragmentAddAccount();
@@ -134,17 +146,13 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
             accountHolder.setText(account.getAccountHolder());
             ifsc.setText(account.getIfsc());
             selectedBankId = account.getBank();
-            bankSpinnerAdapter.setOnLoadCompleteListener(new BankSpinnerAdapter
-                    .OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete() {
-                    int position = bankSpinnerAdapter.getPosition(selectedBankId);
-                    if (position == -1) {
-                        bank.setSelection(bankSpinnerAdapter.getPosition(OTHER_BANK));
-                        otherBank.setText(selectedBankId);
-                    } else
-                        bank.setSelection(position);
-                }
+            bankSpinnerAdapter.setOnLoadCompleteListener(() -> {
+                int position = bankSpinnerAdapter.getPosition(selectedBankId);
+                if (position == -1) {
+                    bank.setSelection(bankSpinnerAdapter.getPosition(OTHER_BANK));
+                    otherBank.setText(selectedBankId);
+                } else
+                    bank.setSelection(position);
             });
             userid.setText(account.getUserid());
             email.setText(account.getEmail());
@@ -153,14 +161,9 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
             number.setVisibility(View.GONE);
             builder.setPositiveButton(R.string.update, this);
         } else {
-            bank.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    bank.setSelection(0);
-                }
-            }, 100);
+            bank.postDelayed(() -> bank.setSelection(0), 100);
         }
-        number.addTextChangedListener(this);
+        number.addTextChangedListener(numberChangeWatcher);
         builder.setView(rootView);
         return builder.create();
     }
@@ -234,12 +237,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
 
     @Override
     public void onClick(final View view) {
-        view.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                performAction(view);
-            }
-        }, 200);
+        view.postDelayed(() -> performAction(view), 200);
     }
 
     private void performAction(View view) {
@@ -254,37 +252,13 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
                                         R.drawable.ic_keyboard_arrow_down_grey_500_24dp :
                                         R.drawable.ic_keyboard_arrow_up_grey_500_24dp
                         ));
-                rootView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((ScrollView) rootView).smoothScrollTo(0, ((ScrollView) rootView)
-                                .getChildAt(0)
-                                .getHeight());
-                    }
-                }, 50);
+                rootView.postDelayed(() -> ((ScrollView) rootView).smoothScrollTo(0, ((ScrollView) rootView)
+                        .getChildAt(0)
+                        .getHeight()), 50);
                 break;
         }
     }
 
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        if (charSequence == null || charSequence.toString().isEmpty()) {
-            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled
-                    (false);
-        } else {
-            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-        }
-    }
-
-    @Override
-    public void afterTextChanged(Editable editable) {
-
-    }
 
     @Override
     public void onInsertTaskComplete(List<Account> items) {

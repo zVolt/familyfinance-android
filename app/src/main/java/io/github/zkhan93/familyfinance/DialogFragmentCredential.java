@@ -4,21 +4,22 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.google.firebase.database.FirebaseDatabase;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.firebase.database.FirebaseDatabase;
+
 import io.github.zkhan93.familyfinance.adapters.CredentialTypeSpinnerAdapter;
 import io.github.zkhan93.familyfinance.models.Credential;
 import io.github.zkhan93.familyfinance.models.CredentialType;
+import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 import io.github.zkhan93.familyfinance.util.Util;
 
 /**
@@ -31,8 +32,8 @@ public class DialogFragmentCredential extends DialogFragment implements DialogIn
 
     public static final String TAG = DialogFragmentCredential.class.getSimpleName();
 
-    private static String ARG_CREDENTIAL = "credential";
-    private static String ARG_FAMILY_ID = "familyId";
+    private static final String ARG_CREDENTIAL = "credential";
+    private static final String ARG_FAMILY_ID = "familyId";
 
     EditText description;
     EditText username;
@@ -42,20 +43,11 @@ public class DialogFragmentCredential extends DialogFragment implements DialogIn
     private CredentialTypeSpinnerAdapter typeAdapter;
     private Credential credential;
     private String familyId;
-    private TextWatcher allFieldsTextChangeWatcher;
+    private final TextWatcherProxy allFieldsTextChangeWatcher;
 
-    {
-        allFieldsTextChangeWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+    public DialogFragmentCredential() {
+        super();
+        allFieldsTextChangeWatcher = new TextWatcherProxy() {
             @Override
             public void afterTextChanged(Editable editable) {
                 syncPositiveButton();
@@ -185,25 +177,15 @@ public class DialogFragmentCredential extends DialogFragment implements DialogIn
         String descriptionText = description.getText().toString();
         String type = credential == null ? null : credential.getTypeId();
         if (type == null || type.isEmpty() || type.equals("other")) {
-            if (descriptionText.isEmpty() ||
-                    usernameText.isEmpty() ||
-                    passwordText.isEmpty())
-                ((AlertDialog) getDialog())
-                        .getButton(DialogInterface.BUTTON_POSITIVE)
-                        .setEnabled(false);
-            else
-                ((AlertDialog) getDialog())
-                        .getButton(DialogInterface.BUTTON_POSITIVE)
-                        .setEnabled(true);
+            ((AlertDialog) getDialog())
+                    .getButton(DialogInterface.BUTTON_POSITIVE)
+                    .setEnabled(!descriptionText.isEmpty() &&
+                            !usernameText.isEmpty() &&
+                            !passwordText.isEmpty());
         } else {
-            if (usernameText.isEmpty() || passwordText.isEmpty())
-                ((AlertDialog) getDialog())
-                        .getButton(DialogInterface.BUTTON_POSITIVE)
-                        .setEnabled(false);
-            else
-                ((AlertDialog) getDialog())
-                        .getButton(DialogInterface.BUTTON_POSITIVE)
-                        .setEnabled(true);
+            ((AlertDialog) getDialog())
+                    .getButton(DialogInterface.BUTTON_POSITIVE)
+                    .setEnabled(!usernameText.isEmpty() && !passwordText.isEmpty());
         }
     }
 }

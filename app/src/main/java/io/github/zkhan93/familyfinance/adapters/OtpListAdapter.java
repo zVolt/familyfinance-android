@@ -36,15 +36,16 @@ public class OtpListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private ArrayList<Otp> otps;
     //    private Query otpRef;
     private boolean ignoreChildEvents;
-    private ItemInsertedListener itemInsertedListener;
-    private int pageSize = 50;
-    private int currentPage = -1;
-    private String familyId, lastLoadedItem;
+    private final ItemInsertedListener itemInsertedListener;
+    private final int pageSize = 50;
+    private final int currentPage = -1;
+    private final String familyId;
+    private String lastLoadedItem;
     private MemberDao memberDao;
     private boolean loading;
 
-    private String year;
-    private String month;
+    private final String year;
+    private final String month;
 
     public OtpListAdapter(App app, String familyId, ItemInsertedListener itemInsertedListener) {
         Calendar calendar = Calendar.getInstance();

@@ -47,7 +47,7 @@ public class FragmentChatroom extends Fragment implements MessageListAdapter.Mes
     ImageButton attach;
     ImageButton newMessage;
 
-    private View.OnClickListener clickListener;
+    private final View.OnClickListener clickListener;
 
     public FragmentChatroom() {
         // Required empty public constructor

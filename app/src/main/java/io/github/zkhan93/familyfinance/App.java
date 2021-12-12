@@ -36,7 +36,7 @@ public class App extends Application {
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
     private SharedPreferences spf;
-    private static String TAG = App.class.getSimpleName();
+    private static final String TAG = App.class.getSimpleName();
 
     @Override
     public void onCreate() {
@@ -116,4 +116,5 @@ public class App extends Application {
         // if needed by your app.
         biometricPrompt.authenticate(promptInfo);
     }
+
 }

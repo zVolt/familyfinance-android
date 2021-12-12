@@ -2,7 +2,6 @@ package io.github.zkhan93.familyfinance.utils;
 
 import org.junit.Test;
 
-import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.util.CardUtil;
 
 import static org.junit.Assert.*;

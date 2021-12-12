@@ -1,11 +1,16 @@
 package io.github.zkhan93.familyfinance.viewholders;
 
+import static io.github.zkhan93.familyfinance.LoginActivity.TAG;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -16,17 +21,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.DCard;
+import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.util.Util;
 
-import static io.github.zkhan93.familyfinance.LoginActivity.TAG;
 
-
-public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
+public class DCardVH extends BaseVH<DCard> implements PopupMenu
         .OnMenuItemClickListener, View.OnClickListener, View.OnLongClickListener {
 
     ImageView bank;
@@ -37,13 +38,12 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
     TextView expiresOn;
     TextView cvv;
 
-    private DCard dCard;
-    private Context context;
-    private PopupMenu popup;
-    private ItemInteractionListener itemInteractionListener;
-    private ValueEventListener bankImageLinkListener, bankNameListener, cardTypeImageLinkListener;
+    private final Context context;
+    private ValueEventListener bankImageLinkListener;
+    private ValueEventListener bankNameListener;
+    private ValueEventListener cardTypeImageLinkListener;
 
-    {
+    private void init() {
         bankImageLinkListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -97,10 +97,9 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
         };
     }
 
-    public DCardVH(View itemView, @NonNull DCardVH.ItemInteractionListener
+    public DCardVH(View itemView, @NonNull ItemInteractionListener
             itemInteractionListener) {
-        super(itemView);
-        this.itemInteractionListener = itemInteractionListener;
+        super(itemView, itemInteractionListener);
         this.context = itemView.getContext();
         bank = itemView.findViewById(R.id.bank_icon);
         cardType = itemView.findViewById(R.id.card_type);
@@ -112,10 +111,11 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
+        this.init();
     }
 
-    public void setDCard(DCard dCard) {
-        String cardType = Util.getCardBrand(dCard.getNumber());;
+    public void updateView() {
+        String cardType = Util.getCardBrand(item.getNumber());
         Log.d(TAG, String.format("card type: %s", cardType));
         if (cardType != null) {
             FirebaseDatabase.getInstance().getReference("images")
@@ -125,63 +125,45 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
         }
         FirebaseDatabase.getInstance().getReference("images")
                 .child("banks")
-                .child(dCard.getBank().toUpperCase())
+                .child(item.getBank().toUpperCase())
                 .addListenerForSingleValueEvent(bankImageLinkListener);
         FirebaseDatabase.getInstance().getReference("banks")
-                .child(dCard.getBank().toUpperCase())
+                .child(item.getBank().toUpperCase())
                 .addListenerForSingleValueEvent(bankNameListener);
-        this.dCard = dCard;
-        Log.d(TAG, dCard.toString());
-        number.setText(dCard.getFormattedNumber(' ', true));
-        cardholder.setText(dCard.getCardholder());
-        expiresOn.setText(DCard.EXPIRE_ON.format(new Date(dCard.getExpireOn())));
-        cvv.setText(dCard.getCvv());
+
+        Log.d(TAG, item.toString());
+        number.setText(item.getFormattedNumber(' ', true));
+        cardholder.setText(item.getCardholder());
+        expiresOn.setText(DCard.EXPIRE_ON.format(new Date(item.getExpireOn())));
+        cvv.setText(item.getCvv());
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_delete:
-                itemInteractionListener.delete(dCard);
-                return true;
-            case R.id.action_edit:
-                itemInteractionListener.edit(dCard);
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.menu:
-                popup.show();
-                break;
-            default:
-                itemInteractionListener.onView(dCard);
-        }
-    }
-
-    @Override
-    public boolean onLongClick(View view) {
-        if (itemInteractionListener != null) {
-            itemInteractionListener.onCopyCardToClipboard(dCard);
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        ItemInteractionListener<DCard> listener = itemInteractionListenerRef.get();
+        if (listener == null) return false;
+        if (menuItem.getItemId() == R.id.action_delete) {
+            listener.delete(item);
+            return true;
+        } else if (menuItem.getItemId() == R.id.action_edit) {
+            listener.edit(item);
             return true;
         }
         return false;
     }
 
+    @Override
+    public void onClick(View view) {
+        ItemInteractionListener<DCard> listener = itemInteractionListenerRef.get();
+        if (listener == null) return;
+        listener.view(item);
+    }
 
-    public interface ItemInteractionListener {
-
-        void delete(DCard cCard);
-
-        void edit(DCard cCard);
-
-        void onView(DCard cCard);
-
-        void onCopyCardToClipboard(DCard cCard);
-
+    @Override
+    public boolean onLongClick(View view) {
+        ItemInteractionListener<DCard> listener = itemInteractionListenerRef.get();
+        if (listener == null) return false;
+        listener.edit(item);
+        return true;
     }
 }

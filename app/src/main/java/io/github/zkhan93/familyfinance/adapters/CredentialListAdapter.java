@@ -36,20 +36,20 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         implements ChildEventListener,
         ValueEventListener {
     public static final String TAG = CredentialListAdapter.class.getSimpleName();
-    private String familyId;
-    private List<CredentialWrapper> wrappedCredentials;
-    private List<CredentialType> credentialTypes;
-    private HashMap<String, List<Credential>> typeToCredentialsMap;
+    private final String familyId;
+    private final List<CredentialWrapper> wrappedCredentials;
+    private final List<CredentialType> credentialTypes;
+    private final HashMap<String, List<Credential>> typeToCredentialsMap;
     private boolean ignoreChildEvents;
-    private CredentialDao credentialDao;
+    private final CredentialDao credentialDao;
     private CredentialTypeDao credentialTypeDao;
-    private DatabaseReference credRef;
+    private final DatabaseReference credRef;
     private ValueEventListener credentialTypeValueListener;
 
-    private CredentialVH.CredentialInteraction credentialInteraction;
+    private final CredentialVH.CredentialInteraction credentialInteraction;
     private View.OnClickListener groupClickListener;
 
-    {
+    private void init() {
         credentialTypeValueListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -73,62 +73,60 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 Log.d(TAG, "onCancelled" + databaseError.getMessage());
             }
         };
-        groupClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO: close all other group and remove their childs
-                String groupKey = (String) view.getTag();
-                //extract the group object and its position in list
-                CredentialType clickedCredentialType = null;
-                int clickedGroupIndex = 0;
+        groupClickListener = view -> {
+            //TODO: close all other group and remove their childs
+            String groupKey = (String) view.getTag();
+            //extract the group object and its position in list
+            CredentialType clickedCredentialType = null;
+            int clickedGroupIndex = 0;
 
-                for (CredentialWrapper wrappedCredential : wrappedCredentials) {
-                    if (wrappedCredential.type == TYPE.HEADER && wrappedCredential.credentialType
-                            .getId().equals(groupKey)) {
-                        clickedCredentialType = wrappedCredential.credentialType;
-                        break;
-                    }
-                    clickedGroupIndex++;
+            for (CredentialWrapper wrappedCredential : wrappedCredentials) {
+                if (wrappedCredential.type == TYPE.HEADER && wrappedCredential.credentialType
+                        .getId().equals(groupKey)) {
+                    clickedCredentialType = wrappedCredential.credentialType;
+                    break;
                 }
-                if (clickedCredentialType == null) return;
-                if (clickedCredentialType.expanded) {
-                    Log.d(TAG, "hiding");
-                    int numberOfChilds = typeToCredentialsMap.get(groupKey).size();
-                    int childStartFrom = clickedGroupIndex + 1;
-                    for (int i = 0; i < numberOfChilds; i++) {
-                        wrappedCredentials.remove(childStartFrom);
-                        notifyItemRemoved(childStartFrom);
-                    }
-                    clickedCredentialType.expanded = false;
-                } else {
-                    Log.d(TAG, "expanding");
-                    int i = 1; //need to insert after the group heading
-                    for (Credential credential : typeToCredentialsMap.get(groupKey)) {
-                        wrappedCredentials.add(clickedGroupIndex + i, new CredentialWrapper(TYPE
-                                .CHILD,
-                                credential, null));
-                        notifyItemInserted(clickedGroupIndex + i);
-                        Log.d(TAG, "inserted at " + (clickedGroupIndex + i));
-                        i++;
-                    }
-                    clickedCredentialType.expanded = true;
+                clickedGroupIndex++;
+            }
+            if (clickedCredentialType == null) return;
+            if (clickedCredentialType.expanded) {
+                Log.d(TAG, "hiding");
+                int numberOfChilds = typeToCredentialsMap.get(groupKey).size();
+                int childStartFrom = clickedGroupIndex + 1;
+                for (int i = 0; i < numberOfChilds; i++) {
+                    wrappedCredentials.remove(childStartFrom);
+                    notifyItemRemoved(childStartFrom);
                 }
+                clickedCredentialType.expanded = false;
+            } else {
+                Log.d(TAG, "expanding");
+                int i = 1; //need to insert after the group heading
+                for (Credential credential : typeToCredentialsMap.get(groupKey)) {
+                    wrappedCredentials.add(clickedGroupIndex + i, new CredentialWrapper(TYPE
+                            .CHILD,
+                            credential, null));
+                    notifyItemInserted(clickedGroupIndex + i);
+                    Log.d(TAG, "inserted at " + (clickedGroupIndex + i));
+                    i++;
+                }
+                clickedCredentialType.expanded = true;
+            }
 
-                StringBuilder strb = new StringBuilder();
-                CredentialWrapper cw;
-                for (int x = 0; x < wrappedCredentials.size(); x++) {
-                    cw = wrappedCredentials.get(x);
-                    strb.append(String.valueOf(x));
-                    strb.append(":");
-                    strb.append(cw.type == TYPE.HEADER ? "HEADER" : "CHILD");
-                    strb.append(", ");
-                }
+            StringBuilder strb = new StringBuilder();
+            CredentialWrapper cw;
+            for (int x = 0; x < wrappedCredentials.size(); x++) {
+                cw = wrappedCredentials.get(x);
+                strb.append(x);
+                strb.append(":");
+                strb.append(cw.type == TYPE.HEADER ? "HEADER" : "CHILD");
+                strb.append(", ");
             }
         };
     }
 
     public CredentialListAdapter(Context context, CredentialVH.CredentialInteraction
             credentialInteraction, String familyId) {
+        this.init();
         this.familyId = familyId;
         this.credentialInteraction = credentialInteraction;
         wrappedCredentials = new ArrayList<>();
@@ -141,6 +139,7 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         DatabaseReference credTypeRef = FirebaseDatabase.getInstance().getReference
                 ("credentialTypes");
         credTypeRef.addListenerForSingleValueEvent(credentialTypeValueListener);
+
     }
 
     @Override

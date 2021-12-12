@@ -14,7 +14,7 @@ public abstract class InfiniteScrollListener extends RecyclerView.OnScrollListen
     // before loading more.
     private int visibleThreshold = 40;
     // True if we are still waiting for the last set of data to load.
-    private boolean loading = true;
+    private final boolean loading = true;
     // Sets the starting page index
     private int visibleItemCount = 0;
     private int totalItemCount = 0;

@@ -23,7 +23,7 @@ public class MessageVH extends RecyclerView.ViewHolder {
     TextView content;
     TextView timestamp;
 
-    private String meId;
+    private final String meId;
 
     public MessageVH(View itemView, String meId) {
         super(itemView);

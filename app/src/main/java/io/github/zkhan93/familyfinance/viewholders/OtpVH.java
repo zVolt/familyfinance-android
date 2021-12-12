@@ -35,13 +35,19 @@ public class OtpVH extends RecyclerView.ViewHolder {
     TextView claim;
 
     private DatabaseReference fromRef;
-    private ValueEventListener senderValueListener;
-    private ValueEventListener claimerValueListener;
+    private final ValueEventListener senderValueListener;
+    private final ValueEventListener claimerValueListener;
     private int asyncCallCount;
     private Member from, claimedBy;
     private Otp otp;
 
-    {
+    public OtpVH(View itemView, String familyId) {
+        super(itemView);
+        receiver = itemView.findViewById(R.id.receiver);
+        number = itemView.findViewById(R.id.number);
+        content = itemView.findViewById(R.id.content);
+        timestamp = itemView.findViewById(R.id.timestamp);
+        claim = itemView.findViewById(R.id.claim);
         senderValueListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -75,15 +81,6 @@ public class OtpVH extends RecyclerView.ViewHolder {
                 checkIfDataFetchComplete();
             }
         };
-    }
-
-    public OtpVH(View itemView, String familyId) {
-        super(itemView);
-        receiver = itemView.findViewById(R.id.receiver);
-        number = itemView.findViewById(R.id.number);
-        content = itemView.findViewById(R.id.content);
-        timestamp = itemView.findViewById(R.id.timestamp);
-        claim = itemView.findViewById(R.id.claim);
     }
 
     public void setOtp(Otp otp) {

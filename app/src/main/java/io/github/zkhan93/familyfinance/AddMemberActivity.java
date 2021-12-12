@@ -4,17 +4,13 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -69,12 +65,7 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
     private void showMessageOnSnackbar(String message) {
         if (message == null || message.trim().length() == 0) return;
         final Snackbar snackbar = Snackbar.make(toolbar, message, Snackbar.LENGTH_LONG);
-        snackbar.setAction("OK", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackbar.dismiss();
-            }
-        }).show();
+        snackbar.setAction("OK", v -> snackbar.dismiss()).show();
     }
 
     @Override
@@ -86,15 +77,12 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
         updates.put("users/" + request.getUserId() + "/requests/" + familyId + "/approved", true);
         updates.put("members/" + familyId + "/" + request.getUserId(), request);
         FirebaseDatabase.getInstance().getReference().updateChildren(updates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            showMessageOnSnackbar(String.format("%s added to family", request
-                                    .getName()));
-                        }
-                        progressDialog.hide();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        showMessageOnSnackbar(String.format("%s added to family", request
+                                .getName()));
                     }
+                    progressDialog.hide();
                 });
     }
 
@@ -107,15 +95,12 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
         updates.put("users/" + request.getUserId() + "/requests/" + familyId + "/blocked", true);
         updates.put("members/" + familyId + "/" + request.getUserId(), null);
         FirebaseDatabase.getInstance().getReference().updateChildren(updates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            showMessageOnSnackbar(String.format("%s blocked from family", request
-                                    .getName()));
-                        }
-                        progressDialog.hide();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        showMessageOnSnackbar(String.format("%s blocked from family", request
+                                .getName()));
                     }
+                    progressDialog.hide();
                 });
     }
 
@@ -128,15 +113,12 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
         updates.put("users/" + request.getUserId() + "/requests/" + familyId + "/approved", false);
         updates.put("members/" + familyId + "/" + request.getUserId(), null);
         FirebaseDatabase.getInstance().getReference().updateChildren(updates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            showMessageOnSnackbar(String.format("%s's approval revoked", request
-                                    .getName()));
-                        }
-                        progressDialog.hide();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        showMessageOnSnackbar(String.format("%s's approval revoked", request
+                                .getName()));
                     }
+                    progressDialog.hide();
                 });
     }
 
@@ -149,15 +131,12 @@ public class AddMemberActivity extends AppCompatActivity implements ReceiveReque
         updates.put("users/" + request.getUserId() + "/requests/" + familyId + "/blocked", false);
         updates.put("members/" + familyId + "/" + request.getUserId(), null);
         FirebaseDatabase.getInstance().getReference().updateChildren(updates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            showMessageOnSnackbar(String.format("%s unblocked", request
-                                    .getName()));
-                        }
-                        progressDialog.hide();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        showMessageOnSnackbar(String.format("%s unblocked", request
+                                .getName()));
                     }
+                    progressDialog.hide();
                 });
 
     }
