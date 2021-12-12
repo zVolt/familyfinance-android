@@ -55,11 +55,11 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
 
     private final WeakReference<ItemInteractionListener<CCard>> itemInteractionListenerRef;
     private CCard cCard;
-    private final MyValueEventListener bankImageLinkListener;
-    private final MyValueEventListener cardTypeImageLinkListener;
-    private final MyValueEventListener bankNameListener;
+    private MyValueEventListener bankImageLinkListener;
+    private MyValueEventListener cardTypeImageLinkListener;
+    private MyValueEventListener bankNameListener;
 
-    {
+    private void init() {
         bankImageLinkListener = new MyValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -127,6 +127,7 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
         container = itemView.findViewById(R.id.container);
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
+        this.init();
     }
 
     private void createPaletteAsync(Bitmap bitmap) {

@@ -76,7 +76,7 @@ public class DialogFragmentViewCard extends DialogFragment implements DialogInte
     TextView password;
     RecyclerView cards;
 
-    {
+    public DialogFragmentViewCard() {
         bankImageLinkListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

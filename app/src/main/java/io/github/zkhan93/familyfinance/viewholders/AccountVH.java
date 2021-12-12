@@ -43,9 +43,9 @@ public class AccountVH extends RecyclerView.ViewHolder implements View.OnClickLi
     private final Context context;
     private final ItemInteractionListener<Account> itemInteractionListener;
     private Account account;
-    private final ValueEventListener bankImageLinkListener;
+    private ValueEventListener bankImageLinkListener;
 
-    {
+    private void init() {
         bankImageLinkListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -82,7 +82,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements View.OnClickLi
         this.itemInteractionListener = itemInteractionListener;
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
-
+        this.init();
     }
 
     public void setAccount(Account account) {

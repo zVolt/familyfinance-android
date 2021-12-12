@@ -85,7 +85,8 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
     private View rootView;
     private final ValueEventListener cardNumberChecker;
 
-    {
+    public DialogFragmentCcard() {
+        super();
         cardNumberTextWatcher = new TextWatcherProxy() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {

@@ -45,7 +45,8 @@ public class DialogFragmentCredential extends DialogFragment implements DialogIn
     private String familyId;
     private final TextWatcherProxy allFieldsTextChangeWatcher;
 
-    {
+    public DialogFragmentCredential() {
+        super();
         allFieldsTextChangeWatcher = new TextWatcherProxy() {
             @Override
             public void afterTextChanged(Editable editable) {

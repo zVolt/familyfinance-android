@@ -40,33 +40,24 @@ public class DialogFragmentViewCredential extends DialogFragment implements Dial
     TextView username;
     TextView password;
     TextView description;
-
     TextView typeName;
-
     ImageView typeIcon;
-
 
     private Credential credential;
     private final DatabaseReference credRef;
     private final View.OnClickListener clickToCopyClistener;
 
-    {
-        clickToCopyClistener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (view instanceof TextView) {
-                    String text = ((TextView) view).getText().toString();
-                    ClipboardManager clipboardManager = (ClipboardManager) getActivity()
-                            .getSystemService(Context.CLIPBOARD_SERVICE);
-                    if (clipboardManager == null) return;
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", text));
-                }
-            }
-        };
-    }
-
     public DialogFragmentViewCredential() {
         credRef = FirebaseDatabase.getInstance().getReference();
+        clickToCopyClistener = view -> {
+            if (view instanceof TextView) {
+                String text = ((TextView) view).getText().toString();
+                ClipboardManager clipboardManager = (ClipboardManager) getActivity()
+                        .getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboardManager == null) return;
+                clipboardManager.setPrimaryClip(ClipData.newPlainText("", text));
+            }
+        };
     }
 
     public static DialogFragmentViewCredential getInstance(Credential credential) {

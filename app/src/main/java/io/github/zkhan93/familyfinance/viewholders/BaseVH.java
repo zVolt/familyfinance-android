@@ -21,5 +21,8 @@ public abstract class BaseVH<T extends BaseModel> extends RecyclerView.ViewHolde
 
     public void setItem(T item) {
         this.item = item;
+        this.updateView();
     }
+
+    protected abstract void updateView();
 }

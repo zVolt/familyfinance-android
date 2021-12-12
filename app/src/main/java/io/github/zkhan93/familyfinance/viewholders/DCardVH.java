@@ -38,14 +38,12 @@ public class DCardVH extends BaseVH<DCard> implements PopupMenu
     TextView expiresOn;
     TextView cvv;
 
-    private DCard dCard;
     private final Context context;
-    private ItemInteractionListener itemInteractionListener;
-    private final ValueEventListener bankImageLinkListener;
-    private final ValueEventListener bankNameListener;
-    private final ValueEventListener cardTypeImageLinkListener;
+    private ValueEventListener bankImageLinkListener;
+    private ValueEventListener bankNameListener;
+    private ValueEventListener cardTypeImageLinkListener;
 
-    {
+    private void init() {
         bankImageLinkListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -113,10 +111,11 @@ public class DCardVH extends BaseVH<DCard> implements PopupMenu
 
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
+        this.init();
     }
 
-    public void setItem(DCard dCard) {
-        String cardType = Util.getCardBrand(dCard.getNumber());
+    public void updateView() {
+        String cardType = Util.getCardBrand(item.getNumber());
         Log.d(TAG, String.format("card type: %s", cardType));
         if (cardType != null) {
             FirebaseDatabase.getInstance().getReference("images")
@@ -126,44 +125,45 @@ public class DCardVH extends BaseVH<DCard> implements PopupMenu
         }
         FirebaseDatabase.getInstance().getReference("images")
                 .child("banks")
-                .child(dCard.getBank().toUpperCase())
+                .child(item.getBank().toUpperCase())
                 .addListenerForSingleValueEvent(bankImageLinkListener);
         FirebaseDatabase.getInstance().getReference("banks")
-                .child(dCard.getBank().toUpperCase())
+                .child(item.getBank().toUpperCase())
                 .addListenerForSingleValueEvent(bankNameListener);
-        this.dCard = dCard;
-        Log.d(TAG, dCard.toString());
-        number.setText(dCard.getFormattedNumber(' ', true));
-        cardholder.setText(dCard.getCardholder());
-        expiresOn.setText(DCard.EXPIRE_ON.format(new Date(dCard.getExpireOn())));
-        cvv.setText(dCard.getCvv());
+
+        Log.d(TAG, item.toString());
+        number.setText(item.getFormattedNumber(' ', true));
+        cardholder.setText(item.getCardholder());
+        expiresOn.setText(DCard.EXPIRE_ON.format(new Date(item.getExpireOn())));
+        cvv.setText(item.getCvv());
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_delete:
-                itemInteractionListener.delete(dCard);
-                return true;
-            case R.id.action_edit:
-                itemInteractionListener.edit(dCard);
-                return true;
-            default:
-                return false;
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        ItemInteractionListener<DCard> listener = itemInteractionListenerRef.get();
+        if (listener == null) return false;
+        if (menuItem.getItemId() == R.id.action_delete) {
+            listener.delete(item);
+            return true;
+        } else if (menuItem.getItemId() == R.id.action_edit) {
+            listener.edit(item);
+            return true;
         }
+        return false;
     }
 
     @Override
     public void onClick(View view) {
-        itemInteractionListener.view(dCard);
+        ItemInteractionListener<DCard> listener = itemInteractionListenerRef.get();
+        if (listener == null) return;
+        listener.view(item);
     }
 
     @Override
     public boolean onLongClick(View view) {
-        if (itemInteractionListener != null) {
-            itemInteractionListener.edit(dCard);
-            return true;
-        }
-        return false;
+        ItemInteractionListener<DCard> listener = itemInteractionListenerRef.get();
+        if (listener == null) return false;
+        listener.edit(item);
+        return true;
     }
 }

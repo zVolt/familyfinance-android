@@ -37,17 +37,13 @@ public class FragmentSms extends Fragment implements
 
     RecyclerView otpsList;
 
-    {
+    public FragmentSms() {
         infiniteScrollListener = new InfiniteScrollListener(10) {
             @Override
             public boolean onLoadMore(int totalItemsCount) {
                 return otpListAdapter.loadNextPage();
             }
         };
-    }
-
-    public FragmentSms() {
-        // Required empty public constructor
     }
 
     /**

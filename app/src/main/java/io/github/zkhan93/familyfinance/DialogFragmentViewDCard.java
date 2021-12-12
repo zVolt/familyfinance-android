@@ -65,7 +65,8 @@ public class DialogFragmentViewDCard extends DialogFragment implements DialogInt
     ImageView updateBy;
     TextView updatedOn;
 
-    {
+    public DialogFragmentViewDCard() {
+        super();
         bankImageLinkListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

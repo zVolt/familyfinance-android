@@ -67,7 +67,8 @@ public class DialogFragmentViewAccount extends DialogFragment implements DialogI
     ImageView updatedBy;
     TextView updatedOn;
 
-    {
+    public DialogFragmentViewAccount() {
+        super();
         bankImageLinkListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

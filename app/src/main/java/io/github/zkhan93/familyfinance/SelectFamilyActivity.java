@@ -74,7 +74,8 @@ public class SelectFamilyActivity extends AppCompatActivity {
     private final int USER_REQ_SUBMITTED = 1;
     private final int USER_REQ_NOT_FOUND = 2;
 
-    {
+    public SelectFamilyActivity(){
+        super();
         checkFamilyExistenceTask = task -> {
             // fetch the moderator ID to check is the familyID exists or not
             TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();

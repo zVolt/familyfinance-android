@@ -81,9 +81,7 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
     private View rootView;
     private final ValueEventListener cardNumberChecker;
 
-    {
-
-
+    public DialogFragmentDcard() {
         cardNumberChecker = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

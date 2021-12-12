@@ -70,7 +70,8 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     private View rootView;
     private final TextWatcherProxy numberChangeWatcher;
 
-    {
+    public DialogFragmentAddAccount() {
+        super();
         numberChangeWatcher = new TextWatcherProxy() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
