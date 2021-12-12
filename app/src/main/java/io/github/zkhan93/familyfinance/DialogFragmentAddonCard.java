@@ -4,7 +4,6 @@ package io.github.zkhan93.familyfinance;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,7 +30,6 @@ import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.tasks.InsertTask;
 import io.github.zkhan93.familyfinance.util.ExpiryTextWatcher;
-import io.github.zkhan93.familyfinance.util.TextWatcherProxy;
 
 import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
 

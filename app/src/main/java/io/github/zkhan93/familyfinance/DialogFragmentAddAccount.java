@@ -146,17 +146,13 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
             accountHolder.setText(account.getAccountHolder());
             ifsc.setText(account.getIfsc());
             selectedBankId = account.getBank();
-            bankSpinnerAdapter.setOnLoadCompleteListener(new BankSpinnerAdapter
-                    .OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete() {
-                    int position = bankSpinnerAdapter.getPosition(selectedBankId);
-                    if (position == -1) {
-                        bank.setSelection(bankSpinnerAdapter.getPosition(OTHER_BANK));
-                        otherBank.setText(selectedBankId);
-                    } else
-                        bank.setSelection(position);
-                }
+            bankSpinnerAdapter.setOnLoadCompleteListener(() -> {
+                int position = bankSpinnerAdapter.getPosition(selectedBankId);
+                if (position == -1) {
+                    bank.setSelection(bankSpinnerAdapter.getPosition(OTHER_BANK));
+                    otherBank.setText(selectedBankId);
+                } else
+                    bank.setSelection(position);
             });
             userid.setText(account.getUserid());
             email.setText(account.getEmail());
@@ -165,12 +161,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
             number.setVisibility(View.GONE);
             builder.setPositiveButton(R.string.update, this);
         } else {
-            bank.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    bank.setSelection(0);
-                }
-            }, 100);
+            bank.postDelayed(() -> bank.setSelection(0), 100);
         }
         number.addTextChangedListener(numberChangeWatcher);
         builder.setView(rootView);
@@ -246,12 +237,7 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
 
     @Override
     public void onClick(final View view) {
-        view.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                performAction(view);
-            }
-        }, 200);
+        view.postDelayed(() -> performAction(view), 200);
     }
 
     private void performAction(View view) {
@@ -266,14 +252,9 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
                                         R.drawable.ic_keyboard_arrow_down_grey_500_24dp :
                                         R.drawable.ic_keyboard_arrow_up_grey_500_24dp
                         ));
-                rootView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((ScrollView) rootView).smoothScrollTo(0, ((ScrollView) rootView)
-                                .getChildAt(0)
-                                .getHeight());
-                    }
-                }, 50);
+                rootView.postDelayed(() -> ((ScrollView) rootView).smoothScrollTo(0, ((ScrollView) rootView)
+                        .getChildAt(0)
+                        .getHeight()), 50);
                 break;
         }
     }

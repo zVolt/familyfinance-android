@@ -5,8 +5,6 @@ import static io.github.zkhan93.familyfinance.models.DCard.EXPIRE_ON;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +25,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -42,6 +36,7 @@ import io.github.zkhan93.familyfinance.adapters.BankSpinnerAdapter;
 import io.github.zkhan93.familyfinance.events.ConfirmDeleteEvent;
 import io.github.zkhan93.familyfinance.events.UpdateEvent;
 import io.github.zkhan93.familyfinance.models.DCard;
+import io.github.zkhan93.familyfinance.util.CardNumberWatcher;
 import io.github.zkhan93.familyfinance.util.ExpiryTextWatcher;
 
 /**
@@ -49,7 +44,7 @@ import io.github.zkhan93.familyfinance.util.ExpiryTextWatcher;
  */
 
 public class DialogFragmentDcard extends DialogFragment implements DialogInterface
-        .OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher, View.OnClickListener {
+        .OnClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
     public static final String TAG = DialogFragmentDcard.class.getSimpleName();
     public static final String ARG_FAMILY_ID = "familyId";
     public static final String ARG_CARD = "ccard";
@@ -74,29 +69,29 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
     View moreFields;
 
     private String familyId, selectedBankId;
-    private String checkCardNumber;
     private DCard dCard;
     private ExpiryTextWatcher expiresOnTextWatcher;
     private BankSpinnerAdapter bankSpinnerAdapter;
     private View rootView;
-    private final ValueEventListener cardNumberChecker;
+    private CardNumberWatcher cardNumberWatcher;
+    private CardNumberWatcher.Listener cardNumberListener;
 
     public DialogFragmentDcard() {
-        cardNumberChecker = new ValueEventListener() {
+        cardNumberListener = new CardNumberWatcher.Listener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot == null) return;
-                if (!dataSnapshot.getKey().equals(checkCardNumber)) return;
-                if (dataSnapshot.exists())
+            public void callback(boolean exists) {
+                if (exists)
                     number.setError("Card already exists!");
                 ((AlertDialog) getDialog())
                         .getButton(DialogInterface.BUTTON_POSITIVE)
-                        .setEnabled(!dataSnapshot.exists());
+                        .setEnabled(!exists);
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void empty() {
+                ((AlertDialog) getDialog())
+                        .getButton(DialogInterface.BUTTON_POSITIVE)
+                        .setEnabled(false);
             }
         };
     }
@@ -138,12 +133,13 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
         builder.setTitle(R.string.title_new_card);
         builder.setPositiveButton(R.string.create, this)
                 .setNegativeButton(android.R.string.cancel, this)
-        .setNeutralButton(R.string.delete, this);
+                .setNeutralButton(R.string.delete, this);
 
         rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_dcard,
                 null);
         cardName = rootView.findViewById(R.id.name);
         cardHolder = rootView.findViewById(R.id.card_holder);
+
         number = rootView.findViewById(R.id.number);
         email = rootView.findViewById(R.id.email);
         username = rootView.findViewById(R.id.username);
@@ -170,18 +166,14 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
         if (dCard != null) {
             cardName.setText(dCard.getName());
             selectedBankId = dCard.getBank();
-            bankSpinnerAdapter.setOnLoadCompleteListener(new BankSpinnerAdapter
-                    .OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete() {
-                    int position = bankSpinnerAdapter.getPosition(selectedBankId);
-                    if (position == -1) {
-                        bank.setSelection(bankSpinnerAdapter.getPosition(BankSpinnerAdapter
-                                .OTHER_BANK));
-                        otherBank.setText(selectedBankId);
-                    } else
-                        bank.setSelection(position);
-                }
+            bankSpinnerAdapter.setOnLoadCompleteListener(() -> {
+                int position = bankSpinnerAdapter.getPosition(selectedBankId);
+                if (position == -1) {
+                    bank.setSelection(bankSpinnerAdapter.getPosition(BankSpinnerAdapter
+                            .OTHER_BANK));
+                    otherBank.setText(selectedBankId);
+                } else
+                    bank.setSelection(position);
             });
             number.setText(dCard.getNumber());
             number.setVisibility(View.GONE);
@@ -194,15 +186,9 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
             phoneNumber.setText(dCard.getPhoneNumber());
             builder.setPositiveButton(R.string.update, this);
         } else {
-            number.addTextChangedListener(this);
+            cardNumberWatcher = new CardNumberWatcher(familyId, number, cardNumberListener);
             number.setVisibility(View.VISIBLE);
-            bankSpinnerAdapter.setOnLoadCompleteListener(new BankSpinnerAdapter
-                    .OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete() {
-                    bank.setSelection(0);
-                }
-            });
+            bankSpinnerAdapter.setOnLoadCompleteListener(() -> bank.setSelection(0));
         }
         builder.setView(rootView);
         return builder.create();
@@ -287,39 +273,8 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
     }
 
     @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        if (charSequence == null || charSequence.toString().isEmpty()) {
-            ((AlertDialog) getDialog())
-                    .getButton(DialogInterface.BUTTON_POSITIVE)
-                    .setEnabled(false);
-        } else {
-            //card number check if the card already exists
-            checkCardNumber = charSequence.toString();
-            FirebaseDatabase.getInstance()
-                    .getReference("ccards")
-                    .child(familyId)
-                    .child(checkCardNumber).addListenerForSingleValueEvent(cardNumberChecker);
-        }
-    }
-
-    @Override
-    public void afterTextChanged(Editable editable) {
-
-    }
-
-    @Override
     public void onClick(final View view) {
-        view.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                clickActions(view);
-            }
-        }, 200);
+        view.postDelayed(() -> clickActions(view), 200);
     }
 
     private void clickActions(View view) {
@@ -334,14 +289,9 @@ public class DialogFragmentDcard extends DialogFragment implements DialogInterfa
                                         R.drawable.ic_keyboard_arrow_down_grey_500_24dp :
                                         R.drawable.ic_keyboard_arrow_up_grey_500_24dp
                         ));
-                rootView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((ScrollView) rootView).smoothScrollTo(0, ((ScrollView) rootView)
-                                .getChildAt(0)
-                                .getHeight());
-                    }
-                }, 50);
+                rootView.postDelayed(() -> ((ScrollView) rootView).smoothScrollTo(0, ((ScrollView) rootView)
+                        .getChildAt(0)
+                        .getHeight()), 50);
                 break;
         }
     }

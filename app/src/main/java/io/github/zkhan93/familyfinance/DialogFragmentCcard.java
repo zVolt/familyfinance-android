@@ -194,18 +194,14 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
         if (cCard != null) {
             cardName.setText(cCard.getName());
             selectedBankId = cCard.getBank();
-            bankSpinnerAdapter.setOnLoadCompleteListener(new BankSpinnerAdapter
-                    .OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete() {
-                    int position = bankSpinnerAdapter.getPosition(selectedBankId);
-                    if (position == -1) {
-                        bank.setSelection(bankSpinnerAdapter.getPosition(BankSpinnerAdapter
-                                .OTHER_BANK));
-                        otherBank.setText(selectedBankId);
-                    } else
-                        bank.setSelection(position);
-                }
+            bankSpinnerAdapter.setOnLoadCompleteListener(() -> {
+                int position = bankSpinnerAdapter.getPosition(selectedBankId);
+                if (position == -1) {
+                    bank.setSelection(bankSpinnerAdapter.getPosition(BankSpinnerAdapter
+                            .OTHER_BANK));
+                    otherBank.setText(selectedBankId);
+                } else
+                    bank.setSelection(position);
             });
             number.setText(cCard.getNumber());
             number.setVisibility(View.GONE);
@@ -323,12 +319,7 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
 
     @Override
     public void onClick(final View view) {
-        view.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                clickActions(view);
-            }
-        }, 200);
+        view.postDelayed(() -> clickActions(view), 200);
     }
 
     private void clickActions(View view) {
@@ -343,14 +334,9 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
                                         R.drawable.ic_keyboard_arrow_down_grey_500_24dp :
                                         R.drawable.ic_keyboard_arrow_up_grey_500_24dp
                         ));
-                rootView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((ScrollView) rootView).smoothScrollTo(0, ((ScrollView) rootView)
-                                .getChildAt(0)
-                                .getHeight());
-                    }
-                }, 50);
+                rootView.postDelayed(() -> ((ScrollView) rootView).smoothScrollTo(0, ((ScrollView) rootView)
+                        .getChildAt(0)
+                        .getHeight()), 50);
                 break;
             case R.id.billing_cycle:
                 DialogFragmentBillingCycle.getInstance(this, billingDay, paymentDay).show

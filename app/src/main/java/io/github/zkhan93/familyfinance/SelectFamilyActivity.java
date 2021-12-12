@@ -231,22 +231,19 @@ public class SelectFamilyActivity extends AppCompatActivity {
             }
             return tcs.getTask();
         };
-        clickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showMessage("", false);
-                familyId = edtTxtFamilyId.getText().toString().trim();
-                switch (view.getId()) {
-                    case R.id.btn_join_family:
-                        joinFamilyBtnAction();
-                        break;
-                    case R.id.btn_create_family:
-                        startFamilyBtnAction();
-                        break;
-                    case R.id.btn_logout:
-                        signOut();
-                        break;
-                }
+        clickListener = view -> {
+            showMessage("", false);
+            familyId = edtTxtFamilyId.getText().toString().trim();
+            switch (view.getId()) {
+                case R.id.btn_join_family:
+                    joinFamilyBtnAction();
+                    break;
+                case R.id.btn_create_family:
+                    startFamilyBtnAction();
+                    break;
+                case R.id.btn_logout:
+                    signOut();
+                    break;
             }
         };
     }

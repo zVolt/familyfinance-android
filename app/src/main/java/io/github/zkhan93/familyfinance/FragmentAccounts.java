@@ -23,7 +23,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import io.github.zkhan93.familyfinance.adapters.MyFirebaseRecyclerAdapter;
 import io.github.zkhan93.familyfinance.adapters.AccountListAdapterOld;
 import io.github.zkhan93.familyfinance.events.DeleteEvent;
 import io.github.zkhan93.familyfinance.models.Account;
