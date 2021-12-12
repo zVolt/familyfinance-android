@@ -15,7 +15,7 @@ import io.github.zkhan93.familyfinance.viewholders.FilterSMSMemberVH;
 
 public class FilterSmsMemberListAdapter extends MemberListAdapter {
 
-    private FilterSMSMemberVH.ItemInteractionListener itemInteractionListener;
+    private final FilterSMSMemberVH.ItemInteractionListener itemInteractionListener;
 
     public FilterSmsMemberListAdapter(App app, String familyId, FilterSMSMemberVH
             .ItemInteractionListener itemInteractionListener) {

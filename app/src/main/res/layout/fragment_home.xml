@@ -46,7 +46,7 @@
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         android:src="@drawable/ic_summary"
-                        android:tint="@color/colorAccent" />
+                        app:tint="@color/colorAccent" />
 
                     <TextView
                         style="@style/AppTheme.Text.Light"
@@ -87,7 +87,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:src="@drawable/ic_card"
-                        android:tint="@color/colorAccent" />
+                        app:tint="@color/colorAccent" />
 
                     <TextView
                         style="@style/AppTheme.Text.Light"
@@ -124,7 +124,7 @@
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         android:src="@drawable/ic_account"
-                        android:tint="@color/colorAccent" />
+                        app:tint="@color/colorAccent" />
 
                     <TextView
                         style="@style/AppTheme.Text.Light"
@@ -166,7 +166,7 @@
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         android:src="@drawable/ic_message"
-                        android:tint="@color/colorAccent" />
+                        app:tint="@color/colorAccent" />
 
                     <TextView
                         style="@style/AppTheme.Text.Light"
@@ -203,7 +203,7 @@
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         android:src="@drawable/ic_card"
-                        android:tint="@color/colorAccent" />
+                        app:tint="@color/colorAccent" />
 
                     <TextView
                         style="@style/AppTheme.Text.Light"
@@ -244,7 +244,7 @@
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         android:src="@drawable/ic_lock"
-                        android:tint="@color/colorAccent" />
+                        app:tint="@color/colorAccent" />
 
                     <TextView
                         style="@style/AppTheme.Text.Light"
@@ -280,7 +280,7 @@
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         android:src="@drawable/ic_group"
-                        android:tint="@color/colorAccent" />
+                        app:tint="@color/colorAccent" />
 
                     <TextView
                         style="@style/AppTheme.Text.Light"

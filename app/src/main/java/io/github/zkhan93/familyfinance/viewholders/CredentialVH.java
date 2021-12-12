@@ -13,9 +13,9 @@ import io.github.zkhan93.familyfinance.models.Credential;
 
 public class CredentialVH extends RecyclerView.ViewHolder implements View.OnClickListener, View
         .OnLongClickListener {
-    private TextView username;
-    private TextView description;
-    private CredentialInteraction credentialInteraction;
+    private final TextView username;
+    private final TextView description;
+    private final CredentialInteraction credentialInteraction;
     private Credential credential;
 
     public CredentialVH(View itemView, CredentialInteraction credentialInteraction) {

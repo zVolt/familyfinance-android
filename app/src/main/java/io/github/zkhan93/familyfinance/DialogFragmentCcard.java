@@ -5,7 +5,6 @@ import static io.github.zkhan93.familyfinance.models.CCard.EXPIRE_ON;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,10 +80,10 @@ public class DialogFragmentCcard extends DialogFragment implements DialogInterfa
     private String checkCardNumber;
     private CCard cCard;
     private ExpiryTextWatcher expiresOnTextWatcher;
-    private TextWatcherProxy cardNumberTextWatcher;
+    private final TextWatcherProxy cardNumberTextWatcher;
     private BankSpinnerAdapter bankSpinnerAdapter;
     private View rootView;
-    private ValueEventListener cardNumberChecker;
+    private final ValueEventListener cardNumberChecker;
 
     {
         cardNumberTextWatcher = new TextWatcherProxy() {

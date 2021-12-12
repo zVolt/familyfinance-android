@@ -7,7 +7,7 @@ import io.github.zkhan93.familyfinance.models.BaseModel;
  */
 
 public abstract class BaseEventWithModel<T extends BaseModel> extends BaseEvent{
-    private T item;
+    private final T item;
 
     public BaseEventWithModel(T item) {
         this.item = item;

@@ -34,12 +34,12 @@ public class SendRequestListAdapter extends RecyclerView.Adapter<SendRequestVH> 
                 .Listener<Request>, LoadFromDbTask.Listener<Request>,
         ChildEventListener, ValueEventListener {
     public static String TAG = SendRequestListAdapter.class.getSimpleName();
-    private List<Request> requests;
-    private Member me;
+    private final List<Request> requests;
+    private final Member me;
     private boolean ignoreChildAddedCalls;
-    private RequestDao requestDao;
+    private final RequestDao requestDao;
 
-    private SendRequestVH.ItemInteractionListener itemInteractionListener;
+    private final SendRequestVH.ItemInteractionListener itemInteractionListener;
 
     public SendRequestListAdapter(App app, Member me, SendRequestVH.ItemInteractionListener
             itemInteractionListener) {

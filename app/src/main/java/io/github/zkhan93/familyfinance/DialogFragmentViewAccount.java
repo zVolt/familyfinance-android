@@ -52,7 +52,7 @@ public class DialogFragmentViewAccount extends DialogFragment implements DialogI
     private DatabaseReference accountRef;
     private FirebaseUser firebaseUser;
     private Map<String, Object> updateMap;
-    private ValueEventListener bankImageLinkListener;
+    private final ValueEventListener bankImageLinkListener;
 
     ImageView bank;
     TextView accountNumber;

@@ -47,8 +47,8 @@ public class DialogFragmentViewCredential extends DialogFragment implements Dial
 
 
     private Credential credential;
-    private DatabaseReference credRef;
-    private View.OnClickListener clickToCopyClistener;
+    private final DatabaseReference credRef;
+    private final View.OnClickListener clickToCopyClistener;
 
     {
         clickToCopyClistener = new View.OnClickListener() {

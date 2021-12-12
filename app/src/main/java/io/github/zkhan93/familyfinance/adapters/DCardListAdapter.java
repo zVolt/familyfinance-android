@@ -4,12 +4,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DatabaseError;
-
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 
 import io.github.zkhan93.familyfinance.App;
 import io.github.zkhan93.familyfinance.R;
@@ -18,49 +15,30 @@ import io.github.zkhan93.familyfinance.models.DaoSession;
 import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.viewholders.DCardVH;
 
-public class DCardListAdapter extends FirebaseRecyclerAdapter<DCard, RecyclerView.ViewHolder> {
+public class DCardListAdapter extends MyFirebaseRecyclerAdapter<DCard, DCardVH> {
     public static final String TAG = DCardListAdapter.class.getSimpleName();
+    private final DaoSession daoSession;
 
-    private ItemInteractionListener itemInteractionListener;
-    private AdapterInteraction adapterInteraction;
-    private DaoSession daoSession;
-
-    public DCardListAdapter(App app, ItemInteractionListener
-            itemInteractionListener, FirebaseRecyclerOptions<DCard> options, AdapterInteraction adapterInteraction) {
-        super(options);
-        this.itemInteractionListener = itemInteractionListener;
-        this.adapterInteraction = adapterInteraction;
-        daoSession = app.getDaoSession();
+    public DCardListAdapter(App app,
+                            ItemInteractionListener<DCard> itemInteractionListener,
+                            FirebaseRecyclerOptions<DCard> options,
+                            AdapterInteraction adapterInteraction,
+                            DaoSession daoSession) {
+        super(app, itemInteractionListener, options, adapterInteraction);
+        this.daoSession = daoSession;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public DCardVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout
                 .listitem_ccard, parent, false);
-        return new DCardVH(view, itemInteractionListener);
+        return new DCardVH(view, this.itemInteractionListener);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position,
-                                    @NonNull DCard dCard) {
-        dCard.__setDaoSession(daoSession);
-        DCardVH dCardHolder = (DCardVH) holder;
-        dCardHolder.setDCard(dCard);
+    protected void onBindViewHolder(@NonNull DCardVH holder, int position, @NonNull DCard item) {
+        item.__setDaoSession(daoSession);
+        super.onBindViewHolder(holder, position, item);
     }
-
-    @Override
-    public void onDataChanged() {
-        adapterInteraction.dataChanged();
-    }
-
-    @Override
-    public void onError(DatabaseError e) {
-        adapterInteraction.dataChanged();
-    }
-
-    public interface AdapterInteraction {
-        void dataChanged();
-    }
-
 }

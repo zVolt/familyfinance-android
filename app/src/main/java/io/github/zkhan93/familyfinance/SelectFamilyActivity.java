@@ -63,16 +63,16 @@ public class SelectFamilyActivity extends AppCompatActivity {
     private String familyId;
     private Member me;
     private MemberDao memberDao;
-    private Continuation<Void, Task<Void>> checkFamilyExistenceTask;
-    private Continuation<Void, Task<Integer>> checkForApprovedRequest;
-    private Continuation<Integer, Task<Integer>> createRequestTask;
-    private Continuation<Integer, Task<Integer>> fetchMembersTask;
+    private final Continuation<Void, Task<Void>> checkFamilyExistenceTask;
+    private final Continuation<Void, Task<Integer>> checkForApprovedRequest;
+    private final Continuation<Integer, Task<Integer>> createRequestTask;
+    private final Continuation<Integer, Task<Integer>> fetchMembersTask;
 
-    private View.OnClickListener clickListener;
+    private final View.OnClickListener clickListener;
 
-    private int USER_REQ_APPROVED = 0;
-    private int USER_REQ_SUBMITTED = 1;
-    private int USER_REQ_NOT_FOUND = 2;
+    private final int USER_REQ_APPROVED = 0;
+    private final int USER_REQ_SUBMITTED = 1;
+    private final int USER_REQ_NOT_FOUND = 2;
 
     {
         checkFamilyExistenceTask = task -> {

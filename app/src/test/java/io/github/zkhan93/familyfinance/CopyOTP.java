@@ -1,7 +1,6 @@
 package io.github.zkhan93.familyfinance;
 
 import android.content.Context;
-import android.content.Intent;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,11 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import io.github.zkhan93.familyfinance.listeners.NotificationActionsListener;
 import io.github.zkhan93.familyfinance.util.Util;
-
-import static io.github.zkhan93.familyfinance.listeners.NotificationActionsListener.ACTION_COPY_OTP;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -49,8 +43,8 @@ public class CopyOTP {
         this.otp = "1234";
     }
 
-    private String message;
-    private String otp;
+    private final String message;
+    private final String otp;
 
     @Test
     public void otp_extract() {

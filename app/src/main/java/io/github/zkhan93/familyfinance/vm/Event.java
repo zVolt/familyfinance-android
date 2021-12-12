@@ -1,7 +1,7 @@
 package io.github.zkhan93.familyfinance.vm;
 
 public class Event<T> {
-    private T content;
+    private final T content;
     private boolean handled;
     public Event(T content){
         this.content = content;

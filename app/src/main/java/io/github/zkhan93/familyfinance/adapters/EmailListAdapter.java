@@ -31,9 +31,9 @@ public class EmailListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         ChildEventListener, SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String TAG = EmailListAdapter.class.getSimpleName();
     private final static String PREF_KEY_SUBSCRIBED = "subscribed";
-    private List<Email> emails;
-    private SharedPreferences sharedPreferences;
-    private SubscribeEmailCallback subscribeEmailCallback;
+    private final List<Email> emails;
+    private final SharedPreferences sharedPreferences;
+    private final SubscribeEmailCallback subscribeEmailCallback;
     private boolean subscribed;
 
     public EmailListAdapter(Context context, String familyId, SubscribeEmailCallback

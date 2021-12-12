@@ -35,8 +35,8 @@ public class OtpVH extends RecyclerView.ViewHolder {
     TextView claim;
 
     private DatabaseReference fromRef;
-    private ValueEventListener senderValueListener;
-    private ValueEventListener claimerValueListener;
+    private final ValueEventListener senderValueListener;
+    private final ValueEventListener claimerValueListener;
     private int asyncCallCount;
     private Member from, claimedBy;
     private Otp otp;

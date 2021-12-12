@@ -24,7 +24,7 @@ import java.util.Collections;
 
 public class EmailSubscribeTask extends AsyncTask<Void, Void, WatchResponse> {
     public static final String TAG = EmailSubscribeTask.class.getSimpleName();
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
 
     public EmailSubscribeTask(GoogleAccountCredential credential, Context context) {
         HttpTransport transport = AndroidHttp.newCompatibleTransport();

@@ -17,7 +17,7 @@ public class LoadFromDbTask<D extends AbstractDao<T, ?>, T>
         extends AsyncTask<Void, Void, List<T>> {
 
     private WeakReference<D> cCardDaoWeakReference;
-    private WeakReference<Listener<T>> callbacksWeakReference;
+    private final WeakReference<Listener<T>> callbacksWeakReference;
     private Query<T> query;
 
     /**

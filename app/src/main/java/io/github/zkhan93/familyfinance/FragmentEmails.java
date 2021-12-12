@@ -215,7 +215,7 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
         private final String TAG = io.github.zkhan93.familyfinance.tasks.EmailSubscribeTask.class
                 .getSimpleName();
         private SharedPreferences sharedPreferences;
-        private Gmail mService = null;
+        private Gmail mService;
 
         EmailSubscribeTask(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -336,7 +336,7 @@ public class FragmentEmails extends Fragment implements SubscribeEmailCallback,
 
     static class GetTokenTask extends AsyncTask<Void, Void, Void> {
         WeakReference<Context> contextWeakReference;
-        private android.accounts.Account account;
+        private final android.accounts.Account account;
 
         GetTokenTask(Context context, android.accounts.Account account) {
             contextWeakReference = new WeakReference<>(context);

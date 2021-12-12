@@ -28,6 +28,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import io.github.zkhan93.familyfinance.adapters.DCardListAdapter;
+import io.github.zkhan93.familyfinance.adapters.MyFirebaseRecyclerAdapter;
 import io.github.zkhan93.familyfinance.events.ConfirmDeleteEvent;
 import io.github.zkhan93.familyfinance.events.CreateEvent;
 import io.github.zkhan93.familyfinance.events.DeleteEvent;
@@ -50,9 +51,9 @@ public class FragmentDCards extends Fragment {
     private String familyId;
     private DCardListAdapter dCardListAdapter;
     private DatabaseReference baseCardRef;
-    private DCardListAdapter.AdapterInteraction adapterInteraction;
-    private ValueEventListener noContentImageUrlListener;
-    private ItemInteractionListener cardInteractionListener;
+    private final MyFirebaseRecyclerAdapter.AdapterInteraction adapterInteraction;
+    private final ValueEventListener noContentImageUrlListener;
+    private final ItemInteractionListener<DCard> cardInteractionListener;
 
     RecyclerView dCardsList;
     ImageView noContent;
@@ -157,9 +158,9 @@ public class FragmentDCards extends Fragment {
 
     @Override
     public void onStop() {
-        super.onStop();
         dCardListAdapter.stopListening();
         EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -200,8 +201,9 @@ public class FragmentDCards extends Fragment {
         FirebaseRecyclerOptions<DCard> options = new FirebaseRecyclerOptions.Builder<DCard>()
                 .setQuery(query, DCard.class)
                 .build();
-        dCardListAdapter = new DCardListAdapter((App) getActivity().getApplicationContext(),
-                cardInteractionListener, options, adapterInteraction);
+        App app = (App) getActivity().getApplicationContext();
+        dCardListAdapter = new DCardListAdapter(app,
+                cardInteractionListener, options, adapterInteraction, app.getDaoSession());
         dCardsList.setAdapter(dCardListAdapter);
         dCardListAdapter.startListening();
     }

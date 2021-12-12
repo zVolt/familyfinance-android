@@ -16,10 +16,11 @@ import io.github.zkhan93.familyfinance.models.CredentialType;
  */
 
 public class CredentialTypeVH extends RecyclerView.ViewHolder {
-    private TextView name, count;
-    private ImageView icon;
+    private final TextView name;
+    private final TextView count;
+    private final ImageView icon;
     private ImageView handler;
-    private View itemView;
+    private final View itemView;
 
     public CredentialTypeVH(View itemView, View.OnClickListener groupClickListener) {
         super(itemView);

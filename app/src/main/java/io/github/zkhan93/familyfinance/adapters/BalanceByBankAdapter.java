@@ -26,7 +26,7 @@ import io.github.zkhan93.familyfinance.viewholders.BalanceByBankVH;
 public class BalanceByBankAdapter extends RecyclerView.Adapter<BalanceByBankVH> implements
         ValueEventListener {
 
-    private List<BalanceByBank> balanceByBankList;
+    private final List<BalanceByBank> balanceByBankList;
 
     public BalanceByBankAdapter(String familyId) {
         this.balanceByBankList = new ArrayList<>();

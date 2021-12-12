@@ -51,11 +51,13 @@ public class CCardVH extends RecyclerView.ViewHolder implements View.OnClickList
     TextView tvCvv;
     ConstraintLayout container;
 
-    private Context context;
+    private final Context context;
 
-    private WeakReference<ItemInteractionListener<CCard>> itemInteractionListenerRef;
+    private final WeakReference<ItemInteractionListener<CCard>> itemInteractionListenerRef;
     private CCard cCard;
-    private MyValueEventListener bankImageLinkListener, cardTypeImageLinkListener, bankNameListener;
+    private final MyValueEventListener bankImageLinkListener;
+    private final MyValueEventListener cardTypeImageLinkListener;
+    private final MyValueEventListener bankNameListener;
 
     {
         bankImageLinkListener = new MyValueEventListener() {

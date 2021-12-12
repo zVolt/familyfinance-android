@@ -30,9 +30,9 @@ public class BankSpinnerAdapter extends BaseAdapter implements ValueEventListene
     public static final String TAG = BankSpinnerAdapter.class.getSimpleName();
     public static final String OTHER_BANK = "ZZZOTHER";
 
-    private List<BankSpinnerItem> bankSpinnerItems;
-    private LayoutInflater inflater;
-    private DatabaseReference bankLogoRef;
+    private final List<BankSpinnerItem> bankSpinnerItems;
+    private final LayoutInflater inflater;
+    private final DatabaseReference bankLogoRef;
     private OnLoadCompleteListener onLoadCompleteListener;
     private boolean loaded;
 
@@ -62,7 +62,7 @@ public class BankSpinnerAdapter extends BaseAdapter implements ValueEventListene
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        ViewHolder viewHolder = null;
+        ViewHolder viewHolder;
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.spinneritem, viewGroup, false);
             viewHolder = new ViewHolder();

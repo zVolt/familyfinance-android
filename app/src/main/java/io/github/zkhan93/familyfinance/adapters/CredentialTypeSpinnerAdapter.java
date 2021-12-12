@@ -27,9 +27,9 @@ import io.github.zkhan93.familyfinance.util.Util;
 
 public class CredentialTypeSpinnerAdapter extends BaseAdapter implements ValueEventListener {
     public static final String TAG = CredentialTypeSpinnerAdapter.class.getSimpleName();
-    private List<CredentialType> credentialTypeList;
+    private final List<CredentialType> credentialTypeList;
     private String selectCredId;
-    private CredentialTypeSpinnerAdapter.OnLoadCompleteListener onLoadCompleteListener;
+    private final CredentialTypeSpinnerAdapter.OnLoadCompleteListener onLoadCompleteListener;
 
     public CredentialTypeSpinnerAdapter(OnLoadCompleteListener onLoadCompleteListener) {
         this.credentialTypeList = new ArrayList<>();

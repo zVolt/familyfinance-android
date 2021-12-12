@@ -33,8 +33,8 @@ public class ReceiveRequestVH extends RecyclerView.ViewHolder implements PopupMe
     ImageButton showOptions;
 
     private Request request;
-    private PopupMenu popupMenu;
-    private ItemInteractionListener itemInteractionListener;
+    private final PopupMenu popupMenu;
+    private final ItemInteractionListener itemInteractionListener;
 
     public ReceiveRequestVH(View itemView, ItemInteractionListener itemInteractionListener) {
         super(itemView);

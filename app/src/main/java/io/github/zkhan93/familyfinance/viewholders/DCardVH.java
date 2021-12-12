@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -28,7 +27,7 @@ import io.github.zkhan93.familyfinance.util.ItemInteractionListener;
 import io.github.zkhan93.familyfinance.util.Util;
 
 
-public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
+public class DCardVH extends BaseVH<DCard> implements PopupMenu
         .OnMenuItemClickListener, View.OnClickListener, View.OnLongClickListener {
 
     ImageView bank;
@@ -40,9 +39,11 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
     TextView cvv;
 
     private DCard dCard;
-    private Context context;
+    private final Context context;
     private ItemInteractionListener itemInteractionListener;
-    private ValueEventListener bankImageLinkListener, bankNameListener, cardTypeImageLinkListener;
+    private final ValueEventListener bankImageLinkListener;
+    private final ValueEventListener bankNameListener;
+    private final ValueEventListener cardTypeImageLinkListener;
 
     {
         bankImageLinkListener = new ValueEventListener() {
@@ -100,8 +101,7 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
 
     public DCardVH(View itemView, @NonNull ItemInteractionListener
             itemInteractionListener) {
-        super(itemView);
-        this.itemInteractionListener = itemInteractionListener;
+        super(itemView, itemInteractionListener);
         this.context = itemView.getContext();
         bank = itemView.findViewById(R.id.bank_icon);
         cardType = itemView.findViewById(R.id.card_type);
@@ -115,9 +115,8 @@ public class DCardVH extends RecyclerView.ViewHolder implements PopupMenu
         itemView.setOnLongClickListener(this);
     }
 
-    public void setDCard(DCard dCard) {
+    public void setItem(DCard dCard) {
         String cardType = Util.getCardBrand(dCard.getNumber());
-        ;
         Log.d(TAG, String.format("card type: %s", cardType));
         if (cardType != null) {
             FirebaseDatabase.getInstance().getReference("images")

@@ -54,7 +54,7 @@ public class DialogFragmentAddonCard extends DialogFragment implements DialogInt
 
     private String familyId, mainCardNumber;
     private AddonCard addonCard;
-    private TextWatcher expiresOnTextWatcher;
+    private final TextWatcher expiresOnTextWatcher;
 
     {
         expiresOnTextWatcher = new TextWatcherProxy() {

@@ -36,18 +36,18 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         implements ChildEventListener,
         ValueEventListener {
     public static final String TAG = CredentialListAdapter.class.getSimpleName();
-    private String familyId;
-    private List<CredentialWrapper> wrappedCredentials;
-    private List<CredentialType> credentialTypes;
-    private HashMap<String, List<Credential>> typeToCredentialsMap;
+    private final String familyId;
+    private final List<CredentialWrapper> wrappedCredentials;
+    private final List<CredentialType> credentialTypes;
+    private final HashMap<String, List<Credential>> typeToCredentialsMap;
     private boolean ignoreChildEvents;
-    private CredentialDao credentialDao;
+    private final CredentialDao credentialDao;
     private CredentialTypeDao credentialTypeDao;
-    private DatabaseReference credRef;
-    private ValueEventListener credentialTypeValueListener;
+    private final DatabaseReference credRef;
+    private final ValueEventListener credentialTypeValueListener;
 
-    private CredentialVH.CredentialInteraction credentialInteraction;
-    private View.OnClickListener groupClickListener;
+    private final CredentialVH.CredentialInteraction credentialInteraction;
+    private final View.OnClickListener groupClickListener;
 
     {
         credentialTypeValueListener = new ValueEventListener() {
@@ -118,7 +118,7 @@ public class CredentialListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 CredentialWrapper cw;
                 for (int x = 0; x < wrappedCredentials.size(); x++) {
                     cw = wrappedCredentials.get(x);
-                    strb.append(String.valueOf(x));
+                    strb.append(x);
                     strb.append(":");
                     strb.append(cw.type == TYPE.HEADER ? "HEADER" : "CHILD");
                     strb.append(", ");

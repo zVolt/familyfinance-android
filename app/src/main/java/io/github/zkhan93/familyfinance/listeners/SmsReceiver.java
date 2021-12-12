@@ -84,7 +84,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         .pref_key_allsms),
                 true);
         SmsMessage[] msgs;
-        String smsFrom = "", smsBody = "";
+        String smsFrom = "", smsBody;
         StringBuilder smsBodyBuilder = new StringBuilder();
         Otp otp;
         Object[] pdus;

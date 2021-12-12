@@ -4,7 +4,7 @@ import android.text.Editable;
 import android.widget.EditText;
 
 public class ExpiryTextWatcher extends TextWatcherProxy {
-    private EditText editTextToWatch;
+    private final EditText editTextToWatch;
 
     public ExpiryTextWatcher(EditText editTextToWatch) {
         this.editTextToWatch = editTextToWatch;

@@ -40,12 +40,13 @@ public class ReceiveRequestListAdapter extends RecyclerView.Adapter<ReceiveReque
         .Listener<Request> {
     public static final String TAG = ReceiveRequestListAdapter.class.getSimpleName();
 
-    private List<Request> requests;
-    private ReceiveRequestVH.ItemInteractionListener itemInteractionListener;
-    private String familyId, familyModeratorId;
-    private DatabaseReference reqRef;
+    private final List<Request> requests;
+    private final ReceiveRequestVH.ItemInteractionListener itemInteractionListener;
+    private final String familyId;
+    private String familyModeratorId;
+    private final DatabaseReference reqRef;
     private boolean ignoreChildEvents;
-    private RequestDao requestDao;
+    private final RequestDao requestDao;
 
     public ReceiveRequestListAdapter(App app, String familyId, ReceiveRequestVH
             .ItemInteractionListener itemInteractionListener) {

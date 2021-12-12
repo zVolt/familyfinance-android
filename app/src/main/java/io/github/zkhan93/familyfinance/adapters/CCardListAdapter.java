@@ -48,10 +48,10 @@ public class CCardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public static final String TAG = CCardListAdapter.class.getSimpleName();
 
     private ArrayList<CCard> ccards;
-    private ItemInteractionListener<CCard> itemInteractionListener;
-    private DatabaseReference ccardRef;
-    private CCardDao cCardDao;
-    private AddonCardDao addonCardDao;
+    private final ItemInteractionListener<CCard> itemInteractionListener;
+    private final DatabaseReference ccardRef;
+    private final CCardDao cCardDao;
+    private final AddonCardDao addonCardDao;
     private boolean ignoreChildEvent;
 
     public CCardListAdapter(App app, String familyId, ItemInteractionListener<CCard>

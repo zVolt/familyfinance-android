@@ -1,6 +1,5 @@
 package io.github.zkhan93.familyfinance;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -15,8 +14,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
-import static android.app.Activity.RESULT_OK;
-
 /**
  * Created by zeeshan on 21/10/17.
  */
@@ -28,7 +25,7 @@ public class FragmentSetting extends PreferenceFragmentCompat {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener =
+    private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener =
             (preference, value) -> {
                 String stringValue = value.toString();
                 Log.d(TAG, preference.getKey() + " preference summary with value " +

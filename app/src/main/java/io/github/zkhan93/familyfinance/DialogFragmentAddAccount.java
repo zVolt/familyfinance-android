@@ -68,18 +68,14 @@ public class DialogFragmentAddAccount extends DialogFragment implements DialogIn
     private BankSpinnerAdapter bankSpinnerAdapter;
     private String selectedBankId;
     private View rootView;
-    private TextWatcherProxy numberChangeWatcher;
+    private final TextWatcherProxy numberChangeWatcher;
 
     {
         numberChangeWatcher = new TextWatcherProxy() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence == null || charSequence.toString().isEmpty()) {
-                    ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled
-                            (false);
-                } else {
-                    ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-                }
+                ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled
+                        (charSequence != null && !charSequence.toString().isEmpty());
             }
         };
     }
