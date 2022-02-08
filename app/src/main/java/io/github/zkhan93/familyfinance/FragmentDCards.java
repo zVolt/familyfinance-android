@@ -60,7 +60,6 @@ public class FragmentDCards extends Fragment {
     AppState appState;
 
     public FragmentDCards() {
-        // Required empty public constructor
         adapterInteraction = () -> {
             if (dCardListAdapter.getItemCount() == 0) {
                 Util.Log.d(TAG, "show blank image");
@@ -241,7 +240,7 @@ public class FragmentDCards extends Fragment {
     @Subscribe()
     public void confirmDelete(ConfirmDeleteEvent event) {
         if (event == null || event.getItem() == null) return;
-        if (event.getItem() instanceof CCard) {
+        if (event.getItem() instanceof DCard) {
             DCard card = (DCard) event.getItem();
             cardInteractionListener.delete(card);
         }

@@ -17,6 +17,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.greenrobot.eventbus.EventBus;
@@ -48,6 +49,7 @@ public class FragmentCCards extends Fragment implements ItemInteractionListener<
 
     private String familyId;
     private CCardListAdapter cCardListAdapter;
+    private DatabaseReference baseCardRef;
     AppState appState;
     RecyclerView ccardsList;
 
@@ -77,8 +79,8 @@ public class FragmentCCards extends Fragment implements ItemInteractionListener<
             familyId = bundle.getString(ARG_FAMILY_ID, null);
         }
         if (familyId == null) {
-            familyId =
-                    PreferenceManager.getDefaultSharedPreferences(requireActivity()).getString(ARG_FAMILY_ID, null);
+            familyId = PreferenceManager.getDefaultSharedPreferences(requireActivity())
+                                        .getString(ARG_FAMILY_ID, null);
         }
         appState = new ViewModelProvider(requireActivity()).get(AppState.class);
     }
@@ -95,6 +97,10 @@ public class FragmentCCards extends Fragment implements ItemInteractionListener<
         ccardsList.setAdapter(cCardListAdapter);
         setHasOptionsMenu(true);
         initFab();
+        baseCardRef = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("ccards")
+                .child(familyId);
         return rootView;
     }
 
@@ -126,7 +132,6 @@ public class FragmentCCards extends Fragment implements ItemInteractionListener<
         cCardListAdapter.unregisterForEvent();
     }
 
-
     private void initFab() {
         appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
         appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
@@ -141,6 +146,7 @@ public class FragmentCCards extends Fragment implements ItemInteractionListener<
 
     @Override
     public void delete(CCard cCard) {
+        // Just show a confirmation dialog
         String title = "You want to delete Credit Card " + cCard.getNumber();
         DialogFragmentConfirm<CCard> dialogFragmentConfirm = new DialogFragmentConfirm<>();
         Bundle bundle = new Bundle();
@@ -167,7 +173,7 @@ public class FragmentCCards extends Fragment implements ItemInteractionListener<
         navController.navigate(R.id.ccard_detail, bundle);
     }
 
-    //TODO: call this from relevant place
+    // call this from relevant place, maybe from details view fab + button
     public void addAddonCard(CCard cCard) {
         DialogFragmentAddonCard.newInstance(familyId, cCard.getNumber()).show(getParentFragmentManager(),
                 DialogFragmentAddonCard.TAG);
@@ -177,7 +183,6 @@ public class FragmentCCards extends Fragment implements ItemInteractionListener<
     public void copyToClipboard(CCard cCard) {
         Util.quickCopy(requireActivity().getApplicationContext(), cCard);
     }
-
 
 
     @Override
@@ -212,6 +217,7 @@ public class FragmentCCards extends Fragment implements ItemInteractionListener<
             cCardListAdapter.deleteCcard(addonCard.getNumber(), true);
         }
     }
+
     @Subscribe()
     public void confirmDelete(ConfirmDeleteEvent event) {
         if (event == null || event.getItem() == null) return;
@@ -220,26 +226,24 @@ public class FragmentCCards extends Fragment implements ItemInteractionListener<
             delete(card);
         }
     }
+
     @Subscribe()
     public void createCCard(CreateEvent event) {
         if (event == null || event.getItem() == null) return;
         if (event.getItem() instanceof CCard) {
             CCard card = (CCard) event.getItem();
-            FirebaseDatabase.getInstance()
-                    .getReference("ccards")
-                    .child(familyId)
+            baseCardRef
                     .child(card.getNumber())
                     .setValue(card);
         }
     }
+
     @Subscribe()
     public void updateCCard(UpdateEvent event) {
         if (event == null || event.getItem() == null) return;
         if (event.getItem() instanceof CCard) {
             CCard card = (CCard) event.getItem();
-            FirebaseDatabase.getInstance()
-                    .getReference("ccards")
-                    .child(familyId)
+            baseCardRef
                     .child(card.getNumber())
                     .setValue(card);
         }
