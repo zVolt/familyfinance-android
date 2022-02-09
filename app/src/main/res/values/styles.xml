@@ -59,6 +59,9 @@
     <style name="AppTheme.Text.Light.Small">
         <item name="android:textSize">@dimen/text_size_sm</item>
     </style>
+    <style name="AppTheme.Text.Light.Medium">
+        <item name="android:textSize">@dimen/text_size_md</item>
+    </style>
     <style name="AppTheme.Text.Light.Large">
         <item name="android:textSize">@dimen/text_size_lg</item>
     </style>

@@ -38,7 +38,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements View.OnClickLi
     TextView balance;
     ImageView updatedBy;
     TextView updatedOn;
-    ImageButton menu;
+    TextView bankName;
 
     private final Context context;
     private final ItemInteractionListener<Account> itemInteractionListener;
@@ -75,6 +75,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements View.OnClickLi
         name = itemView.findViewById(R.id.account_holder);
         accountNumber = itemView.findViewById(R.id.account_number);
         bank = itemView.findViewById(R.id.bank);
+        bankName = itemView.findViewById(R.id.bank_name);
         ifsc = itemView.findViewById(R.id.ifsc);
         balance = itemView.findViewById(R.id.balance);
         updatedBy = itemView.findViewById(R.id.updated_by);
@@ -88,6 +89,7 @@ public class AccountVH extends RecyclerView.ViewHolder implements View.OnClickLi
     public void setAccount(Account account) {
         this.account = account;
         name.setText(account.getAccountHolder());
+        bankName.setText(account.getBank().toUpperCase());
         accountNumber.setText(account.getAccountNumber());
         FirebaseDatabase.getInstance()
                 .getReference("images")

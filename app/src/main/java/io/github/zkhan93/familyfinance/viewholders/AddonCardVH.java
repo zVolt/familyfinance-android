@@ -16,6 +16,7 @@ import java.util.Date;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
+
 import io.github.zkhan93.familyfinance.R;
 import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
@@ -37,9 +38,7 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
     TextView cvv;
     ImageView updatedBy;
     TextView updatedOn;
-    ImageButton menu;
 
-    private PopupMenu popup;
     private AddonCard addonCard;
     private final ItemInteractionListener itemInteractionListener;
     private final Context context;
@@ -54,17 +53,10 @@ public class AddonCardVH extends RecyclerView.ViewHolder implements PopupMenu
         cvv = itemView.findViewById(R.id.cvv);
         updatedBy = itemView.findViewById(R.id.updated_by);
         updatedOn = itemView.findViewById(R.id.updated_on);
-        menu = itemView.findViewById(R.id.menu);
         itemView.setOnLongClickListener(this);
-        itemView.findViewById(R.id.menu).setOnClickListener(view -> popup.show());
         this.itemInteractionListener = itemInteractionListener;
-        popup = new PopupMenu(itemView.getContext(), menu);
-        MenuInflater inflater = popup.getMenuInflater();
-        popup.setOnMenuItemClickListener(this);
-        inflater.inflate(R.menu.addon_card, popup.getMenu());
         updatedBy.setVisibility(View.GONE);
         updatedOn.setVisibility(View.GONE);
-
     }
 
     @Override
