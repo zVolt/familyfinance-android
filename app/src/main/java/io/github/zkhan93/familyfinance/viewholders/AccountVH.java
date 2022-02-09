@@ -39,7 +39,6 @@ public class AccountVH extends RecyclerView.ViewHolder implements View.OnClickLi
     ImageView updatedBy;
     TextView updatedOn;
     TextView bankName;
-    ImageButton menu;
 
     private final Context context;
     private final ItemInteractionListener<Account> itemInteractionListener;
