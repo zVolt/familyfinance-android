@@ -86,13 +86,13 @@ public class HomeActivity extends AppCompatActivity implements AppBarConfigurati
     protected void onStart() {
         super.onStart();
         checkRequiredPermissions();
-        ((App)getApplication()).requestBiometricAuth(this);
+        ((App)getApplication()).requestAuth(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        ((App)getApplication()).requestBiometricAuth(this);
+        ((App)getApplication()).requestAuth(this);
     }
 
     private void checkRequiredPermissions() {

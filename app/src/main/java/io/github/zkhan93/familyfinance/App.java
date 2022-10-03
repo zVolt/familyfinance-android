@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -61,6 +62,20 @@ public class App extends Application {
                 System.currentTimeMillis()).apply();
     }
 
+    public void requestAuth(FragmentActivity activity){
+
+        if (BiometricManager.from(getApplicationContext())
+                .canAuthenticate(BIOMETRIC_STRONG | DEVICE_CREDENTIAL) ==
+                BiometricManager.BIOMETRIC_SUCCESS) {
+            requestBiometricAuth(activity);
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "Enable device PIN to use the app!", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "cannot use biometric of device login");
+            activity.finish();
+        }
+    }
+
     public void requestBiometricAuth(FragmentActivity activity) {
         long biometricAuthThreshold = 10 * 1000;
         long lastAuthAt = spf.getLong(getString(R.string.pref_success_biometric_auth_at), 0);
@@ -107,7 +122,7 @@ public class App extends Application {
         if (Build.VERSION.SDK_INT > 29) {
             builder = builder.setAllowedAuthenticators(BIOMETRIC_STRONG | DEVICE_CREDENTIAL);
         }else{
-            builder = builder.setNegativeButtonText(getString(R.string.cancel));
+            builder.setDeviceCredentialAllowed(true);
         }
         promptInfo = builder.build();
 
