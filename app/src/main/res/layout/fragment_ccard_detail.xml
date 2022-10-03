@@ -227,11 +227,6 @@
                     android:visibility="gone"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/listitem_card_activity" />
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/chart"
-                    android:layout_marginBottom="@dimen/large"
-                    android:layout_width="match_parent"
-                    android:layout_height="250dp" />
             </LinearLayout>
 
         </LinearLayout>

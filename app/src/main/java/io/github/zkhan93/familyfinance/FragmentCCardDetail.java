@@ -7,15 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
-
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +16,7 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +26,7 @@ import io.github.zkhan93.familyfinance.models.AddonCard;
 import io.github.zkhan93.familyfinance.models.CCard;
 import io.github.zkhan93.familyfinance.models.CCardDao;
 import io.github.zkhan93.familyfinance.models.DaoSession;
+import io.github.zkhan93.familyfinance.util.Util;
 import io.github.zkhan93.familyfinance.vm.AppState;
 
 
@@ -58,7 +51,6 @@ public class FragmentCCardDetail extends Fragment {
     TextView password;
     TextView cardLimit;
 
-    LineChart chart;
 
     private CCardDao cCardDao;
     private AppState appState;
@@ -85,6 +77,7 @@ public class FragmentCCardDetail extends Fragment {
         if (getArguments() != null) {
             card = getArguments().getParcelable(ARG_CARD);
         }
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
     }
 
     @Override
@@ -107,8 +100,6 @@ public class FragmentCCardDetail extends Fragment {
         password = rootView.findViewById(R.id.password);
         cardLimit = rootView.findViewById(R.id.card_limit);
 
-        chart = rootView.findViewById(R.id.chart);
-
         Bundle bundle = getArguments();
         if (bundle != null) {
             card = bundle.getParcelable("card");
@@ -118,70 +109,26 @@ public class FragmentCCardDetail extends Fragment {
         }
         setCardDetails();
         setUpCards();
-        setUpChart();
+        initFab();
         return rootView;
     }
 
-    private void setUpChart() {
-        List<Entry> entries = new ArrayList<>();
-        // turn your data into Entry objects
-        entries.add(new Entry(1, 1334));
-        entries.add(new Entry(2, 1543));
-        entries.add(new Entry(3, 3543));
-        entries.add(new Entry(4, 643));
-        entries.add(new Entry(5, 4632));
+    @Override
+    public void onResume() {
+        super.onResume();
+        initFab();
+    }
 
-        LineDataSet dataSet = new LineDataSet(entries, "Earning"); // add entries to dataset
-        dataSet.setDrawFilled(false);
-        dataSet.setValueTextSize(16);
-        dataSet.setDrawValues(true);
-        dataSet.setLineWidth(2f);
-        dataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
-        dataSet.setColor(getResources().getColor(R.color.md_green_500));
-        dataSet.setDrawCircles(false);
-
-
-        LineData lineData = new LineData();
-        lineData.addDataSet(dataSet);
-        Legend legend = chart.getLegend();
-        legend.setEnabled(false);
-
-        chart.setData(lineData);
-        chart.setDescription(null);
-        chart.setDrawGridBackground(false);
-        chart.setDrawBorders(false);
-        chart.setPinchZoom(false);
-        chart.setDoubleTapToZoomEnabled(false);
-        chart.setTouchEnabled(false);
-        chart.getXAxis().setSpaceMin(1);
-        chart.getXAxis().setSpaceMax(1);
-        chart.getXAxis().setDrawAxisLine(false);
-        chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        chart.getXAxis().setDrawGridLines(false);
-        chart.getXAxis().setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getAxisLabel(float value, AxisBase axis) {
-                switch (String.valueOf(value)) {
-                    case "1.0":
-                        return "Jan";
-                    case "2.0":
-                        return "Feb";
-                    case "3.0":
-                        return "Mar";
-                    case "4.0":
-                        return "Apr";
-                    case "5.0":
-                        return "May";
-                }
-                return "";
+    private void initFab() {
+        appState.enableFab(R.drawable.ic_add_white_24dp, TAG);
+        appState.getFabAction().observe(getViewLifecycleOwner(), event -> {
+            String id = event.getContentIfNotHandled();
+            if (id != null && id.equals(TAG)){
+                Util.Log.d(TAG, "addon add click for: %s", id);
+                DialogFragmentAddonCard.newInstance(familyId, card.getNumber()).show(getParentFragmentManager(),
+                        DialogFragmentCcard.TAG);
             }
         });
-        chart.getAxisLeft().setEnabled(false);
-        chart.getAxisRight().setEnabled(false);
-
-        chart.invalidate();
-//        dataSet.setColor();
-//        dataSet.setValueTextColor(...); // styling, ...
     }
 
     private void setUpCards() {
