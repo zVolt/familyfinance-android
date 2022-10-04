@@ -2,6 +2,8 @@ package io.github.zkhan93.familyfinance;
 
 import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG;
 import static androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK;
+
 
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -65,7 +67,7 @@ public class App extends Application {
     public void requestAuth(FragmentActivity activity){
 
         if (BiometricManager.from(getApplicationContext())
-                .canAuthenticate(BIOMETRIC_STRONG | DEVICE_CREDENTIAL) ==
+                .canAuthenticate(BIOMETRIC_STRONG | BIOMETRIC_WEAK | DEVICE_CREDENTIAL) ==
                 BiometricManager.BIOMETRIC_SUCCESS) {
             requestBiometricAuth(activity);
         } else {
@@ -120,7 +122,7 @@ public class App extends Application {
                 .setSubtitle("Log in using your biometric credential");
 
         if (Build.VERSION.SDK_INT > 29) {
-            builder = builder.setAllowedAuthenticators(BIOMETRIC_STRONG | DEVICE_CREDENTIAL);
+            builder = builder.setAllowedAuthenticators(BIOMETRIC_STRONG | BIOMETRIC_WEAK | DEVICE_CREDENTIAL);
         }else{
             builder.setDeviceCredentialAllowed(true);
         }
